@@ -1,0 +1,2209 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل CSS Flexbox الشامل</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        kufi: ['Noto Kufi Arabic', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-card: #1a1a1a;
+            --bg-elevated: #242424;
+            --fg: #f0ece4;
+            --fg-muted: #8a8580;
+            --accent: #e8a838;
+            --accent-dim: rgba(232, 168, 56, 0.15);
+            --accent-glow: rgba(232, 168, 56, 0.3);
+            --border: #2a2a2a;
+            --success: #4ade80;
+            --info: #60a5fa;
+            --rose: #f87171;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: 'Noto Kufi Arabic', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* شريط التمرير المخصص */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 3px;
+        }
+
+        /* خلفية متحركة */
+        .hero-bg {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(232, 168, 56, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 20%, rgba(232, 168, 56, 0.04) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 80%, rgba(200, 120, 20, 0.03) 0%, transparent 40%);
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes bgFloat {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            33% {
+                transform: translate(2%, -1%) rotate(1deg);
+            }
+
+            66% {
+                transform: translate(-1%, 2%) rotate(-1deg);
+            }
+        }
+
+        /* شبكة خلفية */
+        .grid-pattern {
+            background-image:
+                linear-gradient(rgba(232, 168, 56, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(232, 168, 56, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* بطاقات الخصائص */
+        .prop-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prop-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .prop-card:hover {
+            border-color: rgba(232, 168, 56, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(232, 168, 56, 0.1);
+        }
+
+        .prop-card:hover::before {
+            opacity: 1;
+        }
+
+        /* منطقة التجربة */
+        .playground {
+            background: var(--bg-elevated);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            min-height: 200px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .playground.active {
+            border-color: var(--accent);
+            border-style: solid;
+            box-shadow: inset 0 0 30px rgba(232, 168, 56, 0.05);
+        }
+
+        /* عناصر الفليكسbox التجريبية */
+        .flex-item {
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+            cursor: default;
+            min-width: 50px;
+            min-height: 50px;
+        }
+
+        .flex-item:hover {
+            transform: scale(1.05);
+            z-index: 2;
+        }
+
+        .flex-item-1 {
+            background: #e8a838;
+            color: #0f0f0f;
+        }
+
+        .flex-item-2 {
+            background: #ef6461;
+            color: #fff;
+        }
+
+        .flex-item-3 {
+            background: #4ade80;
+            color: #0f0f0f;
+        }
+
+        .flex-item-4 {
+            background: #60a5fa;
+            color: #0f0f0f;
+        }
+
+        .flex-item-5 {
+            background: #c084fc;
+            color: #0f0f0f;
+        }
+
+        .flex-item-6 {
+            background: #f472b6;
+            color: #0f0f0f;
+        }
+
+        /* أزرار الاختيار */
+        .val-btn {
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--fg-muted);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.25s;
+            white-space: nowrap;
+        }
+
+        .val-btn:hover {
+            border-color: var(--accent);
+            color: var(--fg);
+        }
+
+        .val-btn.active {
+            background: var(--accent);
+            color: #0f0f0f;
+            border-color: var(--accent);
+            font-weight: 700;
+            box-shadow: 0 0 16px rgba(232, 168, 56, 0.3);
+        }
+
+        /* شريط التمرير */
+        .range-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border);
+            outline: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(232, 168, 56, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* كود */
+        .code-block {
+            background: #111;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            direction: ltr;
+            text-align: left;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block .prop-name {
+            color: #60a5fa;
+        }
+
+        .code-block .prop-val {
+            color: #e8a838;
+        }
+
+        .code-block .selector {
+            color: #4ade80;
+        }
+
+        .code-block .punctuation {
+            color: #8a8580;
+        }
+
+        .code-block .comment {
+            color: #555;
+            font-style: italic;
+        }
+
+        /* زر النسخ */
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--fg-muted);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-family: 'Noto Kufi Arabic', sans-serif;
+        }
+
+        .copy-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* رسم توضيحي للمحاور */
+        .axis-diagram {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 1;
+            margin: 0 auto;
+        }
+
+        /* تنقل جانبي */
+        .side-nav {
+            position: fixed;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .side-nav a {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: all 0.3s;
+            display: block;
+        }
+
+        .side-nav a.active {
+            background: var(--accent);
+            box-shadow: 0 0 8px rgba(232, 168, 56, 0.5);
+            transform: scale(1.3);
+        }
+
+        .side-nav a:hover {
+            background: var(--fg-muted);
+        }
+
+        /* حركة الظهور */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* تلميح */
+        .tooltip-box {
+            position: absolute;
+            background: var(--bg-elevated);
+            border: 1px solid var(--accent);
+            color: var(--fg);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        /* خط فاصل زخرفي */
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.3;
+            margin: 0 auto;
+            width: 60%;
+        }
+
+        /* تأثير النبض */
+        @keyframes pulse-accent {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(232, 168, 56, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 0 8px rgba(232, 168, 56, 0);
+            }
+        }
+
+        .pulse-ring {
+            animation: pulse-accent 2s infinite;
+        }
+
+        /* اتجاه السهم */
+        .arrow-main {
+            color: var(--accent);
+        }
+
+        .arrow-cross {
+            color: var(--info);
+        }
+
+        /* ملاحظة */
+        .note-box {
+            background: rgba(232, 168, 56, 0.08);
+            border-right: 3px solid var(--accent);
+            border-radius: 0 10px 10px 0;
+            padding: 14px 18px;
+        }
+
+        @media (max-width: 768px) {
+            .side-nav {
+                display: none;
+            }
+        }
+
+        /* رسم Canvas للمحاور */
+        #axisCanvas {
+            border-radius: 12px;
+            background: var(--bg-elevated);
+        }
+    </style>
+</head>
+
+<body class="grid-pattern">
+
+    <!-- تنقل جانبي -->
+    <nav class="side-nav" id="sideNav">
+        <a href="#intro" data-section="intro" title="المقدمة"></a>
+        <a href="#importance" data-section="importance" title="الأهمية"></a>
+        <a href="#mechanism" data-section="mechanism" title="آلية العمل"></a>
+        <a href="#parent-props" data-section="parent-props" title="خصائص الأب"></a>
+        <a href="#child-props" data-section="child-props" title="خصائص الأبناء"></a>
+        <a href="#playground-full" data-section="playground-full" title="ملعب التجربة"></a>
+    </nav>
+
+    <!-- ======= القسم 1: المقدمة ======= -->
+    <header id="intro" class="hero-bg min-h-screen flex items-center justify-center relative px-4">
+        <div class="relative z-10 text-center max-w-4xl mx-auto">
+            <!-- شكل مرئي متحرك أعلى العنوان -->
+            <div class="flex justify-center gap-3 mb-8" id="heroFlexDemo">
+                <div class="w-16 h-16 rounded-xl flex items-center justify-center font-mono font-bold text-lg"
+                    style="background:#e8a838;color:#0f0f0f;">1</div>
+                <div class="w-16 h-16 rounded-xl flex items-center justify-center font-mono font-bold text-lg"
+                    style="background:#ef6461;color:#fff;">2</div>
+                <div class="w-16 h-16 rounded-xl flex items-center justify-center font-mono font-bold text-lg"
+                    style="background:#4ade80;color:#0f0f0f;">3</div>
+                <div class="w-16 h-16 rounded-xl flex items-center justify-center font-mono font-bold text-lg"
+                    style="background:#60a5fa;color:#0f0f0f;">4</div>
+            </div>
+
+            <p class="text-sm tracking-widest uppercase mb-4"
+                style="color:var(--accent); font-family:'JetBrains Mono',monospace;">CSS Layout Module</p>
+            <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight" style="letter-spacing:-1px;">
+                CSS <span style="color:var(--accent);">Flexbox</span>
+            </h1>
+            <p class="text-xl md:text-2xl font-light mb-8"
+                style="color:var(--fg-muted); max-width:600px; margin:0 auto;">
+                الدليل الشامل والتفاعلي لفهم وإتقان نظام التخطيط المرن في CSS
+            </p>
+
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+                <a href="#parent-props"
+                    class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all hover:scale-105"
+                    style="background:var(--accent);color:#0f0f0f;">
+                    <i class="fas fa-play"></i> ابدأ التعلم
+                </a>
+                <a href="#playground-full"
+                    class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm border transition-all hover:scale-105"
+                    style="border-color:var(--border);color:var(--fg-muted);">
+                    <i class="fas fa-flask"></i> الملعب التفاعلي
+                </a>
+            </div>
+
+            <!-- إحصائيات سريعة -->
+            <div class="grid grid-cols-3 gap-6 max-w-md mx-auto">
+                <div>
+                    <div class="text-2xl font-black" style="color:var(--accent);">6+</div>
+                    <div class="text-xs" style="color:var(--fg-muted);">خصائص الأب</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-black" style="color:var(--accent);">6+</div>
+                    <div class="text-xs" style="color:var(--fg-muted);">خصائص الأبناء</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-black" style="color:var(--accent);">100%</div>
+                    <div class="text-xs" style="color:var(--fg-muted);">تفاعلي</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- سهم التمرير -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce" style="color:var(--fg-muted);">
+            <i class="fas fa-chevron-down text-xl"></i>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 pb-32">
+
+        <!-- ======= القسم 2: الأهمية ======= -->
+        <section id="importance" class="py-24 reveal">
+            <div class="text-center mb-16">
+                <span class="text-xs font-mono tracking-widest" style="color:var(--accent);">WHY FLEXBOX</span>
+                <h2 class="text-4xl md:text-5xl font-black mt-3 mb-4">لماذا Flexbox؟</h2>
+                <p class="text-lg" style="color:var(--fg-muted); max-width:550px; margin:0 auto;">
+                    قبل Flexbox كان تخطيط الصفحات كابوساً. الآن الأمور مختلفة تماماً.
+                </p>
+            </div>
+
+            <!-- مقارنة قبل وبعد -->
+            <div class="grid md:grid-cols-2 gap-8 mb-16">
+                <!-- قبل -->
+                <div class="prop-card p-6">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center"
+                            style="background:rgba(248,113,113,0.15);">
+                            <i class="fas fa-times" style="color:var(--rose);"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">قبل Flexbox</h3>
+                    </div>
+                    <ul class="space-y-3 text-sm" style="color:var(--fg-muted);">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-arrow-left mt-1 text-xs" style="color:var(--rose);"></i>
+                            <span>استخدام <code class="font-mono px-1.5 py-0.5 rounded text-xs"
+                                    style="background:var(--bg-elevated);color:var(--rose);">float</code> و <code
+                                    class="font-mono px-1.5 py-0.5 rounded text-xs"
+                                    style="background:var(--bg-elevated);color:var(--rose);">clear</code> بطرق
+                                معقدة</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-arrow-left mt-1 text-xs" style="color:var(--rose);"></i>
+                            <span>توسيط العناصر عمودياً يتطلب أكواداً هاكية</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-arrow-left mt-1 text-xs" style="color:var(--rose);"></i>
+                            <span>ترتيب العناصر يتطلب تغيير HTML</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-arrow-left mt-1 text-xs" style="color:var(--rose);"></i>
+                            <span>توزيع المسافات يدوياً ومعرض للأخطاء</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-arrow-left mt-1 text-xs" style="color:var(--rose);"></i>
+                            <span>عدم استجابة تلقائية لأحجام الشاشة</span>
+                        </li>
+                    </ul>
+                </div>
+                <!-- بعد -->
+                <div class="prop-card p-6" style="border-color:rgba(232,168,56,0.2);">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center"
+                            style="background:var(--accent-dim);">
+                            <i class="fas fa-check" style="color:var(--accent);"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">مع Flexbox</h3>
+                    </div>
+                    <ul class="space-y-3 text-sm" style="color:var(--fg-muted);">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-arrow-left mt-1 text-xs" style="color:var(--accent);"></i>
+                            <span>تخطيط أحادي البعد بسيط وواضح</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-arrow-left mt-1 text-xs" style="color:var(--accent);"></i>
+                            <span>توسيط أفقي وعمودي بسطر واحد</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-arrow-left mt-1 text-xs" style="color:var(--accent);"></i>
+                            <span>إعادة ترتيب بصري بدون لمس HTML</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-arrow-left mt-1 text-xs" style="color:var(--accent);"></i>
+                            <span>توزيع مسافات تلقائي ومرن</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-arrow-left mt-1 text-xs" style="color:var(--accent);"></i>
+                            <span>استجابة طبيعية مع <code class="font-mono px-1.5 py-0.5 rounded text-xs"
+                                    style="background:var(--bg-elevated);color:var(--accent);">flex-wrap</code></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- مزايا رئيسية -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center p-5 rounded-xl"
+                    style="background:var(--bg-card);border:1px solid var(--border);">
+                    <i class="fas fa-arrows-alt-h text-2xl mb-3" style="color:var(--accent);"></i>
+                    <div class="text-sm font-semibold mb-1">توجيه مرن</div>
+                    <div class="text-xs" style="color:var(--fg-muted);">أفقي أو عمودي بسهولة</div>
+                </div>
+                <div class="text-center p-5 rounded-xl"
+                    style="background:var(--bg-card);border:1px solid var(--border);">
+                    <i class="fas fa-compress-arrows-alt text-2xl mb-3" style="color:var(--accent);"></i>
+                    <div class="text-sm font-semibold mb-1">توسيع وتقلص</div>
+                    <div class="text-xs" style="color:var(--fg-muted);">عناصر تتكيف تلقائياً</div>
+                </div>
+                <div class="text-center p-5 rounded-xl"
+                    style="background:var(--bg-card);border:1px solid var(--border);">
+                    <i class="fas fa-align-center text-2xl mb-3" style="color:var(--accent);"></i>
+                    <div class="text-sm font-semibold mb-1">محاذاة مثالية</div>
+                    <div class="text-xs" style="color:var(--fg-muted);">توسيط بكل الاتجاهات</div>
+                </div>
+                <div class="text-center p-5 rounded-xl"
+                    style="background:var(--bg-card);border:1px solid var(--border);">
+                    <i class="fas fa-sort text-2xl mb-3" style="color:var(--accent);"></i>
+                    <div class="text-sm font-semibold mb-1">ترتيب بصري</div>
+                    <div class="text-xs" style="color:var(--fg-muted);">إعادة ترتيب دون تعديل DOM</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ======= القسم 3: آلية العمل ======= -->
+        <section id="mechanism" class="py-24 reveal">
+            <div class="text-center mb-16">
+                <span class="text-xs font-mono tracking-widest" style="color:var(--accent);">HOW IT WORKS</span>
+                <h2 class="text-4xl md:text-5xl font-black mt-3 mb-4">آلية العمل</h2>
+                <p class="text-lg" style="color:var(--fg-muted); max-width:600px; margin:0 auto;">
+                    فهم المحاور هو المفتاح الأساسي لإتقان Flexbox
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-10 items-center">
+                <!-- رسم توضيحي بالمحاور -->
+                <div class="flex justify-center">
+                    <canvas id="axisCanvas" width="440" height="440"></canvas>
+                </div>
+
+                <!-- شرح المحاور -->
+                <div class="space-y-6">
+                    <div class="p-5 rounded-xl"
+                        style="background:var(--bg-card);border:1px solid var(--border);border-right:3px solid var(--accent);">
+                        <h4 class="font-bold mb-2 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full inline-block" style="background:var(--accent);"></span>
+                            المحور الرئيسي (Main Axis)
+                        </h4>
+                        <p class="text-sm" style="color:var(--fg-muted);">
+                            الاتجاه الذي يتم فيه ترتيب العناصر المرنة. يكون أفقالياً بشكل افتراضي (من اليمين لليسار في
+                            RTL). يبدأ من <strong style="color:var(--fg);">main-start</strong> وينتهي عند <strong
+                                style="color:var(--fg);">main-end</strong>.
+                        </p>
+                    </div>
+                    <div class="p-5 rounded-xl"
+                        style="background:var(--bg-card);border:1px solid var(--border);border-right:3px solid var(--info);">
+                        <h4 class="font-bold mb-2 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full inline-block" style="background:var(--info);"></span>
+                            المحور العرضي (Cross Axis)
+                        </h4>
+                        <p class="text-sm" style="color:var(--fg-muted);">
+                            المحور العمودي على المحور الرئيسي. يبدأ من <strong
+                                style="color:var(--fg);">cross-start</strong> وينتهي عند <strong
+                                style="color:var(--fg);">cross-end</strong>. يُستخدم لمحاذاة العناصر عمودياً.
+                        </p>
+                    </div>
+                    <div class="note-box">
+                        <p class="text-sm">
+                            <i class="fas fa-lightbulb ml-2" style="color:var(--accent);"></i>
+                            عند تغيير <code class="font-mono px-1 py-0.5 rounded text-xs"
+                                style="background:var(--bg);color:var(--accent);">flex-direction</code> تتغير اتجاهات
+                            المحاور معاً. فهم هذا المفهوم يمنع الالتباس.
+                        </p>
+                    </div>
+
+                    <!-- مصطلحات أساسية -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="p-3 rounded-lg text-center text-xs" style="background:var(--bg-elevated);">
+                            <div class="font-bold mb-1" style="color:var(--accent);">Flex Container</div>
+                            <div style="color:var(--fg-muted);">العنصر الأب الذي يملك display: flex</div>
+                        </div>
+                        <div class="p-3 rounded-lg text-center text-xs" style="background:var(--bg-elevated);">
+                            <div class="font-bold mb-1" style="color:var(--accent);">Flex Items</div>
+                            <div style="color:var(--fg-muted);">الأبناء المباشرون داخل الحاوية</div>
+                        </div>
+                        <div class="p-3 rounded-lg text-center text-xs" style="background:var(--bg-elevated);">
+                            <div class="font-bold mb-1" style="color:var(--accent);">Main Size</div>
+                            <div style="color:var(--fg-muted);">عرض أو طول العنصر على المحور الرئيسي</div>
+                        </div>
+                        <div class="p-3 rounded-lg text-center text-xs" style="background:var(--bg-elevated);">
+                            <div class="font-bold mb-1" style="color:var(--accent);">Cross Size</div>
+                            <div style="color:var(--fg-muted);">عرض أو طول العنصر على المحور العرضي</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ======= القسم 4: خصائص الأب ======= -->
+        <section id="parent-props" class="py-24 reveal">
+            <div class="text-center mb-16">
+                <span class="text-xs font-mono tracking-widest" style="color:var(--accent);">CONTAINER PROPERTIES</span>
+                <h2 class="text-4xl md:text-5xl font-black mt-3 mb-4">خصائص الحاوية (الأب)</h2>
+                <p class="text-lg" style="color:var(--fg-muted); max-width:600px; margin:0 auto;">
+                    تُطبق على العنصر الذي يحتوي <code class="font-mono px-1.5 py-0.5 rounded text-xs"
+                        style="background:var(--bg-elevated);color:var(--accent);">display: flex</code>
+                </p>
+            </div>
+
+            <!-- === 1. display: flex === -->
+            <div class="prop-card p-6 md:p-8 mb-8" id="prop-display">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 pulse-ring"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">01</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">display: flex</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">الخاصية الأساسية التي تحول العنصر إلى حاوية
+                            مرنة. كل الأبناء المباشرون يصبحون عناصر flex تلقائياً.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn active" onclick="toggleDisplay(this, 'flex')">flex</button>
+                            <button class="val-btn" onclick="toggleDisplay(this, 'block')">block (بدون flex)</button>
+                            <button class="val-btn" onclick="toggleDisplay(this, 'inline-flex')">inline-flex</button>
+                        </div>
+                        <div class="playground p-4" id="displayDemo">
+                            <div class="flex-item flex-item-1">1</div>
+                            <div class="flex-item flex-item-2">2</div>
+                            <div class="flex-item flex-item-3">3</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">display</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="displayCode">flex</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 2. flex-direction === -->
+            <div class="prop-card p-6 md:p-8 mb-8" id="prop-direction">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">02</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">flex-direction</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يحدد اتجاه المحور الرئيسي وبالتالي كيفية ترتيب
+                            العناصر.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn active" onclick="setDirection(this,'row')">row</button>
+                            <button class="val-btn" onclick="setDirection(this,'row-reverse')">row-reverse</button>
+                            <button class="val-btn" onclick="setDirection(this,'column')">column</button>
+                            <button class="val-btn"
+                                onclick="setDirection(this,'column-reverse')">column-reverse</button>
+                        </div>
+                        <div class="playground active p-4" id="directionDemo" style="display:flex; min-height:220px;">
+                            <div class="flex-item flex-item-1">1</div>
+                            <div class="flex-item flex-item-2">2</div>
+                            <div class="flex-item flex-item-3">3</div>
+                            <div class="flex-item flex-item-4">4</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">display</span><span class="punctuation">:</span> <span
+                            class="prop-val">flex</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">flex-direction</span><span class="punctuation">:</span>
+                        <span class="prop-val" id="directionCode">row</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span><br><br>
+                        <span class="comment">/* row: افتراضي، أفقي */</span><br>
+                        <span class="comment">/* row-reverse: أفقي معكوس */</span><br>
+                        <span class="comment">/* column: عمودي */</span><br>
+                        <span class="comment">/* column-reverse: عمودي معكوس */</span>
+                    </div>
+                </div>
+                <!-- رسم توضيحي للاتجاهات -->
+                <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="text-center p-3 rounded-lg" style="background:var(--bg-elevated);">
+                        <div class="flex justify-center gap-1 mb-2">
+                            <div class="w-6 h-4 rounded" style="background:#e8a838;"></div>
+                            <div class="w-6 h-4 rounded" style="background:#ef6461;"></div>
+                            <div class="w-6 h-4 rounded" style="background:#4ade80;"></div>
+                        </div>
+                        <div class="text-xs font-mono" style="color:var(--accent);">row</div>
+                    </div>
+                    <div class="text-center p-3 rounded-lg" style="background:var(--bg-elevated);">
+                        <div class="flex justify-center gap-1 mb-2">
+                            <div class="w-6 h-4 rounded" style="background:#4ade80;"></div>
+                            <div class="w-6 h-4 rounded" style="background:#ef6461;"></div>
+                            <div class="w-6 h-4 rounded" style="background:#e8a838;"></div>
+                        </div>
+                        <div class="text-xs font-mono" style="color:var(--accent);">row-reverse</div>
+                    </div>
+                    <div class="text-center p-3 rounded-lg" style="background:var(--bg-elevated);">
+                        <div class="flex flex-col items-center gap-1 mb-2">
+                            <div class="w-10 h-3 rounded" style="background:#e8a838;"></div>
+                            <div class="w-10 h-3 rounded" style="background:#ef6461;"></div>
+                            <div class="w-10 h-3 rounded" style="background:#4ade80;"></div>
+                        </div>
+                        <div class="text-xs font-mono" style="color:var(--accent);">column</div>
+                    </div>
+                    <div class="text-center p-3 rounded-lg" style="background:var(--bg-elevated);">
+                        <div class="flex flex-col items-center gap-1 mb-2">
+                            <div class="w-10 h-3 rounded" style="background:#4ade80;"></div>
+                            <div class="w-10 h-3 rounded" style="background:#ef6461;"></div>
+                            <div class="w-10 h-3 rounded" style="background:#e8a838;"></div>
+                        </div>
+                        <div class="text-xs font-mono" style="color:var(--accent);">column-reverse</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 3. flex-wrap === -->
+            <div class="prop-card p-6 md:p-8 mb-8" id="prop-wrap">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">03</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">flex-wrap</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يحدد ما إذا كان العناصر ستنتقل لسطر جديد عندما
+                            لا تتسع المساحة أم سيتم ضغطها.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn active" onclick="setWrap(this,'nowrap')">nowrap</button>
+                            <button class="val-btn" onclick="setWrap(this,'wrap')">wrap</button>
+                            <button class="val-btn" onclick="setWrap(this,'wrap-reverse')">wrap-reverse</button>
+                        </div>
+                        <div class="playground active p-4" id="wrapDemo" style="display:flex; min-height:200px;">
+                            <div class="flex-item flex-item-1" style="width:120px;">1</div>
+                            <div class="flex-item flex-item-2" style="width:120px;">2</div>
+                            <div class="flex-item flex-item-3" style="width:120px;">3</div>
+                            <div class="flex-item flex-item-4" style="width:120px;">4</div>
+                            <div class="flex-item flex-item-5" style="width:120px;">5</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">display</span><span class="punctuation">:</span> <span
+                            class="prop-val">flex</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">flex-wrap</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="wrapCode">nowrap</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span><br><br>
+                        <span class="comment">/* nowrap: كل العناصر في سطر واحد (افتراضي) */</span><br>
+                        <span class="comment">/* wrap: الانتقال لسطر جديد عند الحاجة */</span><br>
+                        <span class="comment">/* wrap-reverse: عكس اتجاه الانتقال */</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 4. justify-content === -->
+            <div class="prop-card p-6 md:p-8 mb-8" id="prop-justify">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">04</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">justify-content</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يتحكم بتوزيع المسافات على <strong
+                                style="color:var(--fg);">المحور الرئيسي</strong>. هذه من أكثر الخصائص استخداماً.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn active" onclick="setJustify(this,'flex-start')">flex-start</button>
+                            <button class="val-btn" onclick="setJustify(this,'flex-end')">flex-end</button>
+                            <button class="val-btn" onclick="setJustify(this,'center')">center</button>
+                            <button class="val-btn" onclick="setJustify(this,'space-between')">space-between</button>
+                            <button class="val-btn" onclick="setJustify(this,'space-around')">space-around</button>
+                            <button class="val-btn" onclick="setJustify(this,'space-evenly')">space-evenly</button>
+                        </div>
+                        <div class="playground active p-4" id="justifyDemo" style="display:flex; min-height:120px;">
+                            <div class="flex-item flex-item-1" style="width:70px;">1</div>
+                            <div class="flex-item flex-item-2" style="width:70px;">2</div>
+                            <div class="flex-item flex-item-3" style="width:70px;">3</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">display</span><span class="punctuation">:</span> <span
+                            class="prop-val">flex</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">justify-content</span><span class="punctuation">:</span>
+                        <span class="prop-val" id="justifyCode">flex-start</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span>
+                    </div>
+                </div>
+                <!-- رسم توضيحي للمسافات -->
+                <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-3" id="justifyVisuals">
+                    <div class="text-center p-3 rounded-lg" style="background:var(--bg-elevated);">
+                        <div class="flex justify-start gap-1 mb-2 px-2">
+                            <div class="w-6 h-4 rounded" style="background:#e8a838;"></div>
+                            <div class="w-6 h-4 rounded" style="background:#ef6461;"></div>
+                            <div class="w-6 h-4 rounded" style="background:#4ade80;"></div>
+                        </div>
+                        <div class="text-xs font-mono" style="color:var(--accent);">flex-start</div>
+                    </div>
+                    <div class="text-center p-3 rounded-lg" style="background:var(--bg-elevated);">
+                        <div class="flex justify-end gap-1 mb-2 px-2">
+                            <div class="w-6 h-4 rounded" style="background:#e8a838;"></div>
+                            <div class="w-6 h-4 rounded" style="background:#ef6461;"></div>
+                            <div class="w-6 h-4 rounded" style="background:#4ade80;"></div>
+                        </div>
+                        <div class="text-xs font-mono" style="color:var(--accent);">flex-end</div>
+                    </div>
+                    <div class="text-center p-3 rounded-lg" style="background:var(--bg-elevated);">
+                        <div class="flex justify-center gap-1 mb-2 px-2">
+                            <div class="w-6 h-4 rounded" style="background:#e8a838;"></div>
+                            <div class="w-6 h-4 rounded" style="background:#ef6461;"></div>
+                            <div class="w-6 h-4 rounded" style="background:#4ade80;"></div>
+                        </div>
+                        <div class="text-xs font-mono" style="color:var(--accent);">center</div>
+                    </div>
+                    <div class="text-center p-3 rounded-lg" style="background:var(--bg-elevated);">
+                        <div class="flex justify-between mb-2 px-2">
+                            <div class="w-6 h-4 rounded" style="background:#e8a838;"></div>
+                            <div class="w-6 h-4 rounded" style="background:#ef6461;"></div>
+                            <div class="w-6 h-4 rounded" style="background:#4ade80;"></div>
+                        </div>
+                        <div class="text-xs font-mono" style="color:var(--accent);">space-between</div>
+                    </div>
+                    <div class="text-center p-3 rounded-lg" style="background:var(--bg-elevated);">
+                        <div class="flex justify-around mb-2 px-2">
+                            <div class="w-6 h-4 rounded" style="background:#e8a838;"></div>
+                            <div class="w-6 h-4 rounded" style="background:#ef6461;"></div>
+                            <div class="w-6 h-4 rounded" style="background:#4ade80;"></div>
+                        </div>
+                        <div class="text-xs font-mono" style="color:var(--accent);">space-around</div>
+                    </div>
+                    <div class="text-center p-3 rounded-lg" style="background:var(--bg-elevated);">
+                        <div class="flex justify-evenly mb-2 px-2">
+                            <div class="w-6 h-4 rounded" style="background:#e8a838;"></div>
+                            <div class="w-6 h-4 rounded" style="background:#ef6461;"></div>
+                            <div class="w-6 h-4 rounded" style="background:#4ade80;"></div>
+                        </div>
+                        <div class="text-xs font-mono" style="color:var(--accent);">space-evenly</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 5. align-items === -->
+            <div class="prop-card p-6 md:p-8 mb-8" id="prop-align">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">05</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">align-items</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يتحكم بمحاذاة العناصر على <strong
+                                style="color:var(--fg);">المحور العرضي</strong> (المحاور العمودية في التخطيط الأفقي).
+                        </p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn" onclick="setAlign(this,'stretch')">stretch</button>
+                            <button class="val-btn active" onclick="setAlign(this,'flex-start')">flex-start</button>
+                            <button class="val-btn" onclick="setAlign(this,'flex-end')">flex-end</button>
+                            <button class="val-btn" onclick="setAlign(this,'center')">center</button>
+                            <button class="val-btn" onclick="setAlign(this,'baseline')">baseline</button>
+                        </div>
+                        <div class="playground active p-4" id="alignDemo" style="display:flex; min-height:200px;">
+                            <div class="flex-item flex-item-1" style="width:80px; height:60px;">1</div>
+                            <div class="flex-item flex-item-2" style="width:80px; height:100px; font-size:18px;">2</div>
+                            <div class="flex-item flex-item-3" style="width:80px; height:40px;">3</div>
+                            <div class="flex-item flex-item-4" style="width:80px; height:80px; font-size:10px;">4</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">display</span><span class="punctuation">:</span> <span
+                            class="prop-val">flex</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">align-items</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="alignCode">flex-start</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span><br><br>
+                        <span class="comment">/* stretch: يمد العناصر لملء الحاوية (افتراضي) */</span><br>
+                        <span class="comment">/* flex-start: بداية المحور العرضي */</span><br>
+                        <span class="comment">/* flex-end: نهاية المحور العرضي */</span><br>
+                        <span class="comment">/* center: توسيط على المحور العرضي */</span><br>
+                        <span class="comment">/* baseline: محاذاة حسب خط النص */</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 6. align-content === -->
+            <div class="prop-card p-6 md:p-8 mb-8" id="prop-align-content">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">06</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">align-content</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يتحكم بتوزيع المسافات بين <strong
+                                style="color:var(--fg);">الأسطر</strong> (يحتاج flex-wrap: wrap). يختلف عن align-items
+                            الذي يتعامل مع العناصر داخل السطر.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn active" onclick="setAlignContent(this,'stretch')">stretch</button>
+                            <button class="val-btn" onclick="setAlignContent(this,'flex-start')">flex-start</button>
+                            <button class="val-btn" onclick="setAlignContent(this,'flex-end')">flex-end</button>
+                            <button class="val-btn" onclick="setAlignContent(this,'center')">center</button>
+                            <button class="val-btn"
+                                onclick="setAlignContent(this,'space-between')">space-between</button>
+                            <button class="val-btn" onclick="setAlignContent(this,'space-around')">space-around</button>
+                        </div>
+                        <div class="playground active p-4" id="alignContentDemo"
+                            style="display:flex; flex-wrap:wrap; min-height:280px;">
+                            <div class="flex-item flex-item-1" style="width:140px;">1</div>
+                            <div class="flex-item flex-item-2" style="width:140px;">2</div>
+                            <div class="flex-item flex-item-3" style="width:140px;">3</div>
+                            <div class="flex-item flex-item-4" style="width:140px;">4</div>
+                            <div class="flex-item flex-item-5" style="width:140px;">5</div>
+                            <div class="flex-item flex-item-6" style="width:140px;">6</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">display</span><span class="punctuation">:</span> <span
+                            class="prop-val">flex</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">flex-wrap</span><span class="punctuation">:</span> <span
+                            class="prop-val">wrap</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">align-content</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="alignContentCode">stretch</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span>
+                    </div>
+                </div>
+                <div class="note-box mt-4">
+                    <p class="text-sm">
+                        <i class="fas fa-exclamation-triangle ml-2" style="color:var(--accent);"></i>
+                        <strong>تنبيه:</strong> align-content لا يؤثر عندما يكون flex-wrap: nowrap لأنه لا توجد أسطر
+                        متعددة.
+                    </p>
+                </div>
+            </div>
+
+            <!-- === 7. gap === -->
+            <div class="prop-card p-6 md:p-8 mb-8" id="prop-gap">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">07</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">gap</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يحدد المسافة بين العناصر المرنة. أسهل بكثير من
+                            استخدام margin على كل عنصر.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="mb-3">
+                            <label class="text-xs font-mono mb-1 block" style="color:var(--fg-muted);">row-gap: <span
+                                    id="rowGapVal">10</span>px</label>
+                            <input type="range" class="range-slider" min="0" max="40" value="10"
+                                oninput="setGap(this.value, document.getElementById('colGap').value)">
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-xs font-mono mb-1 block" style="color:var(--fg-muted);">column-gap: <span
+                                    id="colGapVal">10</span>px</label>
+                            <input type="range" class="range-slider" id="colGap" min="0" max="40" value="10"
+                                oninput="setGap(document.querySelector('#prop-gap input[type=range]').value, this.value)">
+                        </div>
+                        <div class="playground active p-4" id="gapDemo"
+                            style="display:flex; flex-wrap:wrap; gap:10px; min-height:200px;">
+                            <div class="flex-item flex-item-1" style="width:100px;">1</div>
+                            <div class="flex-item flex-item-2" style="width:100px;">2</div>
+                            <div class="flex-item flex-item-3" style="width:100px;">3</div>
+                            <div class="flex-item flex-item-4" style="width:100px;">4</div>
+                            <div class="flex-item flex-item-5" style="width:100px;">5</div>
+                            <div class="flex-item flex-item-6" style="width:100px;">6</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">display</span><span class="punctuation">:</span> <span
+                            class="prop-val">flex</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">flex-wrap</span><span class="punctuation">:</span> <span
+                            class="prop-val">wrap</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">gap</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="gapCode">10px 10px</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span><br><br>
+                        <span class="comment">/* القيمة الأولى: المسافة العمودية */</span><br>
+                        <span class="comment">/* القيمة الثانية: المسافة الأفقية */</span><br>
+                        <span class="comment">/* قيمة واحدة = مسافة متساوية في كلا الاتجاهين */</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ======= القسم 5: خصائص الأبناء ======= -->
+        <section id="child-props" class="py-24 reveal">
+            <div class="text-center mb-16">
+                <span class="text-xs font-mono tracking-widest" style="color:var(--accent);">ITEM PROPERTIES</span>
+                <h2 class="text-4xl md:text-5xl font-black mt-3 mb-4">خصائص العناصر (الأبناء)</h2>
+                <p class="text-lg" style="color:var(--fg-muted); max-width:600px; margin:0 auto;">
+                    تُطبق على العناصر الفرعية داخل الحاوية المرنة للتحكم بسلوك كل عنصر على حدة
+                </p>
+            </div>
+
+            <!-- === 1. order === -->
+            <div class="prop-card p-6 md:p-8 mb-8" id="prop-order">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:rgba(96,165,250,0.15);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--info);">01</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">order</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يتحكم بترتيب ظهور العنصر بصرياً بدون تغيير
+                            ترتيبه في HTML. القيمة الافتراضية هي 0. العناصر ذات القيمة الأصغر تظهر أولاً.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="grid grid-cols-4 gap-3 mb-3">
+                            <div>
+                                <label class="text-xs font-mono block mb-1" style="color:var(--fg-muted);">عنصر
+                                    1</label>
+                                <input type="range" class="range-slider" min="-2" max="5" value="0"
+                                    oninput="setOrder(0, this.value)">
+                                <div class="text-center text-xs font-mono mt-1" style="color:var(--accent);"
+                                    id="orderVal0">0</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-mono block mb-1" style="color:var(--fg-muted);">عنصر
+                                    2</label>
+                                <input type="range" class="range-slider" min="-2" max="5" value="0"
+                                    oninput="setOrder(1, this.value)">
+                                <div class="text-center text-xs font-mono mt-1" style="color:var(--accent);"
+                                    id="orderVal1">0</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-mono block mb-1" style="color:var(--fg-muted);">عنصر
+                                    3</label>
+                                <input type="range" class="range-slider" min="-2" max="5" value="0"
+                                    oninput="setOrder(2, this.value)">
+                                <div class="text-center text-xs font-mono mt-1" style="color:var(--accent);"
+                                    id="orderVal2">0</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-mono block mb-1" style="color:var(--fg-muted);">عنصر
+                                    4</label>
+                                <input type="range" class="range-slider" min="-2" max="5" value="0"
+                                    oninput="setOrder(3, this.value)">
+                                <div class="text-center text-xs font-mono mt-1" style="color:var(--accent);"
+                                    id="orderVal3">0</div>
+                            </div>
+                        </div>
+                        <div class="playground active p-4" id="orderDemo"
+                            style="display:flex; gap:10px; min-height:80px;">
+                            <div class="flex-item flex-item-1" style="order:0;">1</div>
+                            <div class="flex-item flex-item-2" style="order:0;">2</div>
+                            <div class="flex-item flex-item-3" style="order:0;">3</div>
+                            <div class="flex-item flex-item-4" style="order:0;">4</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.item-1</span> <span class="punctuation">{</span> <span
+                            class="prop-name">order</span><span class="punctuation">:</span> <span class="prop-val"
+                            id="orderCode0">0</span><span class="punctuation">;</span> <span
+                            class="punctuation">}</span><br>
+                        <span class="selector">.item-2</span> <span class="punctuation">{</span> <span
+                            class="prop-name">order</span><span class="punctuation">:</span> <span class="prop-val"
+                            id="orderCode1">0</span><span class="punctuation">;</span> <span
+                            class="punctuation">}</span><br>
+                        <span class="selector">.item-3</span> <span class="punctuation">{</span> <span
+                            class="prop-name">order</span><span class="punctuation">:</span> <span class="prop-val"
+                            id="orderCode2">0</span><span class="punctuation">;</span> <span
+                            class="punctuation">}</span><br>
+                        <span class="selector">.item-4</span> <span class="punctuation">{</span> <span
+                            class="prop-name">order</span><span class="punctuation">:</span> <span class="prop-val"
+                            id="orderCode3">0</span><span class="punctuation">;</span> <span
+                            class="punctuation">}</span><br><br>
+                        <span class="comment">/* قيمة سالبة = يظهر أولاً */</span><br>
+                        <span class="comment">/* لا يؤثر على ترتيب القراءة أو التبويب */</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 2. flex-grow === -->
+            <div class="prop-card p-6 md:p-8 mb-8" id="prop-grow">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:rgba(96,165,250,0.15);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--info);">02</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">flex-grow</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يحدد مقدار قدرة العنصر على التوسع لملء المسافة
+                            الفارغة. القيمة الافتراضية هي 0 (لا يتوسع).</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="grid grid-cols-3 gap-3 mb-3">
+                            <div>
+                                <label class="text-xs font-mono block mb-1" style="color:var(--fg-muted);">عنصر
+                                    1</label>
+                                <input type="range" class="range-slider" min="0" max="5" value="0"
+                                    oninput="setGrow(0, this.value)">
+                                <div class="text-center text-xs font-mono mt-1" style="color:var(--accent);"
+                                    id="growVal0">0</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-mono block mb-1" style="color:var(--fg-muted);">عنصر
+                                    2</label>
+                                <input type="range" class="range-slider" min="0" max="5" value="0"
+                                    oninput="setGrow(1, this.value)">
+                                <div class="text-center text-xs font-mono mt-1" style="color:var(--accent);"
+                                    id="growVal1">0</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-mono block mb-1" style="color:var(--fg-muted);">عنصر
+                                    3</label>
+                                <input type="range" class="range-slider" min="0" max="5" value="0"
+                                    oninput="setGrow(2, this.value)">
+                                <div class="text-center text-xs font-mono mt-1" style="color:var(--accent);"
+                                    id="growVal2">0</div>
+                            </div>
+                        </div>
+                        <div class="playground active p-4" id="growDemo"
+                            style="display:flex; gap:10px; min-height:80px;">
+                            <div class="flex-item flex-item-1" style="flex-grow:0; width:80px;">1</div>
+                            <div class="flex-item flex-item-2" style="flex-grow:0; width:80px;">2</div>
+                            <div class="flex-item flex-item-3" style="flex-grow:0; width:80px;">3</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.item-1</span> <span class="punctuation">{</span> <span
+                            class="prop-name">flex-grow</span><span class="punctuation">:</span> <span class="prop-val"
+                            id="growCode0">0</span><span class="punctuation">;</span> <span
+                            class="punctuation">}</span><br>
+                        <span class="selector">.item-2</span> <span class="punctuation">{</span> <span
+                            class="prop-name">flex-grow</span><span class="punctuation">:</span> <span class="prop-val"
+                            id="growCode1">0</span><span class="punctuation">;</span> <span
+                            class="punctuation">}</span><br>
+                        <span class="selector">.item-3</span> <span class="punctuation">{</span> <span
+                            class="prop-name">flex-grow</span><span class="punctuation">:</span> <span class="prop-val"
+                            id="growCode2">0</span><span class="punctuation">;</span> <span
+                            class="punctuation">}</span><br><br>
+                        <span class="comment">/* grow:1 يتوسع بالتساوي */</span><br>
+                        <span class="comment">/* grow:2 يأخذ ضعف المساحة */</span><br>
+                        <span class="comment">/* التوزيع يحدث نسبياً */</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 3. flex-shrink === -->
+            <div class="prop-card p-6 md:p-8 mb-8" id="prop-shrink">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:rgba(96,165,250,0.15);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--info);">03</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">flex-shrink</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يحدد مقدار قدرة العنصر على التقلص عندما لا
+                            تتسع المسافة. القيمة الافتراضية هي 1 (يتقلص). ضعه 0 لمنع التقلص.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="grid grid-cols-3 gap-3 mb-3">
+                            <div>
+                                <label class="text-xs font-mono block mb-1" style="color:var(--fg-muted);">عنصر
+                                    1</label>
+                                <input type="range" class="range-slider" min="0" max="5" value="1"
+                                    oninput="setShrink(0, this.value)">
+                                <div class="text-center text-xs font-mono mt-1" style="color:var(--accent);"
+                                    id="shrinkVal0">1</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-mono block mb-1" style="color:var(--fg-muted);">عنصر
+                                    2</label>
+                                <input type="range" class="range-slider" min="0" max="5" value="1"
+                                    oninput="setShrink(1, this.value)">
+                                <div class="text-center text-xs font-mono mt-1" style="color:var(--accent);"
+                                    id="shrinkVal1">1</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-mono block mb-1" style="color:var(--fg-muted);">عنصر
+                                    3</label>
+                                <input type="range" class="range-slider" min="0" max="5" value="1"
+                                    oninput="setShrink(2, this.value)">
+                                <div class="text-center text-xs font-mono mt-1" style="color:var(--accent);"
+                                    id="shrinkVal2">1</div>
+                            </div>
+                        </div>
+                        <div class="playground active p-4" id="shrinkDemo"
+                            style="display:flex; gap:10px; min-height:80px;">
+                            <div class="flex-item flex-item-1" style="flex-shrink:1; width:200px;">1</div>
+                            <div class="flex-item flex-item-2" style="flex-shrink:1; width:200px;">2</div>
+                            <div class="flex-item flex-item-3" style="flex-shrink:1; width:200px;">3</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.item-1</span> <span class="punctuation">{</span> <span
+                            class="prop-name">flex-shrink</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="shrinkCode0">1</span><span class="punctuation">;</span> <span
+                            class="punctuation">}</span><br>
+                        <span class="selector">.item-2</span> <span class="punctuation">{</span> <span
+                            class="prop-name">flex-shrink</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="shrinkCode1">1</span><span class="punctuation">;</span> <span
+                            class="punctuation">}</span><br>
+                        <span class="selector">.item-3</span> <span class="punctuation">{</span> <span
+                            class="prop-name">flex-shrink</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="shrinkCode2">1</span><span class="punctuation">;</span> <span
+                            class="punctuation">}</span><br><br>
+                        <span class="comment">/* 0 = لا يتقلص أبداً */</span><br>
+                        <span class="comment">/* 1 = يتقلص بالتساوي (افتراضي) */</span><br>
+                        <span class="comment">/* العناصر الأكبر تتقلص أكثر */</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 4. flex-basis === -->
+            <div class="prop-card p-6 md:p-8 mb-8" id="prop-basis">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:rgba(96,165,250,0.15);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--info);">04</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">flex-basis</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يحدد الحجم الافتراضي للعنصر قبل توزيع المساحة
+                            الفارغة. يشبه width/height لكنه أكثر دقة في سياق Flexbox. القيمة الافتراضية هي <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg-elevated);color:var(--accent);">auto</code>.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="grid grid-cols-3 gap-3 mb-3">
+                            <div>
+                                <label class="text-xs font-mono block mb-1" style="color:var(--fg-muted);">عنصر
+                                    1</label>
+                                <input type="range" class="range-slider" min="30" max="300" value="80"
+                                    oninput="setBasis(0, this.value)">
+                                <div class="text-center text-xs font-mono mt-1" style="color:var(--accent);"
+                                    id="basisVal0">80px</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-mono block mb-1" style="color:var(--fg-muted);">عنصر
+                                    2</label>
+                                <input type="range" class="range-slider" min="30" max="300" value="80"
+                                    oninput="setBasis(1, this.value)">
+                                <div class="text-center text-xs font-mono mt-1" style="color:var(--accent);"
+                                    id="basisVal1">80px</div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-mono block mb-1" style="color:var(--fg-muted);">عنصر
+                                    3</label>
+                                <input type="range" class="range-slider" min="30" max="300" value="80"
+                                    oninput="setBasis(2, this.value)">
+                                <div class="text-center text-xs font-mono mt-1" style="color:var(--accent);"
+                                    id="basisVal2">80px</div>
+                            </div>
+                        </div>
+                        <div class="playground active p-4" id="basisDemo"
+                            style="display:flex; gap:10px; min-height:80px;">
+                            <div class="flex-item flex-item-1" style="flex-basis:80px;">1</div>
+                            <div class="flex-item flex-item-2" style="flex-basis:80px;">2</div>
+                            <div class="flex-item flex-item-3" style="flex-basis:80px;">3</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.item-1</span> <span class="punctuation">{</span> <span
+                            class="prop-name">flex-basis</span><span class="punctuation">:</span> <span class="prop-val"
+                            id="basisCode0">80px</span><span class="punctuation">;</span> <span
+                            class="punctuation">}</span><br>
+                        <span class="selector">.item-2</span> <span class="punctuation">{</span> <span
+                            class="prop-name">flex-basis</span><span class="punctuation">:</span> <span class="prop-val"
+                            id="basisCode1">80px</span><span class="punctuation">;</span> <span
+                            class="punctuation">}</span><br>
+                        <span class="selector">.item-3</span> <span class="punctuation">{</span> <span
+                            class="prop-name">flex-basis</span><span class="punctuation">:</span> <span class="prop-val"
+                            id="basisCode2">80px</span><span class="punctuation">;</span> <span
+                            class="punctuation">}</span><br><br>
+                        <span class="comment">/* auto: يستخدم حجم المحتوى أو width */</span><br>
+                        <span class="comment">/* يمكن استخدام px, %, em, rem */</span><br>
+                        <span class="comment">/* يتجاوز width عند وجوده */</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 5. flex (الاختصار) === -->
+            <div class="prop-card p-6 md:p-8 mb-8" id="prop-flex-shorthand">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:rgba(96,165,250,0.15);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--info);">05</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">flex (الاختصار)</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">اختصار لثلاث خصائص: <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg-elevated);color:var(--accent);">flex-grow</code> <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg-elevated);color:var(--accent);">flex-shrink</code> <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg-elevated);color:var(--accent);">flex-basis</code></p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-3 gap-4 mb-4">
+                    <div class="p-4 rounded-xl text-center" style="background:var(--bg-elevated);">
+                        <div class="font-mono text-lg font-bold mb-2" style="color:var(--accent);">flex: 0 1 auto</div>
+                        <div class="text-xs" style="color:var(--fg-muted);">القيمة الافتراضية</div>
+                    </div>
+                    <div class="p-4 rounded-xl text-center" style="background:var(--bg-elevated);">
+                        <div class="font-mono text-lg font-bold mb-2" style="color:var(--accent);">flex: 1</div>
+                        <div class="text-xs" style="color:var(--fg-muted);">flex: 1 1 0% - الأكثر استخداماً</div>
+                    </div>
+                    <div class="p-4 rounded-xl text-center" style="background:var(--bg-elevated);">
+                        <div class="font-mono text-lg font-bold mb-2" style="color:var(--accent);">flex: none</div>
+                        <div class="text-xs" style="color:var(--fg-muted);">flex: 0 0 auto - ثابت الحجم</div>
+                    </div>
+                </div>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                    <span class="comment">/* الصيغة الكاملة */</span><br>
+                    <span class="selector">.item</span> <span class="punctuation">{</span> <span
+                        class="prop-name">flex</span><span class="punctuation">:</span> <span
+                        class="prop-val">&lt;grow&gt; &lt;shrink&gt; &lt;basis&gt;</span><span
+                        class="punctuation">;</span> <span class="punctuation">}</span><br><br>
+                    <span class="comment">/* أمثلة شائعة */</span><br>
+                    <span class="selector">.item</span> <span class="punctuation">{</span> <span
+                        class="prop-name">flex</span><span class="punctuation">:</span> <span
+                        class="prop-val">1</span><span class="punctuation">;</span> <span class="punctuation">}</span>
+                    <span class="comment">/* 1 1 0% */</span><br>
+                    <span class="selector">.item</span> <span class="punctuation">{</span> <span
+                        class="prop-name">flex</span><span class="punctuation">:</span> <span class="prop-val">0 0
+                        200px</span><span class="punctuation">;</span> <span class="punctuation">}</span> <span
+                        class="comment">/* ثابت 200px */</span><br>
+                    <span class="selector">.item</span> <span class="punctuation">{</span> <span
+                        class="prop-name">flex</span><span class="punctuation">:</span> <span class="prop-val">2 1
+                        100px</span><span class="punctuation">;</span> <span class="punctuation">}</span> <span
+                        class="comment">/* يتوسع بضعف البقية */</span><br>
+                    <span class="selector">.item</span> <span class="punctuation">{</span> <span
+                        class="prop-name">flex</span><span class="punctuation">:</span> <span
+                        class="prop-val">auto</span><span class="punctuation">;</span> <span
+                        class="punctuation">}</span> <span class="comment">/* 1 1 auto */</span>
+                </div>
+            </div>
+
+            <!-- === 6. align-self === -->
+            <div class="prop-card p-6 md:p-8 mb-8" id="prop-self">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:rgba(96,165,250,0.15);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--info);">06</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">align-self</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يتجاوز <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg-elevated);color:var(--accent);">align-items</code> لعنصر واحد
+                            فقط. نفس القيم المتاحة. يسمح بمحاذاة مختلفة لكل عنصر.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="mb-3">
+                            <label class="text-xs font-mono mb-2 block" style="color:var(--fg-muted);">align-self للعنصر
+                                المحدد (البرتقالي):</label>
+                            <div class="flex gap-2 flex-wrap">
+                                <button class="val-btn active" onclick="setSelf(this,'auto')">auto</button>
+                                <button class="val-btn" onclick="setSelf(this,'flex-start')">flex-start</button>
+                                <button class="val-btn" onclick="setSelf(this,'flex-end')">flex-end</button>
+                                <button class="val-btn" onclick="setSelf(this,'center')">center</button>
+                                <button class="val-btn" onclick="setSelf(this,'stretch')">stretch</button>
+                            </div>
+                        </div>
+                        <div class="playground active p-4" id="selfDemo"
+                            style="display:flex; align-items:center; min-height:200px; gap:10px;">
+                            <div class="flex-item flex-item-2" style="width:80px;">1</div>
+                            <div class="flex-item flex-item-1" id="selfTarget" style="width:80px; align-self:auto;">2
+                            </div>
+                            <div class="flex-item flex-item-3" style="width:80px;">3</div>
+                            <div class="flex-item flex-item-4" style="width:80px;">4</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">display</span><span class="punctuation">:</span> <span
+                            class="prop-val">flex</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">align-items</span><span class="punctuation">:</span> <span
+                            class="prop-val">center</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span><br><br>
+                        <span class="selector">.target</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">align-self</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="selfCode">auto</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span><br><br>
+                        <span class="comment">/* auto: يتبع align-items */</span><br>
+                        <span class="comment">/* القيم الأخرى: تتجاوز align-items */</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ======= القسم 6: الملعب التفاعلي الكامل ======= -->
+        <section id="playground-full" class="py-24 reveal">
+            <div class="text-center mb-16">
+                <span class="text-xs font-mono tracking-widest" style="color:var(--accent);">FULL PLAYGROUND</span>
+                <h2 class="text-4xl md:text-5xl font-black mt-3 mb-4">الملعب التفاعلي</h2>
+                <p class="text-lg" style="color:var(--fg-muted); max-width:600px; margin:0 auto;">
+                    جرّب كل الخصائص معاً وشاهد النتيجة فوراً مع الكود الجاهز للنسخ
+                </p>
+            </div>
+
+            <div class="prop-card p-6 md:p-8">
+                <div class="grid lg:grid-cols-3 gap-6">
+                    <!-- لوحة التحكم -->
+                    <div class="space-y-4" style="max-height:600px; overflow-y:auto; padding-left:8px;">
+                        <h4 class="font-bold text-sm flex items-center gap-2" style="color:var(--accent);">
+                            <i class="fas fa-sliders-h"></i> لوحة التحكم
+                        </h4>
+
+                        <!-- display -->
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2" style="color:var(--fg-muted);">display</label>
+                            <div class="flex gap-1 flex-wrap">
+                                <button class="val-btn active text-xs"
+                                    onclick="fullSet(this,'display','flex')">flex</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'display','inline-flex')">inline-flex</button>
+                            </div>
+                        </div>
+
+                        <!-- flex-direction -->
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2"
+                                style="color:var(--fg-muted);">flex-direction</label>
+                            <div class="flex gap-1 flex-wrap">
+                                <button class="val-btn active text-xs"
+                                    onclick="fullSet(this,'flexDirection','row')">row</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'flexDirection','row-reverse')">row-reverse</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'flexDirection','column')">column</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'flexDirection','column-reverse')">column-reverse</button>
+                            </div>
+                        </div>
+
+                        <!-- flex-wrap -->
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2" style="color:var(--fg-muted);">flex-wrap</label>
+                            <div class="flex gap-1 flex-wrap">
+                                <button class="val-btn active text-xs"
+                                    onclick="fullSet(this,'flexWrap','nowrap')">nowrap</button>
+                                <button class="val-btn text-xs" onclick="fullSet(this,'flexWrap','wrap')">wrap</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'flexWrap','wrap-reverse')">wrap-reverse</button>
+                            </div>
+                        </div>
+
+                        <!-- justify-content -->
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2"
+                                style="color:var(--fg-muted);">justify-content</label>
+                            <div class="flex gap-1 flex-wrap">
+                                <button class="val-btn active text-xs"
+                                    onclick="fullSet(this,'justifyContent','flex-start')">flex-start</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'justifyContent','flex-end')">flex-end</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'justifyContent','center')">center</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'justifyContent','space-between')">space-between</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'justifyContent','space-around')">space-around</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'justifyContent','space-evenly')">space-evenly</button>
+                            </div>
+                        </div>
+
+                        <!-- align-items -->
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2"
+                                style="color:var(--fg-muted);">align-items</label>
+                            <div class="flex gap-1 flex-wrap">
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'alignItems','stretch')">stretch</button>
+                                <button class="val-btn active text-xs"
+                                    onclick="fullSet(this,'alignItems','flex-start')">flex-start</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'alignItems','flex-end')">flex-end</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'alignItems','center')">center</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'alignItems','baseline')">baseline</button>
+                            </div>
+                        </div>
+
+                        <!-- align-content -->
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2"
+                                style="color:var(--fg-muted);">align-content</label>
+                            <div class="flex gap-1 flex-wrap">
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'alignContent','stretch')">stretch</button>
+                                <button class="val-btn active text-xs"
+                                    onclick="fullSet(this,'alignContent','flex-start')">flex-start</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'alignContent','flex-end')">flex-end</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'alignContent','center')">center</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'alignContent','space-between')">space-between</button>
+                                <button class="val-btn text-xs"
+                                    onclick="fullSet(this,'alignContent','space-around')">space-around</button>
+                            </div>
+                        </div>
+
+                        <!-- gap -->
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2" style="color:var(--fg-muted);">gap: <span
+                                    id="fullGapVal">10px</span></label>
+                            <input type="range" class="range-slider" min="0" max="40" value="10"
+                                oninput="fullSetGap(this.value)">
+                        </div>
+
+                        <!-- عدد العناصر -->
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2" style="color:var(--fg-muted);">عدد العناصر:
+                                <span id="fullCountVal">4</span></label>
+                            <input type="range" class="range-slider" min="1" max="8" value="4"
+                                oninput="fullSetCount(this.value)">
+                        </div>
+                    </div>
+
+                    <!-- منطقة العرض -->
+                    <div class="lg:col-span-2 space-y-4">
+                        <div class="playground active p-4" id="fullDemo"
+                            style="display:flex; min-height:350px; gap:10px;">
+                            <div class="flex-item flex-item-1" style="padding:12px 20px;">1</div>
+                            <div class="flex-item flex-item-2" style="padding:12px 20px;">2</div>
+                            <div class="flex-item flex-item-3" style="padding:12px 20px;">3</div>
+                            <div class="flex-item flex-item-4" style="padding:12px 20px;">4</div>
+                        </div>
+
+                        <!-- الكود المُولَّد -->
+                        <div class="code-block" style="font-size:12px;">
+                            <button class="copy-btn" onclick="copyCode(this)"><i
+                                    class="fas fa-copy ml-1"></i>نسخ</button>
+                            <div id="fullCode"></div>
+                        </div>
+
+                        <!-- زر إعادة تعيين -->
+                        <button onclick="resetFullPlayground()"
+                            class="px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-105"
+                            style="background:var(--bg-elevated);border:1px solid var(--border);color:var(--fg-muted);">
+                            <i class="fas fa-undo ml-2"></i>إعادة تعيين
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ملخص سريع -->
+        <section class="py-16 reveal">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-black mb-4">ملخص سريع</h2>
+                <p class="text-sm" style="color:var(--fg-muted);">جدول مرجعي سريع لجميع خصائص Flexbox</p>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm" style="border-collapse:separate; border-spacing:0;">
+                    <thead>
+                        <tr>
+                            <th class="p-3 text-right rounded-tr-xl" style="background:var(--accent);color:#0f0f0f;">
+                                الخاصية</th>
+                            <th class="p-3 text-right" style="background:var(--accent);color:#0f0f0f;">التطبيق على</th>
+                            <th class="p-3 text-right" style="background:var(--accent);color:#0f0f0f;">الوظيفة</th>
+                            <th class="p-3 text-right rounded-tl-xl" style="background:var(--accent);color:#0f0f0f;">
+                                الافتراضي</th>
+                        </tr>
+                    </thead>
+                    <tbody id="summaryTable"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- تذييل -->
+    <footer class="py-8 text-center text-xs" style="color:var(--fg-muted); border-top:1px solid var(--border);">
+        <p>دليل CSS Flexbox الشامل — ملف تعليمي تفاعلي</p>
+    </footer>
+
+    <script>
+        // ========== بيانات جدول الملخص ==========
+        const summaryData = [
+            { prop: 'display', on: 'الأب', desc: 'تفعيل Flexbox', def: 'block' },
+            { prop: 'flex-direction', on: 'الأب', desc: 'اتجاه المحور الرئيسي', def: 'row' },
+            { prop: 'flex-wrap', on: 'الأب', desc: 'التفاف الأسطر', def: 'nowrap' },
+            { prop: 'justify-content', on: 'الأب', desc: 'توزيع على المحور الرئيسي', def: 'flex-start' },
+            { prop: 'align-items', on: 'الأب', desc: 'محاذاة على المحور العرضي', def: 'stretch' },
+            { prop: 'align-content', on: 'الأب', desc: 'توزيع الأسطر', def: 'stretch' },
+            { prop: 'gap', on: 'الأب', desc: 'المسافة بين العناصر', def: '0' },
+            { prop: 'order', on: 'الابن', desc: 'ترتيب ظهور العنصر', def: '0' },
+            { prop: 'flex-grow', on: 'الابن', desc: 'معدل التوسع', def: '0' },
+            { prop: 'flex-shrink', on: 'الابن', desc: 'معدل التقلص', def: '1' },
+            { prop: 'flex-basis', on: 'الابن', desc: 'الحجم الأساسي', def: 'auto' },
+            { prop: 'flex', on: 'الابن', desc: 'اختصار grow/shrink/basis', def: '0 1 auto' },
+            { prop: 'align-self', on: 'الابن', desc: 'محاذاة فردية', def: 'auto' },
+        ];
+
+        // بناء جدول الملخص
+        const summaryTable = document.getElementById('summaryTable');
+        summaryData.forEach((row, i) => {
+            const isParent = row.on === 'الأب';
+            const bgColor = i % 2 === 0 ? 'var(--bg-card)' : 'var(--bg-elevated)';
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="p-3 font-mono text-xs" style="background:${bgColor};color:var(--accent);">${row.prop}</td>
+                <td class="p-3 text-xs" style="background:${bgColor};">
+                    <span class="px-2 py-0.5 rounded text-xs" style="background:${isParent ? 'var(--accent-dim)' : 'rgba(96,165,250,0.15)'};color:${isParent ? 'var(--accent)' : 'var(--info)'};">${row.on}</span>
+                </td>
+                <td class="p-3 text-xs" style="background:${bgColor};color:var(--fg-muted);">${row.desc}</td>
+                <td class="p-3 font-mono text-xs" style="background:${bgColor};color:var(--fg-muted);">${row.def}</td>
+            `;
+            summaryTable.appendChild(tr);
+        });
+
+        // ========== وظائف خصائص الأب ==========
+
+        // تنشيط زر في مجموعة
+        function activateBtn(btn) {
+            const siblings = btn.parentElement.querySelectorAll('.val-btn');
+            siblings.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        // display
+        function toggleDisplay(btn, val) {
+            activateBtn(btn);
+            const demo = document.getElementById('displayDemo');
+            const code = document.getElementById('displayCode');
+            demo.style.display = val;
+            demo.classList.toggle('active', val !== 'block');
+            code.textContent = val;
+        }
+
+        // flex-direction
+        function setDirection(btn, val) {
+            activateBtn(btn);
+            document.getElementById('directionDemo').style.flexDirection = val;
+            document.getElementById('directionCode').textContent = val;
+        }
+
+        // flex-wrap
+        function setWrap(btn, val) {
+            activateBtn(btn);
+            document.getElementById('wrapDemo').style.flexWrap = val;
+            document.getElementById('wrapCode').textContent = val;
+        }
+
+        // justify-content
+        function setJustify(btn, val) {
+            activateBtn(btn);
+            document.getElementById('justifyDemo').style.justifyContent = val;
+            document.getElementById('justifyCode').textContent = val;
+        }
+
+        // align-items
+        function setAlign(btn, val) {
+            activateBtn(btn);
+            const demo = document.getElementById('alignDemo');
+            demo.style.alignItems = val;
+            document.getElementById('alignCode').textContent = val;
+            // عند stretch نزيل الأطوال الثابتة لنرى التأثير
+            const items = demo.querySelectorAll('.flex-item');
+            items.forEach(item => {
+                if (val === 'stretch') {
+                    item.style.height = 'auto';
+                } else {
+                    // إعادة الأطوال المختلفة
+                    const idx = Array.from(items).indexOf(item);
+                    const heights = [60, 100, 40, 80];
+                    item.style.height = heights[idx] + 'px';
+                }
+            });
+        }
+
+        // align-content
+        function setAlignContent(btn, val) {
+            activateBtn(btn);
+            document.getElementById('alignContentDemo').style.alignContent = val;
+            document.getElementById('alignContentCode').textContent = val;
+        }
+
+        // gap
+        function setGap(rowVal, colVal) {
+            const demo = document.getElementById('gapDemo');
+            demo.style.gap = rowVal + 'px ' + colVal + 'px';
+            document.getElementById('rowGapVal').textContent = rowVal;
+            document.getElementById('colGapVal').textContent = colVal;
+            document.getElementById('gapCode').textContent = rowVal + 'px ' + colVal + 'px';
+        }
+
+        // ========== وظائف خصائص الأبناء ==========
+
+        // order
+        function setOrder(idx, val) {
+            const demo = document.getElementById('orderDemo');
+            demo.children[idx].style.order = val;
+            document.getElementById('orderVal' + idx).textContent = val;
+            document.getElementById('orderCode' + idx).textContent = val;
+        }
+
+        // flex-grow
+        function setGrow(idx, val) {
+            const demo = document.getElementById('growDemo');
+            demo.children[idx].style.flexGrow = val;
+            document.getElementById('growVal' + idx).textContent = val;
+            document.getElementById('growCode' + idx).textContent = val;
+        }
+
+        // flex-shrink
+        function setShrink(idx, val) {
+            const demo = document.getElementById('shrinkDemo');
+            demo.children[idx].style.flexShrink = val;
+            document.getElementById('shrinkVal' + idx).textContent = val;
+            document.getElementById('shrinkCode' + idx).textContent = val;
+        }
+
+        // flex-basis
+        function setBasis(idx, val) {
+            const demo = document.getElementById('basisDemo');
+            demo.children[idx].style.flexBasis = val + 'px';
+            document.getElementById('basisVal' + idx).textContent = val + 'px';
+            document.getElementById('basisCode' + idx).textContent = val + 'px';
+        }
+
+        // align-self
+        function setSelf(btn, val) {
+            activateBtn(btn);
+            document.getElementById('selfTarget').style.alignSelf = val;
+            document.getElementById('selfCode').textContent = val;
+        }
+
+        // ========== الملعب التفاعلي الكامل ==========
+        const fullState = {
+            display: 'flex',
+            flexDirection: 'row',
+            flexWrap: 'nowrap',
+            justifyContent: 'flex-start',
+            alignItems: 'flex-start',
+            alignContent: 'flex-start',
+            gap: '10px',
+            count: 4
+        };
+        const itemClasses = ['flex-item-1', 'flex-item-2', 'flex-item-3', 'flex-item-4', 'flex-item-5', 'flex-item-6', 'flex-item-1', 'flex-item-2'];
+
+        function fullSet(btn, prop, val) {
+            activateBtn(btn);
+            fullState[prop] = val;
+            applyFullState();
+        }
+
+        function fullSetGap(val) {
+            fullState.gap = val + 'px';
+            document.getElementById('fullGapVal').textContent = val + 'px';
+            applyFullState();
+        }
+
+        function fullSetCount(val) {
+            fullState.count = parseInt(val);
+            document.getElementById('fullCountVal').textContent = val;
+            rebuildFullItems();
+            applyFullState();
+        }
+
+        function rebuildFullItems() {
+            const demo = document.getElementById('fullDemo');
+            demo.innerHTML = '';
+            for (let i = 0; i < fullState.count; i++) {
+                const div = document.createElement('div');
+                div.className = 'flex-item ' + itemClasses[i];
+                div.style.padding = '12px 20px';
+                div.textContent = i + 1;
+                demo.appendChild(div);
+            }
+        }
+
+        function applyFullState() {
+            const demo = document.getElementById('fullDemo');
+            demo.style.display = fullState.display;
+            demo.style.flexDirection = fullState.flexDirection;
+            demo.style.flexWrap = fullState.flexWrap;
+            demo.style.justifyContent = fullState.justifyContent;
+            demo.style.alignItems = fullState.alignItems;
+            demo.style.alignContent = fullState.alignContent;
+            demo.style.gap = fullState.gap;
+            updateFullCode();
+        }
+
+        function updateFullCode() {
+            const codeEl = document.getElementById('fullCode');
+            const lines = [
+                `<span class="selector">.container</span> <span class="punctuation">{</span>`,
+                `  <span class="prop-name">display</span><span class="punctuation">:</span> <span class="prop-val">${fullState.display}</span><span class="punctuation">;</span>`,
+                `  <span class="prop-name">flex-direction</span><span class="punctuation">:</span> <span class="prop-val">${fullState.flexDirection}</span><span class="punctuation">;</span>`,
+                `  <span class="prop-name">flex-wrap</span><span class="punctuation">:</span> <span class="prop-val">${fullState.flexWrap}</span><span class="punctuation">;</span>`,
+                `  <span class="prop-name">justify-content</span><span class="punctuation">:</span> <span class="prop-val">${fullState.justifyContent}</span><span class="punctuation">;</span>`,
+                `  <span class="prop-name">align-items</span><span class="punctuation">:</span> <span class="prop-val">${fullState.alignItems}</span><span class="punctuation">;</span>`,
+                `  <span class="prop-name">align-content</span><span class="punctuation">:</span> <span class="prop-val">${fullState.alignContent}</span><span class="punctuation">;</span>`,
+                `  <span class="prop-name">gap</span><span class="punctuation">:</span> <span class="prop-val">${fullState.gap}</span><span class="punctuation">;</span>`,
+                `<span class="punctuation">}</span>`
+            ];
+            codeEl.innerHTML = lines.join('<br>');
+        }
+
+        function resetFullPlayground() {
+            fullState.display = 'flex';
+            fullState.flexDirection = 'row';
+            fullState.flexWrap = 'nowrap';
+            fullState.justifyContent = 'flex-start';
+            fullState.alignItems = 'flex-start';
+            fullState.alignContent = 'flex-start';
+            fullState.gap = '10px';
+            fullState.count = 4;
+
+            // إعادة أزرار الملعب
+            const container = document.querySelector('#playground-full .prop-card');
+            container.querySelectorAll('.val-btn').forEach(btn => btn.classList.remove('active'));
+            // تنشيط الأزرار الافتراضية
+            const defaults = ['flex', 'row', 'nowrap', 'flex-start', 'flex-start', 'flex-start'];
+            const groups = container.querySelectorAll('.p-3.rounded-lg');
+            groups.forEach((group, gi) => {
+                if (gi < 6) {
+                    const btns = group.querySelectorAll('.val-btn');
+                    btns.forEach(b => {
+                        if (b.textContent.trim() === defaults[gi]) b.classList.add('active');
+                    });
+                }
+            });
+
+            document.querySelector('#playground-full input[type=range]').value = 10;
+            document.getElementById('fullGapVal').textContent = '10px';
+            document.querySelectorAll('#playground-full input[type=range]')[1].value = 4;
+            document.getElementById('fullCountVal').textContent = '4';
+
+            rebuildFullItems();
+            applyFullState();
+        }
+
+        // تهيئة أولية للملعب
+        updateFullCode();
+
+        // ========== نسخ الكود ==========
+        function copyCode(btn) {
+            const codeBlock = btn.parentElement;
+            const text = codeBlock.innerText.replace('نسخ', '').trim();
+            navigator.clipboard.writeText(text).then(() => {
+                const orig = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check ml-1"></i>تم';
+                btn.style.color = 'var(--success)';
+                btn.style.borderColor = 'var(--success)';
+                setTimeout(() => {
+                    btn.innerHTML = orig;
+                    btn.style.color = '';
+                    btn.style.borderColor = '';
+                }, 1500);
+            });
+        }
+
+        // ========== رسم توضيحي للمحاور (Canvas) ==========
+        function drawAxisDiagram() {
+            const canvas = document.getElementById('axisCanvas');
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const cx = w / 2;
+            const cy = h / 2;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // خلفية شفافة
+            ctx.fillStyle = '#1a1a1a';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, w, h, 12);
+            ctx.fill();
+
+            // إطار الحاوية
+            const boxW = 320;
+            const boxH = 260;
+            const boxX = cx - boxW / 2;
+            const boxY = cy - boxH / 2;
+
+            ctx.strokeStyle = 'rgba(232, 168, 56, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([6, 4]);
+            ctx.strokeRect(boxX, boxY, boxW, boxH);
+            ctx.setLineDash([]);
+
+            // تسمية الحاوية
+            ctx.font = '12px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#8a8580';
+            ctx.textAlign = 'center';
+            ctx.fillText('Flex Container', cx, boxY - 10);
+
+            // المحور الرئيسي (أفقي - ذهبي)
+            const mainStartX = boxX + 20;
+            const mainEndX = boxX + boxW - 20;
+            const mainY = cy + 40;
+
+            ctx.beginPath();
+            ctx.moveTo(mainStartX, mainY);
+            ctx.lineTo(mainEndX, mainY);
+            ctx.strokeStyle = '#e8a838';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // سهم المحور الرئيسي
+            ctx.beginPath();
+            ctx.moveTo(mainEndX, mainY);
+            ctx.lineTo(mainEndX - 10, mainY - 6);
+            ctx.lineTo(mainEndX - 10, mainY + 6);
+            ctx.closePath();
+            ctx.fillStyle = '#e8a838';
+            ctx.fill();
+
+            // تسمية المحور الرئيسي
+            ctx.font = 'bold 13px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#e8a838';
+            ctx.textAlign = 'center';
+            ctx.fillText('Main Axis', cx, mainY + 25);
+
+            // main-start / main-end
+            ctx.font = '10px "JetBrains Mono", monospace';
+            ctx.fillStyle = 'rgba(232, 168, 56, 0.6)';
+            ctx.textAlign = 'left';
+            ctx.fillText('main-start', mainStartX - 10, mainY - 12);
+            ctx.textAlign = 'right';
+            ctx.fillText('main-end', mainEndX + 10, mainY - 12);
+
+            // المحور العرضي (عمودي - أزرق)
+            const crossStartY = boxY + 20;
+            const crossEndY = boxY + boxH - 20;
+            const crossX = cx - 100;
+
+            ctx.beginPath();
+            ctx.moveTo(crossX, crossStartY);
+            ctx.lineTo(crossX, crossEndY);
+            ctx.strokeStyle = '#60a5fa';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // سهم المحور العرضي
+            ctx.beginPath();
+            ctx.moveTo(crossX, crossEndY);
+            ctx.lineTo(crossX - 6, crossEndY - 10);
+            ctx.lineTo(crossX + 6, crossEndY - 10);
+            ctx.closePath();
+            ctx.fillStyle = '#60a5fa';
+            ctx.fill();
+
+            // تسمية المحور العرضي
+            ctx.save();
+            ctx.translate(crossX - 20, cy);
+            ctx.rotate(-Math.PI / 2);
+            ctx.font = 'bold 13px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#60a5fa';
+            ctx.textAlign = 'center';
+            ctx.fillText('Cross Axis', 0, 0);
+            ctx.restore();
+
+            // cross-start / cross-end
+            ctx.font = '10px "JetBrains Mono", monospace';
+            ctx.fillStyle = 'rgba(96, 165, 250, 0.6)';
+            ctx.textAlign = 'center';
+            ctx.fillText('cross-start', crossX, crossStartY - 8);
+            ctx.fillText('cross-end', crossX, crossEndY + 16);
+
+            // عناصر تجريبية داخل الحاوية
+            const itemColors = ['#e8a838', '#ef6461', '#4ade80', '#60a5fa'];
+            const itemW = 50;
+            const itemH = 40;
+            const startX = cx - (itemColors.length * (itemW + 15)) / 2 + 7;
+
+            for (let i = 0; i < itemColors.length; i++) {
+                const ix = startX + i * (itemW + 15);
+                const iy = cy - itemH / 2 - 10;
+
+                ctx.fillStyle = itemColors[i];
+                ctx.globalAlpha = 0.85;
+                ctx.beginPath();
+                ctx.roundRect(ix, iy, itemW, itemH, 6);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+
+                ctx.font = 'bold 16px "JetBrains Mono", monospace';
+                ctx.fillStyle = i === 0 || i === 2 ? '#0f0f0f' : '#fff';
+                ctx.textAlign = 'center';
+                ctx.fillText(i + 1, ix + itemW / 2, iy + itemH / 2 + 6);
+            }
+        }
+        drawAxisDiagram();
+
+        // ========== حركة الظهور عند التمرير ==========
+        const revealElements = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        revealElements.forEach(el => observer.observe(el));
+
+        // ========== التنقل الجانبي ==========
+        const sections = ['intro', 'importance', 'mechanism', 'parent-props', 'child-props', 'playground-full'];
+        const navLinks = document.querySelectorAll('#sideNav a');
+
+        const navObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    navLinks.forEach(link => {
+                        link.classList.toggle('active', link.dataset.section === id);
+                    });
+                }
+            });
+        }, { threshold: 0.3 });
+
+        sections.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) navObserver.observe(el);
+        });
+
+        // ========== حركة عناصر البطل ==========
+        const heroItems = document.querySelectorAll('#heroFlexDemo .flex-item');
+        let heroFrame;
+        let heroTime = 0;
+
+        function animateHero() {
+            heroTime += 0.02;
+            heroItems.forEach((item, i) => {
+                const offset = Math.sin(heroTime + i * 0.8) * 8;
+                const rotate = Math.sin(heroTime + i * 0.6) * 3;
+                const scale = 1 + Math.sin(heroTime + i * 1.2) * 0.05;
+                item.style.transform = `translateY(${offset}px) rotate(${rotate}deg) scale(${scale})`;
+            });
+            heroFrame = requestAnimationFrame(animateHero);
+        }
+        animateHero();
+
+        // تقليل الحركة إذا المستخدم يفضل ذلك
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            cancelAnimationFrame(heroFrame);
+        }
+    </script>
+</body>
+
+</html>
