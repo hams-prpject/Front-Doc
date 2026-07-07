@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تعلم CSS من الصفر</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            arabic: ['Tajawal', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          },
+          colors: {
+            indigo: {
+              50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe',
+              300: '#a5b4fc', 400: '#818cf8', 500: '#6366f1',
+              600: '#4f46e5', 700: '#4338ca', 800: '#3730a3', 900: '#312e81',
+            }
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease forwards',
+            'slide-up': 'slideUp 0.5s ease forwards',
+          },
+          keyframes: {
+            fadeIn: { from: { opacity: '0' }, to: { opacity: '1' } },
+            slideUp: { from: { opacity: '0', transform: 'translateY(20px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Tajawal', sans-serif; }
+    code, pre { font-family: 'Fira Code', monospace; direction: ltr; }
+    .lesson { display: none; }
+    .lesson.active { display: block; animation: slideUp 0.4s ease forwards; }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .nav-pill.active {
+      background: #4f46e5;
+      color: white;
+      box-shadow: 0 4px 14px rgba(79,70,229,0.4);
+    }
+    .code-line .kw  { color: #c084fc; }
+    .code-line .prop { color: #34d399; }
+    .code-line .val  { color: #fbbf24; }
+    .code-line .str  { color: #fb923c; }
+    .code-line .cmt  { color: #6b7280; font-style: italic; }
+    .code-line .tag  { color: #60a5fa; }
+    /* progress bar */
+    #progress-fill { transition: width 0.4s ease; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+
+  <!-- ===== HERO ===== -->
+  <header class="relative overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 border-b border-slate-800">
+    <!-- decorative blobs -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-indigo-600 opacity-10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-16 -left-16 w-72 h-72 bg-violet-600 opacity-10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative max-w-4xl mx-auto px-6 py-14 text-center">
+      <span class="inline-block bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-sm px-4 py-1 rounded-full mb-5 tracking-wide">
+        للمبتدئين — بدون خبرة سابقة
+      </span>
+      <h1 class="text-5xl md:text-6xl font-black text-white mb-4 leading-tight">
+        تعلّم <span class="text-transparent bg-clip-text bg-gradient-to-l from-violet-400 to-indigo-400">CSS</span>
+        <br/>من الصفر
+      </h1>
+      <p class="text-slate-400 text-lg max-w-xl mx-auto">
+        12 درساً مبسطاً تأخذك من لا شيء إلى بناء صفحات ويب جميلة
+      </p>
+
+      <!-- stats -->
+      <div class="flex justify-center gap-8 mt-10 flex-wrap">
+        <div class="text-center">
+          <div class="text-3xl font-bold text-indigo-400">12</div>
+          <div class="text-sm text-slate-500 mt-1">دروس</div>
+        </div>
+        <div class="w-px bg-slate-700 self-stretch"></div>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-violet-400">30+</div>
+          <div class="text-sm text-slate-500 mt-1">خاصية CSS</div>
+        </div>
+        <div class="w-px bg-slate-700 self-stretch"></div>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-emerald-400">0</div>
+          <div class="text-sm text-slate-500 mt-1">خبرة مطلوبة</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main class="max-w-4xl mx-auto px-4 py-10">
+
+    <!-- Progress bar -->
+    <div class="mb-6">
+      <div class="flex justify-between text-xs text-slate-500 mb-2">
+        <span>تقدمك</span>
+        <span id="progress-text">1 / 12</span>
+      </div>
+      <div class="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+        <div id="progress-fill" class="h-full bg-gradient-to-l from-violet-500 to-indigo-500 rounded-full" style="width:12.5%"></div>
+      </div>
+    </div>
+
+    <!-- Nav pills -->
+    <div class="flex flex-wrap gap-2 mb-8" id="nav-pills">
+      <!-- built by JS -->
+    </div>
+
+    <!-- ======== LESSONS ======== -->
+    <div id="lessons-container">
+
+      <!-- L1 -->
+      <div class="lesson active" id="l1">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white shrink-0">1</span>
+          <h2 class="text-2xl font-bold text-white">مقدمة عن CSS</h2>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-5">
+          <p class="text-slate-300 text-base leading-relaxed mb-4">
+            <strong class="text-white">CSS</strong> اختصار لـ <span class="text-indigo-300 font-semibold">Cascading Style Sheets</span> — وهي اللغة التي تُحدد شكل ومظهر صفحات الويب.
+          </p>
+          <p class="text-slate-400 leading-relaxed">
+            HTML يبني هيكل الصفحة (العناوين، الفقرات، الصور)، أما CSS فيُجمّلها ويُحدد ألوانها وخطوطها ومسافاتها.
+          </p>
+        </div>
+
+        <!-- analogy card -->
+        <div class="bg-gradient-to-l from-indigo-950 to-slate-900 border border-indigo-800/50 rounded-2xl p-5 mb-5 flex gap-4 items-start">
+          <div class="text-3xl">🏠</div>
+          <div>
+            <div class="font-bold text-indigo-300 mb-1">تشبيه بسيط</div>
+            <p class="text-slate-400 text-sm leading-relaxed">فكّر في HTML كهيكل المنزل (الجدران والأبواب)، وCSS كالديكور والطلاء والأثاث — بدونه المنزل موجود لكنه فارغ ورمادي.</p>
+          </div>
+        </div>
+
+        <!-- before/after -->
+        <div class="grid grid-cols-2 gap-4 mb-5">
+          <div class="bg-slate-900 border border-slate-700 rounded-xl p-5 text-center">
+            <div class="text-xs text-slate-500 mb-3 uppercase tracking-wider">بدون CSS</div>
+            <div class="text-slate-300 text-base">مرحبا بالعالم</div>
+          </div>
+          <div class="bg-slate-900 border border-indigo-700/50 rounded-xl p-5 text-center">
+            <div class="text-xs text-slate-500 mb-3 uppercase tracking-wider">مع CSS</div>
+            <div class="text-white text-xl font-black bg-gradient-to-l from-violet-500 to-indigo-500 bg-clip-text text-transparent">مرحبا بالعالم</div>
+          </div>
+        </div>
+
+        <div class="bg-emerald-950/50 border border-emerald-800/40 rounded-xl p-4 flex gap-3">
+          <span class="text-emerald-400 text-lg shrink-0">✓</span>
+          <p class="text-emerald-300 text-sm leading-relaxed">CSS لا يحتاج تثبيتاً — يكفي ملف نصي عادي وأي متصفح مثل Chrome أو Firefox!</p>
+        </div>
+      </div>
+
+      <!-- L2 -->
+      <div class="lesson" id="l2">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white shrink-0">2</span>
+          <h2 class="text-2xl font-bold text-white">طرق تضمين CSS</h2>
+        </div>
+
+        <p class="text-slate-400 mb-5 leading-relaxed">هناك 3 طرق لإضافة CSS إلى صفحتك — لكل طريقة مكانها الصحيح:</p>
+
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+          <div class="bg-slate-900 border border-emerald-700/40 rounded-xl p-5">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-6 h-6 rounded-full bg-emerald-600 flex items-center justify-center text-xs text-white font-bold">1</span>
+              <span class="font-bold text-white text-sm">خارجي</span>
+              <span class="text-xs bg-emerald-900 text-emerald-300 px-2 py-0.5 rounded-full mr-auto">الأفضل</span>
+            </div>
+            <p class="text-slate-400 text-sm leading-relaxed">ملف .css منفصل مربوط بـ HTML</p>
+          </div>
+          <div class="bg-slate-900 border border-amber-700/40 rounded-xl p-5">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-6 h-6 rounded-full bg-amber-600 flex items-center justify-center text-xs text-white font-bold">2</span>
+              <span class="font-bold text-white text-sm">داخلي</span>
+              <span class="text-xs bg-amber-900 text-amber-300 px-2 py-0.5 rounded-full mr-auto">مقبول</span>
+            </div>
+            <p class="text-slate-400 text-sm leading-relaxed">داخل وسم &lt;style&gt; في &lt;head&gt;</p>
+          </div>
+          <div class="bg-slate-900 border border-red-700/40 rounded-xl p-5">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-6 h-6 rounded-full bg-red-700 flex items-center justify-center text-xs text-white font-bold">3</span>
+              <span class="font-bold text-white text-sm">مضمّن</span>
+              <span class="text-xs bg-red-900 text-red-300 px-2 py-0.5 rounded-full mr-auto">تجنّب</span>
+            </div>
+            <p class="text-slate-400 text-sm leading-relaxed">مباشرة بخاصية style في الوسم</p>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <div class="text-xs text-slate-500 uppercase tracking-wider mb-2">1 — الخارجي (style.css)</div>
+            <pre class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm overflow-x-auto"><code class="code-line"><span class="tag">&lt;link</span> rel=<span class="str">"stylesheet"</span> href=<span class="str">"style.css"</span><span class="tag">&gt;</span></code></pre>
+          </div>
+          <div>
+            <div class="text-xs text-slate-500 uppercase tracking-wider mb-2">2 — الداخلي</div>
+            <pre class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm overflow-x-auto"><code class="code-line"><span class="tag">&lt;style&gt;</span>
+  <span class="prop">h1</span> { <span class="kw">color</span>: <span class="val">blue</span>; }
+<span class="tag">&lt;/style&gt;</span></code></pre>
+          </div>
+          <div>
+            <div class="text-xs text-slate-500 uppercase tracking-wider mb-2">3 — المضمّن</div>
+            <pre class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm overflow-x-auto"><code class="code-line"><span class="tag">&lt;h1</span> style=<span class="str">"color: blue;"</span><span class="tag">&gt;</span>عنوان<span class="tag">&lt;/h1&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <div class="mt-5 bg-indigo-950/50 border border-indigo-800/40 rounded-xl p-4 flex gap-3">
+          <span class="text-indigo-400 shrink-0">💡</span>
+          <p class="text-indigo-300 text-sm leading-relaxed">للتعلم: ابدأ بالطريقة الداخلية. للمشاريع الحقيقية: الخارجية دائماً.</p>
+        </div>
+      </div>
+
+      <!-- L3 -->
+      <div class="lesson" id="l3">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white shrink-0">3</span>
+          <h2 class="text-2xl font-bold text-white">CSS Syntax — تركيب الجملة</h2>
+        </div>
+
+        <p class="text-slate-400 mb-6">كل قاعدة CSS تتكون من 3 أجزاء لا تتغير أبداً:</p>
+
+        <!-- anatomy diagram -->
+        <div class="bg-slate-950 border border-slate-700 rounded-2xl p-6 mb-6 overflow-x-auto">
+          <div class="flex items-stretch gap-0 font-mono text-base min-w-max mx-auto w-fit text-center rounded-xl overflow-hidden border border-slate-700">
+            <div class="bg-emerald-900/60 text-emerald-300 px-5 py-3 font-bold">h1</div>
+            <div class="bg-slate-800 text-slate-400 px-3 py-3">{</div>
+            <div class="bg-indigo-900/60 text-indigo-300 px-5 py-3">color</div>
+            <div class="bg-slate-800 text-slate-500 px-2 py-3">:</div>
+            <div class="bg-amber-900/60 text-amber-300 px-5 py-3">red</div>
+            <div class="bg-slate-800 text-slate-500 px-1 py-3">;</div>
+            <div class="bg-slate-800 text-slate-400 px-3 py-3">}</div>
+          </div>
+          <div class="flex gap-0 font-mono text-xs mt-2 min-w-max mx-auto w-fit text-center">
+            <div class="text-emerald-500 w-16 px-2">محدد</div>
+            <div class="w-8"></div>
+            <div class="text-indigo-400 w-16 px-2">خاصية</div>
+            <div class="w-4"></div>
+            <div class="text-amber-400 w-12 px-2">قيمة</div>
+          </div>
+        </div>
+
+        <div class="mb-5">
+          <div class="text-xs text-slate-500 uppercase tracking-wider mb-2">مثال كامل</div>
+          <pre class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm overflow-x-auto"><code class="code-line"><span class="cmt">/* قاعدة CSS لتنسيق الفقرات */</span>
+<span class="prop">p</span> {
+  <span class="kw">color</span>: <span class="val">darkblue</span>;
+  <span class="kw">font-size</span>: <span class="val">18px</span>;
+  <span class="kw">text-align</span>: <span class="val">center</span>;
+}</code></pre>
+        </div>
+
+        <div class="bg-red-950/50 border border-red-800/40 rounded-xl p-4 flex gap-3 mb-4">
+          <span class="text-red-400 shrink-0 text-lg">⚠</span>
+          <div>
+            <div class="font-bold text-red-300 mb-1">أكثر الأخطاء شيوعاً!</div>
+            <p class="text-red-300/80 text-sm leading-relaxed">نسيان الفاصلة المنقوطة <code class="bg-red-900/50 px-1 rounded text-xs">;</code> بعد كل قيمة — إذا لم يعمل الستايل، تحقق منها أولاً.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-red-950/40 border border-red-800/30 rounded-xl p-4">
+            <div class="text-xs text-red-400 mb-2">❌ خطأ</div>
+            <pre class="text-sm"><code class="code-line"><span class="prop">p</span> {
+  <span class="kw">color</span>: <span class="val">red</span>
+}</code></pre>
+          </div>
+          <div class="bg-emerald-950/40 border border-emerald-800/30 rounded-xl p-4">
+            <div class="text-xs text-emerald-400 mb-2">✓ صحيح</div>
+            <pre class="text-sm"><code class="code-line"><span class="prop">p</span> {
+  <span class="kw">color</span>: <span class="val">red</span>;
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- L4 -->
+      <div class="lesson" id="l4">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white shrink-0">4</span>
+          <h2 class="text-2xl font-bold text-white">CSS Selectors — المحددات</h2>
+        </div>
+
+        <p class="text-slate-400 mb-6">المحدد يخبر المتصفح: "على أيّ عنصر تطبّق هذا الستايل؟"</p>
+
+        <div class="space-y-3 mb-6">
+          <div class="flex items-center gap-4 bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <code class="bg-indigo-950 text-indigo-300 text-sm px-3 py-1.5 rounded-lg font-mono min-w-[80px] text-center">h1</code>
+            <div>
+              <div class="text-white text-sm font-medium">محدد العنصر</div>
+              <div class="text-slate-500 text-xs mt-0.5">يطبّق الستايل على كل عناصر &lt;h1&gt;</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <code class="bg-violet-950 text-violet-300 text-sm px-3 py-1.5 rounded-lg font-mono min-w-[80px] text-center">.myClass</code>
+            <div>
+              <div class="text-white text-sm font-medium">محدد الـ Class</div>
+              <div class="text-slate-500 text-xs mt-0.5">يطبّق على كل عنصر يحمل class="myClass"</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <code class="bg-amber-950 text-amber-300 text-sm px-3 py-1.5 rounded-lg font-mono min-w-[80px] text-center">#myId</code>
+            <div>
+              <div class="text-white text-sm font-medium">محدد الـ ID</div>
+              <div class="text-slate-500 text-xs mt-0.5">يطبّق على عنصر واحد فقط يحمل id="myId"</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <code class="bg-slate-800 text-slate-300 text-sm px-3 py-1.5 rounded-lg font-mono min-w-[80px] text-center">*</code>
+            <div>
+              <div class="text-white text-sm font-medium">المحدد الشامل</div>
+              <div class="text-slate-500 text-xs mt-0.5">يطبّق على جميع العناصر في الصفحة</div>
+            </div>
+          </div>
+        </div>
+
+        <pre class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm overflow-x-auto mb-5"><code class="code-line"><span class="cmt">/* محدد العنصر */</span>
+<span class="prop">h1</span> { <span class="kw">color</span>: <span class="val">blue</span>; }
+
+<span class="cmt">/* محدد الـ class (يبدأ بنقطة) */</span>
+<span class="prop">.title</span> { <span class="kw">font-size</span>: <span class="val">24px</span>; }
+
+<span class="cmt">/* محدد الـ id (يبدأ بـ #) */</span>
+<span class="prop">#logo</span> { <span class="kw">width</span>: <span class="val">100px</span>; }</code></pre>
+
+        <div class="bg-indigo-950/50 border border-indigo-800/40 rounded-xl p-4 flex gap-3">
+          <span class="text-indigo-400 shrink-0">💡</span>
+          <p class="text-indigo-300 text-sm leading-relaxed"><strong>قاعدة ذهبية:</strong> استخدم <code class="bg-indigo-900 px-1 rounded text-xs">.class</code> للعناصر المتكررة، و<code class="bg-indigo-900 px-1 rounded text-xs">#id</code> للعناصر الفريدة (مرة واحدة فقط في الصفحة).</p>
+        </div>
+      </div>
+
+      <!-- L5 -->
+      <div class="lesson" id="l5">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white shrink-0">5</span>
+          <h2 class="text-2xl font-bold text-white">CSS Comments — التعليقات</h2>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-5">
+          <p class="text-slate-300 leading-relaxed mb-3">التعليقات هي ملاحظات تكتبها لنفسك أو لزملائك.</p>
+          <p class="text-slate-400 text-sm leading-relaxed">المتصفح يتجاهلها تماماً — لا تؤثر على شكل الصفحة أبداً.</p>
+        </div>
+
+        <pre class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm overflow-x-auto mb-5"><code class="code-line"><span class="cmt">/* هذا تعليق في CSS */</span>
+
+<span class="prop">p</span> {
+  <span class="kw">color</span>: <span class="val">red</span>; <span class="cmt">/* اللون الأحمر مؤقت */</span>
+  <span class="cmt">/* font-size: 20px; */</span>  <span class="cmt">/* سطر معطّل مؤقتاً */</span>
+}</code></pre>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <div class="text-indigo-400 font-bold mb-2">📝 استخدام 1</div>
+            <p class="text-slate-400 text-sm leading-relaxed">شرح الكود لنفسك أو لمن يعمل معك لاحقاً</p>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <div class="text-indigo-400 font-bold mb-2">🔧 استخدام 2</div>
+            <p class="text-slate-400 text-sm leading-relaxed">إيقاف خاصية مؤقتاً لاختبارها دون حذفها</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- L6 -->
+      <div class="lesson" id="l6">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white shrink-0">6</span>
+          <h2 class="text-2xl font-bold text-white">CSS Colors — الألوان</h2>
+        </div>
+
+        <p class="text-slate-400 mb-5">3 طرق لكتابة الألوان في CSS:</p>
+
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 text-center">
+            <div class="w-12 h-12 rounded-full mx-auto mb-3 border-2 border-slate-700" style="background:red;"></div>
+            <div class="font-bold text-white text-sm mb-1">اسم اللون</div>
+            <code class="text-indigo-300 text-xs">color: red</code>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 text-center">
+            <div class="w-12 h-12 rounded-full mx-auto mb-3 border-2 border-slate-700" style="background:#3b82f6;"></div>
+            <div class="font-bold text-white text-sm mb-1">كود HEX</div>
+            <code class="text-indigo-300 text-xs">color: #3b82f6</code>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 text-center">
+            <div class="w-12 h-12 rounded-full mx-auto mb-3 border-2 border-slate-700" style="background:rgb(34,197,94);"></div>
+            <div class="font-bold text-white text-sm mb-1">RGB</div>
+            <code class="text-indigo-300 text-xs">color: rgb(34,197,94)</code>
+          </div>
+        </div>
+
+        <pre class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm overflow-x-auto mb-5"><code class="code-line"><span class="prop">h1</span> {
+  <span class="cmt">/* 1. اسم اللون (أسهل للمبتدئين) */</span>
+  <span class="kw">color</span>: <span class="val">red</span>;
+
+  <span class="cmt">/* 2. HEX (الأكثر استخداماً) */</span>
+  <span class="kw">color</span>: <span class="val">#ff0000</span>;
+
+  <span class="cmt">/* 3. RGB */</span>
+  <span class="kw">color</span>: <span class="val">rgb(255, 0, 0)</span>;
+}</code></pre>
+
+        <!-- color palette teaser -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-4">
+          <div class="text-xs text-slate-500 mb-3">ألوان مفيدة للبدء</div>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 rounded-full text-xs font-mono" style="background:#ef4444;color:#fff;">red</span>
+            <span class="px-3 py-1 rounded-full text-xs font-mono" style="background:#3b82f6;color:#fff;">blue</span>
+            <span class="px-3 py-1 rounded-full text-xs font-mono" style="background:#22c55e;color:#fff;">green</span>
+            <span class="px-3 py-1 rounded-full text-xs font-mono" style="background:#f59e0b;color:#000;">orange</span>
+            <span class="px-3 py-1 rounded-full text-xs font-mono" style="background:#8b5cf6;color:#fff;">purple</span>
+            <span class="px-3 py-1 rounded-full text-xs font-mono" style="background:#ec4899;color:#fff;">pink</span>
+            <span class="px-3 py-1 rounded-full text-xs font-mono" style="background:#1e293b;color:#94a3b8;border:1px solid #334155;">black</span>
+          </div>
+        </div>
+
+        <div class="bg-emerald-950/50 border border-emerald-800/40 rounded-xl p-4 flex gap-3">
+          <span class="text-emerald-400 shrink-0">✓</span>
+          <p class="text-emerald-300 text-sm leading-relaxed">ابدأ بأسماء الألوان، ثم تعلم HEX — وهو ما ستجده في كل مشروع حقيقي.</p>
+        </div>
+      </div>
+
+      <!-- L7 -->
+      <div class="lesson" id="l7">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white shrink-0">7</span>
+          <h2 class="text-2xl font-bold text-white">CSS Backgrounds — الخلفيات</h2>
+        </div>
+
+        <!-- live preview -->
+        <div class="grid grid-cols-3 gap-3 mb-6">
+          <div class="h-20 rounded-xl flex items-center justify-center text-xs font-bold text-white" style="background:#6366f1;">لون</div>
+          <div class="h-20 rounded-xl flex items-center justify-center text-xs font-bold text-white" style="background: linear-gradient(135deg,#6366f1,#ec4899);">تدرج</div>
+          <div class="h-20 rounded-xl flex items-center justify-center text-xs font-bold bg-slate-700 text-slate-300 border border-dashed border-slate-600">صورة</div>
+        </div>
+
+        <pre class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm overflow-x-auto mb-5"><code class="code-line"><span class="prop">body</span> {
+  <span class="cmt">/* لون الخلفية */</span>
+  <span class="kw">background-color</span>: <span class="val">lightblue</span>;
+
+  <span class="cmt">/* صورة خلفية */</span>
+  <span class="kw">background-image</span>: <span class="val">url("bg.jpg")</span>;
+
+  <span class="cmt">/* هل تتكرر الصورة؟ */</span>
+  <span class="kw">background-repeat</span>: <span class="val">no-repeat</span>;
+
+  <span class="cmt">/* حجم الصورة — cover تملأ كل المساحة */</span>
+  <span class="kw">background-size</span>: <span class="val">cover</span>;
+
+  <span class="cmt">/* موضع الصورة */</span>
+  <span class="kw">background-position</span>: <span class="val">center</span>;
+}</code></pre>
+
+        <div class="bg-indigo-950/50 border border-indigo-800/40 rounded-xl p-4 flex gap-3">
+          <span class="text-indigo-400 shrink-0">💡</span>
+          <p class="text-indigo-300 text-sm leading-relaxed"><code class="bg-indigo-900 px-1 rounded text-xs">background-color</code> هي الخاصية الأكثر استخداماً — ستستخدمها في كل مشروع تقريباً.</p>
+        </div>
+      </div>
+
+      <!-- L8 -->
+      <div class="lesson" id="l8">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white shrink-0">8</span>
+          <h2 class="text-2xl font-bold text-white">Height, Width & Text Color</h2>
+        </div>
+
+        <!-- visual demo -->
+        <div class="relative bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6 overflow-hidden">
+          <div class="flex gap-4 items-end flex-wrap">
+            <div class="bg-indigo-600/30 border border-indigo-500/40 rounded-lg flex items-center justify-center text-indigo-300 text-xs font-mono" style="width:80px;height:50px;">80×50</div>
+            <div class="bg-violet-600/30 border border-violet-500/40 rounded-lg flex items-center justify-center text-violet-300 text-xs font-mono" style="width:130px;height:80px;">130×80</div>
+            <div class="bg-pink-600/30 border border-pink-500/40 rounded-lg flex items-center justify-center text-pink-300 text-xs font-mono" style="width:180px;height:110px;">180×110</div>
+          </div>
+        </div>
+
+        <pre class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm overflow-x-auto mb-5"><code class="code-line"><span class="prop">div</span> {
+  <span class="kw">width</span>:  <span class="val">300px</span>;   <span class="cmt">/* العرض — بالبكسل */</span>
+  <span class="kw">height</span>: <span class="val">200px</span>;   <span class="cmt">/* الارتفاع */</span>
+  <span class="kw">width</span>:  <span class="val">50%</span>;     <span class="cmt">/* أو نسبة من العنصر الأب */</span>
+}
+
+<span class="cmt">/* لون النص */</span>
+<span class="prop">p</span>  { <span class="kw">color</span>: <span class="val">darkblue</span>; }
+<span class="prop">h1</span> { <span class="kw">color</span>: <span class="val">#e24b4a</span>; }</code></pre>
+
+        <div class="bg-amber-950/50 border border-amber-800/40 rounded-xl p-4 flex gap-3 mb-4">
+          <span class="text-amber-400 shrink-0">⚠</span>
+          <p class="text-amber-300 text-sm leading-relaxed"><strong>انتبه:</strong> <code class="bg-amber-900/50 px-1 rounded text-xs">color</code> تُغيّر لون النص فقط — لتغيير لون الخلفية استخدم <code class="bg-amber-900/50 px-1 rounded text-xs">background-color</code>.</p>
+        </div>
+
+        <div class="bg-indigo-950/50 border border-indigo-800/40 rounded-xl p-4 flex gap-3">
+          <span class="text-indigo-400 shrink-0">💡</span>
+          <p class="text-indigo-300 text-sm leading-relaxed">درس واحد متبقّ! انتقل للدرس التالي لتتعلم خصائص النصوص الكاملة.</p>
+        </div>
+      </div>
+
+      <!-- L9: CSS Text -->
+      <div class="lesson" id="l9">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white shrink-0">9</span>
+          <h2 class="text-2xl font-bold text-white">CSS Text — خصائص النصوص</h2>
+        </div>
+
+        <p class="text-slate-400 mb-6 leading-relaxed">خصائص النص في CSS تتحكم في كل ما يتعلق بمظهر الكلمات — من لونها وحجمها وخطها، إلى محاذاتها وتزيينها وتباعد حروفها.</p>
+
+        <!-- interactive demo -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-6">
+          <div class="text-xs text-slate-500 uppercase tracking-wider mb-3">معاينة تفاعلية — جرّب الأزرار</div>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <button onclick="textDemo('align','right')"    class="tdemo-btn px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">يمين</button>
+            <button onclick="textDemo('align','center')"   class="tdemo-btn px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">وسط</button>
+            <button onclick="textDemo('align','left')"     class="tdemo-btn px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">يسار</button>
+            <span class="w-px bg-slate-700 self-stretch mx-1"></span>
+            <button onclick="textDemo('deco','underline')" class="tdemo-btn px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">سطر تحت</button>
+            <button onclick="textDemo('deco','line-through')" class="tdemo-btn px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">مشطوب</button>
+            <button onclick="textDemo('deco','none')"      class="tdemo-btn px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">بدون</button>
+            <span class="w-px bg-slate-700 self-stretch mx-1"></span>
+            <button onclick="textDemo('size','14px')"      class="tdemo-btn px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">صغير</button>
+            <button onclick="textDemo('size','18px')"      class="tdemo-btn px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">متوسط</button>
+            <button onclick="textDemo('size','26px')"      class="tdemo-btn px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">كبير</button>
+          </div>
+          <div id="text-preview" class="bg-slate-950 rounded-xl p-5 text-slate-200 leading-relaxed transition-all duration-300" style="text-align:right;font-size:16px;text-decoration:none;direction:rtl;">
+            مرحباً! هذا مثال على تطبيق خصائص النص في CSS. جرّب الأزرار أعلاه لترى التغيير فوراً.
+          </div>
+          <div class="mt-2 font-mono text-xs text-indigo-400" id="text-code">text-align: right; | font-size: 16px; | text-decoration: none;</div>
+        </div>
+
+        <!-- properties -->
+        <div class="space-y-4 mb-6">
+
+          <!-- color + font-size -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <code class="text-emerald-400 text-sm font-mono">color</code>
+              <span class="text-slate-600">&amp;</span>
+              <code class="text-emerald-400 text-sm font-mono">font-size</code>
+            </div>
+            <pre class="bg-slate-950 rounded-lg p-4 text-sm overflow-x-auto"><code class="code-line"><span class="prop">p</span> {
+  <span class="kw">color</span>: <span class="val">#4f46e5</span>;        <span class="cmt">/* لون النص */</span>
+  <span class="kw">font-size</span>: <span class="val">18px</span>;     <span class="cmt">/* حجم الخط بالبكسل */</span>
+  <span class="kw">font-size</span>: <span class="val">1.2rem</span>;   <span class="cmt">/* أو بوحدة rem */</span>
+}</span></code></pre>
+            <div class="mt-3 flex flex-wrap gap-3 items-baseline">
+              <span style="font-size:12px;color:#94a3b8;">12px</span>
+              <span style="font-size:16px;color:#a5b4fc;">16px</span>
+              <span style="font-size:20px;color:#818cf8;">20px</span>
+              <span style="font-size:26px;color:#6366f1;">26px</span>
+              <span style="font-size:34px;color:#4f46e5;">34px</span>
+            </div>
+          </div>
+
+          <!-- font-family + font-weight -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <code class="text-emerald-400 text-sm font-mono">font-family</code>
+              <span class="text-slate-600">&amp;</span>
+              <code class="text-emerald-400 text-sm font-mono">font-weight</code>
+            </div>
+            <pre class="bg-slate-950 rounded-lg p-4 text-sm overflow-x-auto mb-3"><code class="code-line"><span class="prop">h1</span> {
+  <span class="kw">font-family</span>: <span class="val">Arial, sans-serif</span>;  <span class="cmt">/* نوع الخط */</span>
+  <span class="kw">font-weight</span>: <span class="val">bold</span>;               <span class="cmt">/* سماكة: normal / bold / 100-900 */</span>
+}</span></code></pre>
+            <div class="flex flex-wrap gap-4 items-center">
+              <span style="font-weight:300;" class="text-slate-300 text-sm">300 رفيع</span>
+              <span style="font-weight:400;" class="text-slate-300 text-sm">400 عادي</span>
+              <span style="font-weight:600;" class="text-slate-300 text-sm">600 ثقيل</span>
+              <span style="font-weight:900;" class="text-slate-300 text-sm">900 أثقل</span>
+            </div>
+          </div>
+
+          <!-- font-style -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <code class="text-emerald-400 text-sm font-mono block mb-3">font-style</code>
+            <pre class="bg-slate-950 rounded-lg p-4 text-sm overflow-x-auto mb-3"><code class="code-line"><span class="prop">em</span> {
+  <span class="kw">font-style</span>: <span class="val">italic</span>;   <span class="cmt">/* مائل */</span>
+}
+<span class="prop">p</span>  {
+  <span class="kw">font-style</span>: <span class="val">normal</span>;   <span class="cmt">/* عادي */</span>
+}</span></code></pre>
+            <div class="flex gap-6 flex-wrap">
+              <span class="text-slate-300 text-base" style="font-style:normal;">Normal — عادي</span>
+              <span class="text-slate-300 text-base" style="font-style:italic;">Italic — مائل</span>
+            </div>
+          </div>
+
+          <!-- text-align -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-800 flex items-center gap-2">
+              <code class="text-emerald-400 text-sm font-mono">text-align</code>
+              <span class="text-slate-500 text-xs">محاذاة النص أفقياً</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-x-reverse divide-slate-800">
+              <div class="p-4"><div class="text-xs text-indigo-300 font-mono mb-2">right</div><div class="bg-slate-950 rounded p-2 text-xs text-slate-300 text-right">نص →</div></div>
+              <div class="p-4"><div class="text-xs text-indigo-300 font-mono mb-2">center</div><div class="bg-slate-950 rounded p-2 text-xs text-slate-300 text-center">← نص →</div></div>
+              <div class="p-4"><div class="text-xs text-indigo-300 font-mono mb-2">left</div><div class="bg-slate-950 rounded p-2 text-xs text-slate-300 text-left">← نص</div></div>
+              <div class="p-4"><div class="text-xs text-indigo-300 font-mono mb-2">justify</div><div class="bg-slate-950 rounded p-2 text-xs text-slate-300 text-justify">نص طويل يمتد على كامل العرض</div></div>
+            </div>
+          </div>
+
+          <!-- text-decoration -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-800 flex items-center gap-2">
+              <code class="text-emerald-400 text-sm font-mono">text-decoration</code>
+              <span class="text-slate-500 text-xs">تزيين النص بخطوط</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-x-reverse divide-slate-800">
+              <div class="p-4 text-center"><div class="text-xs text-indigo-300 font-mono mb-2">none</div><div class="text-slate-300 text-sm">عادي</div></div>
+              <div class="p-4 text-center"><div class="text-xs text-indigo-300 font-mono mb-2">underline</div><div class="text-slate-300 text-sm underline">مسطّر</div></div>
+              <div class="p-4 text-center"><div class="text-xs text-indigo-300 font-mono mb-2">overline</div><div class="text-slate-300 text-sm" style="text-decoration:overline;">علوي</div></div>
+              <div class="p-4 text-center"><div class="text-xs text-indigo-300 font-mono mb-2">line-through</div><div class="text-slate-300 text-sm line-through">مشطوب</div></div>
+            </div>
+          </div>
+
+          <!-- text-transform -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-800 flex items-center gap-2">
+              <code class="text-emerald-400 text-sm font-mono">text-transform</code>
+              <span class="text-slate-500 text-xs">تحويل حالة الأحرف الإنجليزية</span>
+            </div>
+            <div class="grid grid-cols-3 divide-x divide-x-reverse divide-slate-800">
+              <div class="p-4 text-center"><div class="text-xs text-indigo-300 font-mono mb-2">uppercase</div><div class="text-slate-300 text-sm uppercase font-mono">hello</div></div>
+              <div class="p-4 text-center"><div class="text-xs text-indigo-300 font-mono mb-2">lowercase</div><div class="text-slate-300 text-sm lowercase font-mono">HELLO</div></div>
+              <div class="p-4 text-center"><div class="text-xs text-indigo-300 font-mono mb-2">capitalize</div><div class="text-slate-300 text-sm capitalize font-mono">hello world</div></div>
+            </div>
+          </div>
+
+          <!-- letter-spacing & line-height -->
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+              <div class="px-5 py-3 border-b border-slate-800">
+                <code class="text-emerald-400 text-sm font-mono">letter-spacing</code>
+                <div class="text-slate-500 text-xs mt-0.5">المسافة بين الحروف</div>
+              </div>
+              <div class="p-4 space-y-3">
+                <div><div class="text-xs text-indigo-300 font-mono mb-1">normal</div><div class="text-slate-300 text-sm font-mono" style="letter-spacing:normal;">Hello CSS</div></div>
+                <div><div class="text-xs text-indigo-300 font-mono mb-1">3px</div><div class="text-slate-300 text-sm font-mono" style="letter-spacing:3px;">Hello CSS</div></div>
+                <div><div class="text-xs text-indigo-300 font-mono mb-1">8px</div><div class="text-slate-300 text-sm font-mono" style="letter-spacing:8px;">Hello</div></div>
+              </div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+              <div class="px-5 py-3 border-b border-slate-800">
+                <code class="text-emerald-400 text-sm font-mono">line-height</code>
+                <div class="text-slate-500 text-xs mt-0.5">المسافة بين الأسطر</div>
+              </div>
+              <div class="p-4 space-y-3">
+                <div><div class="text-xs text-indigo-300 font-mono mb-1">1.0 — ضيق</div><div class="text-slate-300 text-xs" style="line-height:1;">سطر أول<br/>سطر ثاني<br/>سطر ثالث</div></div>
+                <div><div class="text-xs text-indigo-300 font-mono mb-1">1.8 — مريح</div><div class="text-slate-300 text-xs" style="line-height:1.8;">سطر أول<br/>سطر ثاني<br/>سطر ثالث</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- word-spacing & text-indent -->
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+              <div class="px-5 py-3 border-b border-slate-800">
+                <code class="text-emerald-400 text-sm font-mono">word-spacing</code>
+                <div class="text-slate-500 text-xs mt-0.5">المسافة بين الكلمات</div>
+              </div>
+              <div class="p-4 space-y-3">
+                <div><div class="text-xs text-indigo-300 font-mono mb-1">normal</div><div class="text-slate-300 text-sm" style="word-spacing:normal;">مرحبا بك في CSS</div></div>
+                <div><div class="text-xs text-indigo-300 font-mono mb-1">10px</div><div class="text-slate-300 text-sm" style="word-spacing:10px;">مرحبا بك في CSS</div></div>
+              </div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+              <div class="px-5 py-3 border-b border-slate-800">
+                <code class="text-emerald-400 text-sm font-mono">text-indent</code>
+                <div class="text-slate-500 text-xs mt-0.5">مسافة بداية الفقرة</div>
+              </div>
+              <div class="p-4 space-y-3">
+                <div><div class="text-xs text-indigo-300 font-mono mb-1">0px</div><div class="text-slate-300 text-xs leading-relaxed" style="text-indent:0;direction:rtl;">هذه فقرة بدون مسافة بادئة في بدايتها.</div></div>
+                <div><div class="text-xs text-indigo-300 font-mono mb-1">30px</div><div class="text-slate-300 text-xs leading-relaxed" style="text-indent:30px;direction:rtl;">هذه فقرة بها مسافة بادئة في البداية.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- text-shadow -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <code class="text-emerald-400 text-sm font-mono block mb-3">text-shadow — ظل النص</code>
+            <pre class="bg-slate-950 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code class="code-line"><span class="prop">h1</span> {
+  <span class="cmt">/* x   y   ضبابية   اللون */</span>
+  <span class="kw">text-shadow</span>: <span class="val">2px 4px 6px rgba(0,0,0,0.5)</span>;
+}</span></code></pre>
+            <div class="flex flex-wrap gap-6 items-center">
+              <span class="text-white text-lg font-bold" style="text-shadow:none;">بدون ظل</span>
+              <span class="text-white text-lg font-bold" style="text-shadow:2px 2px 4px rgba(99,102,241,0.8);">ظل بنفسجي</span>
+              <span class="text-white text-lg font-bold" style="text-shadow:0 0 12px rgba(99,102,241,1);">توهج</span>
+              <span class="text-white text-lg font-bold" style="text-shadow:3px 3px 0 #4338ca,-3px -3px 0 #ec4899;">متعدد</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- complete reference code -->
+        <div class="mb-5">
+          <div class="text-xs text-slate-500 uppercase tracking-wider mb-2">مثال شامل — جميع الخصائص معاً</div>
+          <pre class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm overflow-x-auto"><code class="code-line"><span class="prop">p</span> {
+  <span class="kw">color</span>:           <span class="val">#1e293b</span>;        <span class="cmt">/* لون النص */</span>
+  <span class="kw">font-size</span>:       <span class="val">18px</span>;           <span class="cmt">/* حجم الخط */</span>
+  <span class="kw">font-family</span>:     <span class="val">Arial, sans-serif</span>;<span class="cmt">/* نوع الخط */</span>
+  <span class="kw">font-weight</span>:     <span class="val">bold</span>;           <span class="cmt">/* سماكة الخط */</span>
+  <span class="kw">font-style</span>:      <span class="val">italic</span>;         <span class="cmt">/* مائل */</span>
+  <span class="kw">text-align</span>:      <span class="val">center</span>;         <span class="cmt">/* المحاذاة */</span>
+  <span class="kw">text-decoration</span>: <span class="val">underline</span>;      <span class="cmt">/* سطر تحت */</span>
+  <span class="kw">text-transform</span>:  <span class="val">uppercase</span>;      <span class="cmt">/* أحرف كبيرة */</span>
+  <span class="kw">letter-spacing</span>:  <span class="val">2px</span>;            <span class="cmt">/* بين الحروف */</span>
+  <span class="kw">word-spacing</span>:    <span class="val">5px</span>;            <span class="cmt">/* بين الكلمات */</span>
+  <span class="kw">line-height</span>:     <span class="val">1.6</span>;            <span class="cmt">/* بين الأسطر */</span>
+  <span class="kw">text-indent</span>:     <span class="val">20px</span>;           <span class="cmt">/* مسافة البداية */</span>
+  <span class="kw">text-shadow</span>:     <span class="val">2px 2px 4px #000</span>;<span class="cmt">/* الظل */</span>
+}</code></pre>
+        </div>
+
+        <div class="bg-indigo-950/50 border border-indigo-800/40 rounded-xl p-4 flex gap-3">
+          <span class="text-indigo-400 shrink-0">💡</span>
+          <p class="text-indigo-300 text-sm leading-relaxed">ثلاثة دروس متبقية — استمر لتتعلم النصوص والخطوط والعرض!</p>
+        </div>
+      </div>
+
+      <!-- L10: CSS Text -->
+      <div class="lesson" id="l10">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white shrink-0">10</span>
+          <h2 class="text-2xl font-bold text-white">CSS Text — خصائص النصوص</h2>
+        </div>
+        <p class="text-slate-400 mb-6 leading-relaxed">خصائص النص تتحكم في كل ما يتعلق بمظهر الكلمات — من محاذاتها وتزيينها إلى تباعد حروفها وظلالها.</p>
+
+        <!-- interactive demo -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-6">
+          <div class="text-xs text-slate-500 uppercase tracking-wider mb-3">معاينة تفاعلية</div>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <button onclick="setT('align','right')"        class="tb px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">يمين</button>
+            <button onclick="setT('align','center')"       class="tb px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">وسط</button>
+            <button onclick="setT('align','left')"         class="tb px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">يسار</button>
+            <span class="w-px bg-slate-700 self-stretch mx-1"></span>
+            <button onclick="setT('deco','underline')"     class="tb px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">سطر تحت</button>
+            <button onclick="setT('deco','line-through')"  class="tb px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">مشطوب</button>
+            <button onclick="setT('deco','none')"          class="tb px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">بدون</button>
+            <span class="w-px bg-slate-700 self-stretch mx-1"></span>
+            <button onclick="setT('size','13px')"          class="tb px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">صغير</button>
+            <button onclick="setT('size','18px')"          class="tb px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">متوسط</button>
+            <button onclick="setT('size','26px')"          class="tb px-3 py-1 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition">كبير</button>
+          </div>
+          <div id="tp" class="bg-slate-950 rounded-xl p-5 text-slate-200 leading-relaxed transition-all duration-300" style="text-align:right;font-size:16px;text-decoration:none;direction:rtl;">
+            مرحباً! هذا مثال على تطبيق خصائص النص في CSS. جرّب الأزرار أعلاه لترى التغيير فوراً على هذه الجملة.
+          </div>
+          <div class="mt-2 font-mono text-xs text-indigo-400" id="tp-code">text-align:right | font-size:16px | text-decoration:none</div>
+        </div>
+
+        <div class="space-y-4 mb-6">
+          <!-- text-align -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-800 flex items-center gap-2"><code class="text-emerald-400 text-sm font-mono">text-align</code><span class="text-slate-500 text-xs">— محاذاة النص أفقياً</span></div>
+            <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-x-reverse divide-slate-800">
+              <div class="p-4"><div class="text-xs text-indigo-300 font-mono mb-2">right</div><div class="bg-slate-950 rounded p-2 text-xs text-slate-300 text-right">نص →</div></div>
+              <div class="p-4"><div class="text-xs text-indigo-300 font-mono mb-2">center</div><div class="bg-slate-950 rounded p-2 text-xs text-slate-300 text-center">← نص →</div></div>
+              <div class="p-4"><div class="text-xs text-indigo-300 font-mono mb-2">left</div><div class="bg-slate-950 rounded p-2 text-xs text-slate-300 text-left">← نص</div></div>
+              <div class="p-4"><div class="text-xs text-indigo-300 font-mono mb-2">justify</div><div class="bg-slate-950 rounded p-2 text-xs text-slate-300 text-justify">نص طويل يمتد على كامل العرض</div></div>
+            </div>
+          </div>
+          <!-- text-decoration -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-800 flex items-center gap-2"><code class="text-emerald-400 text-sm font-mono">text-decoration</code><span class="text-slate-500 text-xs">— تزيين النص بخطوط</span></div>
+            <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-x-reverse divide-slate-800">
+              <div class="p-4 text-center"><div class="text-xs text-indigo-300 font-mono mb-2">none</div><div class="text-slate-300 text-sm">عادي</div></div>
+              <div class="p-4 text-center"><div class="text-xs text-indigo-300 font-mono mb-2">underline</div><div class="text-slate-300 text-sm underline">مسطّر</div></div>
+              <div class="p-4 text-center"><div class="text-xs text-indigo-300 font-mono mb-2">overline</div><div class="text-slate-300 text-sm" style="text-decoration:overline;">علوي</div></div>
+              <div class="p-4 text-center"><div class="text-xs text-indigo-300 font-mono mb-2">line-through</div><div class="text-slate-300 text-sm line-through">مشطوب</div></div>
+            </div>
+          </div>
+          <!-- text-transform -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-800 flex items-center gap-2"><code class="text-emerald-400 text-sm font-mono">text-transform</code><span class="text-slate-500 text-xs">— تحويل حالة الأحرف الإنجليزية</span></div>
+            <div class="grid grid-cols-3 divide-x divide-x-reverse divide-slate-800">
+              <div class="p-4 text-center"><div class="text-xs text-indigo-300 font-mono mb-2">uppercase</div><div class="text-slate-300 text-sm uppercase font-mono">hello</div></div>
+              <div class="p-4 text-center"><div class="text-xs text-indigo-300 font-mono mb-2">lowercase</div><div class="text-slate-300 text-sm lowercase font-mono">HELLO</div></div>
+              <div class="p-4 text-center"><div class="text-xs text-indigo-300 font-mono mb-2">capitalize</div><div class="text-slate-300 text-sm capitalize font-mono">hello world</div></div>
+            </div>
+          </div>
+          <!-- letter-spacing + line-height -->
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+              <div class="px-5 py-3 border-b border-slate-800"><code class="text-emerald-400 text-sm font-mono">letter-spacing</code><div class="text-slate-500 text-xs">المسافة بين الحروف</div></div>
+              <div class="p-4 space-y-3">
+                <div><div class="text-xs text-indigo-300 font-mono mb-1">normal</div><div class="text-slate-300 text-sm font-mono" style="letter-spacing:normal;">Hello CSS</div></div>
+                <div><div class="text-xs text-indigo-300 font-mono mb-1">3px</div><div class="text-slate-300 text-sm font-mono" style="letter-spacing:3px;">Hello CSS</div></div>
+                <div><div class="text-xs text-indigo-300 font-mono mb-1">8px</div><div class="text-slate-300 text-sm font-mono" style="letter-spacing:8px;">Hello</div></div>
+              </div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+              <div class="px-5 py-3 border-b border-slate-800"><code class="text-emerald-400 text-sm font-mono">line-height</code><div class="text-slate-500 text-xs">المسافة بين الأسطر</div></div>
+              <div class="p-4 space-y-3">
+                <div><div class="text-xs text-indigo-300 font-mono mb-1">1.0 — ضيق</div><div class="text-slate-300 text-xs" style="line-height:1;">سطر أول<br/>سطر ثاني<br/>سطر ثالث</div></div>
+                <div><div class="text-xs text-indigo-300 font-mono mb-1">1.8 — مريح</div><div class="text-slate-300 text-xs" style="line-height:1.8;">سطر أول<br/>سطر ثاني<br/>سطر ثالث</div></div>
+              </div>
+            </div>
+          </div>
+          <!-- text-shadow -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <code class="text-emerald-400 text-sm font-mono block mb-3">text-shadow — ظل النص</code>
+            <pre class="bg-slate-950 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code class="code-line"><span class="prop">h1</span> { <span class="kw">text-shadow</span>: <span class="val">2px 4px 6px rgba(0,0,0,0.5)</span>; }</code></pre>
+            <div class="flex flex-wrap gap-6 items-center">
+              <span class="text-white text-lg font-bold" style="text-shadow:none;">بدون ظل</span>
+              <span class="text-white text-lg font-bold" style="text-shadow:2px 2px 4px rgba(99,102,241,0.8);">ظل بنفسجي</span>
+              <span class="text-white text-lg font-bold" style="text-shadow:0 0 12px rgba(99,102,241,1);">توهج</span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-indigo-950/50 border border-indigo-800/40 rounded-xl p-4 flex gap-3">
+          <span class="text-indigo-400 shrink-0">💡</span>
+          <p class="text-indigo-300 text-sm leading-relaxed">أكثر الخصائص استخداماً يومياً: <code class="bg-indigo-900 px-1 rounded text-xs">text-align</code> و <code class="bg-indigo-900 px-1 rounded text-xs">text-decoration</code> و <code class="bg-indigo-900 px-1 rounded text-xs">line-height</code>.</p>
+        </div>
+      </div>
+
+      <!-- L11: CSS Fonts -->
+      <div class="lesson" id="l11">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white shrink-0">11</span>
+          <h2 class="text-2xl font-bold text-white">CSS Fonts — الخطوط</h2>
+        </div>
+        <p class="text-slate-400 mb-6 leading-relaxed">خصائص الخطوط تتحكم في نوع الخط وحجمه وثخانته وأسلوبه — وهي من أكثر الخصائص تأثيراً على مظهر الصفحة.</p>
+
+        <!-- font-family -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden mb-4">
+          <div class="px-5 py-3 border-b border-slate-800 flex items-center gap-2"><code class="text-emerald-400 text-sm font-mono">font-family</code><span class="text-slate-500 text-xs">— نوع الخط</span></div>
+          <div class="p-5 space-y-3">
+            <div class="flex items-center gap-4 bg-slate-950 rounded-lg p-3">
+              <span class="text-xs text-indigo-300 font-mono w-28 shrink-0">Arial</span>
+              <span style="font-family:Arial;" class="text-slate-200 text-base">مرحبا — Hello World 123</span>
+            </div>
+            <div class="flex items-center gap-4 bg-slate-950 rounded-lg p-3">
+              <span class="text-xs text-indigo-300 font-mono w-28 shrink-0">Georgia</span>
+              <span style="font-family:Georgia;" class="text-slate-200 text-base">مرحبا — Hello World 123</span>
+            </div>
+            <div class="flex items-center gap-4 bg-slate-950 rounded-lg p-3">
+              <span class="text-xs text-indigo-300 font-mono w-28 shrink-0">Courier New</span>
+              <span style="font-family:'Courier New';" class="text-slate-200 text-base">Hello World 123</span>
+            </div>
+            <div class="flex items-center gap-4 bg-slate-950 rounded-lg p-3">
+              <span class="text-xs text-indigo-300 font-mono w-28 shrink-0">Tajawal (Google)</span>
+              <span style="font-family:'Tajawal';" class="text-slate-200 text-base">مرحبا بالعالم — Hello</span>
+            </div>
+          </div>
+          <pre class="bg-slate-950 border-t border-slate-800 p-4 text-sm overflow-x-auto"><code class="code-line"><span class="prop">p</span> {
+  <span class="cmt">/* نضع خطاً احتياطياً بعد الفاصلة */</span>
+  <span class="kw">font-family</span>: <span class="val">Arial, Helvetica, sans-serif</span>;
+}</code></pre>
+        </div>
+
+        <!-- Google Fonts -->
+        <div class="bg-gradient-to-l from-violet-950 to-slate-900 border border-violet-800/40 rounded-xl p-5 mb-4">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-violet-300 text-sm font-bold">Google Fonts — خطوط مجانية</span>
+            <span class="text-xs bg-violet-900 text-violet-300 px-2 py-0.5 rounded-full">مميّز</span>
+          </div>
+          <p class="text-slate-400 text-sm mb-3 leading-relaxed">يمكنك استخدام آلاف الخطوط المجانية من Google Fonts بإضافة سطر واحد في &lt;head&gt;:</p>
+          <pre class="bg-slate-950 rounded-lg p-4 text-sm overflow-x-auto"><code class="code-line"><span class="cmt">&lt;!-- 1. أضف هذا في head --&gt;</span>
+<span class="tag">&lt;link</span> href=<span class="str">"https://fonts.googleapis.com/css2?family=Tajawal"</span>
+      rel=<span class="str">"stylesheet"</span><span class="tag">&gt;</span>
+
+<span class="cmt">/* 2. استخدمه في CSS */</span>
+<span class="prop">body</span> { <span class="kw">font-family</span>: <span class="val">'Tajawal', sans-serif</span>; }</code></pre>
+        </div>
+
+        <!-- font-size -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 mb-4">
+          <code class="text-emerald-400 text-sm font-mono block mb-3">font-size — حجم الخط</code>
+          <div class="flex flex-wrap gap-4 items-baseline mb-4">
+            <span style="font-size:12px;" class="text-slate-300">12px</span>
+            <span style="font-size:16px;" class="text-slate-300">16px</span>
+            <span style="font-size:20px;" class="text-slate-300">20px</span>
+            <span style="font-size:28px;" class="text-slate-300">28px</span>
+            <span style="font-size:36px;" class="text-slate-300">36px</span>
+          </div>
+          <pre class="bg-slate-950 rounded-lg p-4 text-sm overflow-x-auto"><code class="code-line"><span class="prop">h1</span> { <span class="kw">font-size</span>: <span class="val">36px</span>; }   <span class="cmt">/* بالبكسل */</span>
+<span class="prop">p</span>  { <span class="kw">font-size</span>: <span class="val">1rem</span>; }  <span class="cmt">/* rem = نسبة للجذر (16px عادةً) */</span>
+<span class="prop">small</span> { <span class="kw">font-size</span>: <span class="val">0.8rem</span>; }</code></pre>
+        </div>
+
+        <!-- font-weight + font-style -->
+        <div class="grid md:grid-cols-2 gap-4 mb-4">
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-800"><code class="text-emerald-400 text-sm font-mono">font-weight</code><div class="text-slate-500 text-xs">سماكة الخط</div></div>
+            <div class="p-4 space-y-2">
+              <div class="flex items-center justify-between"><span class="text-xs text-indigo-300 font-mono">300</span><span class="text-slate-300" style="font-weight:300;">خط رفيع Light</span></div>
+              <div class="flex items-center justify-between"><span class="text-xs text-indigo-300 font-mono">400 (normal)</span><span class="text-slate-300" style="font-weight:400;">خط عادي Normal</span></div>
+              <div class="flex items-center justify-between"><span class="text-xs text-indigo-300 font-mono">600</span><span class="text-slate-300" style="font-weight:600;">خط ثقيل Semi Bold</span></div>
+              <div class="flex items-center justify-between"><span class="text-xs text-indigo-300 font-mono">700 (bold)</span><span class="text-slate-300" style="font-weight:700;">خط بولد Bold</span></div>
+              <div class="flex items-center justify-between"><span class="text-xs text-indigo-300 font-mono">900</span><span class="text-slate-300" style="font-weight:900;">خط أثقل Black</span></div>
+            </div>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-800"><code class="text-emerald-400 text-sm font-mono">font-style</code><div class="text-slate-500 text-xs">أسلوب الخط</div></div>
+            <div class="p-4 space-y-4">
+              <div><div class="text-xs text-indigo-300 font-mono mb-1">normal</div><div class="text-slate-300 text-base" style="font-style:normal;">Hello — مرحبا</div></div>
+              <div><div class="text-xs text-indigo-300 font-mono mb-1">italic</div><div class="text-slate-300 text-base" style="font-style:italic;">Hello — مرحبا</div></div>
+              <div><div class="text-xs text-indigo-300 font-mono mb-1">oblique</div><div class="text-slate-300 text-base" style="font-style:oblique;">Hello — مرحبا</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- font shorthand -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 mb-5">
+          <div class="flex items-center gap-2 mb-3">
+            <code class="text-emerald-400 text-sm font-mono">font</code>
+            <span class="text-xs bg-amber-900 text-amber-300 px-2 py-0.5 rounded-full">اختصار ذهبي</span>
+          </div>
+          <p class="text-slate-400 text-sm mb-3">يمكنك دمج كل خصائص الخط في سطر واحد:</p>
+          <pre class="bg-slate-950 rounded-lg p-4 text-sm overflow-x-auto"><code class="code-line"><span class="prop">p</span> {
+  <span class="cmt">/* font-style  font-weight  font-size  font-family */</span>
+  <span class="kw">font</span>: <span class="val">italic bold 18px 'Tajawal', sans-serif</span>;
+}</code></pre>
+        </div>
+
+        <div class="bg-emerald-950/50 border border-emerald-800/40 rounded-xl p-4 flex gap-3">
+          <span class="text-emerald-400 shrink-0">✓</span>
+          <p class="text-emerald-300 text-sm leading-relaxed">درس واحد متبقي — تعلّم CSS Display وستكون جاهزاً تماماً!</p>
+        </div>
+      </div>
+
+      <!-- L12: CSS Display -->
+      <div class="lesson" id="l12">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white shrink-0">12</span>
+          <h2 class="text-2xl font-bold text-white">CSS Display — طريقة العرض</h2>
+        </div>
+        <p class="text-slate-400 mb-6 leading-relaxed">خاصية <code class="bg-slate-800 text-indigo-300 text-sm px-1.5 py-0.5 rounded font-mono">display</code> هي من أهم خصائص CSS — تحدد كيف يظهر العنصر في الصفحة وكيف يتعامل مع العناصر المجاورة.</p>
+
+        <!-- interactive demo -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-6">
+          <div class="text-xs text-slate-500 uppercase tracking-wider mb-3">معاينة تفاعلية — اختر نوع العرض</div>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <button onclick="setD('block')"        class="db-btn px-3 py-1.5 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition" data-v="block">block</button>
+            <button onclick="setD('inline')"       class="db-btn px-3 py-1.5 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition" data-v="inline">inline</button>
+            <button onclick="setD('inline-block')" class="db-btn px-3 py-1.5 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition" data-v="inline-block">inline-block</button>
+            <button onclick="setD('none')"         class="db-btn px-3 py-1.5 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition" data-v="none">none</button>
+            <button onclick="setD('flex')"         class="db-btn px-3 py-1.5 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition" data-v="flex">flex</button>
+            <button onclick="setD('grid')"         class="db-btn px-3 py-1.5 text-xs rounded-lg border border-slate-700 text-slate-400 hover:border-indigo-500 hover:text-white transition" data-v="grid">grid</button>
+          </div>
+          <div id="dp" class="bg-slate-950 rounded-xl p-4 min-h-16 transition-all duration-300">
+            <div id="d1" class="bg-indigo-600/30 border border-indigo-500/40 text-indigo-200 text-xs font-mono px-3 py-2 rounded">عنصر 1</div>
+            <div id="d2" class="bg-violet-600/30 border border-violet-500/40 text-violet-200 text-xs font-mono px-3 py-2 rounded">عنصر 2</div>
+            <div id="d3" class="bg-pink-600/30 border border-pink-500/40 text-pink-200 text-xs font-mono px-3 py-2 rounded">عنصر 3</div>
+          </div>
+          <div class="mt-2 font-mono text-xs text-indigo-400" id="d-code">display: block;</div>
+        </div>
+
+        <!-- display values explained -->
+        <div class="space-y-4 mb-6">
+
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-800 flex items-center gap-3">
+              <code class="text-emerald-400 text-sm font-mono">display: block</code>
+              <span class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">مثل: div, p, h1</span>
+            </div>
+            <div class="p-5">
+              <p class="text-slate-400 text-sm mb-3 leading-relaxed">يأخذ العنصر كامل عرض الصف — كل عنصر في سطر جديد.</p>
+              <div class="space-y-1">
+                <div class="bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-xs font-mono px-3 py-2 rounded">div — يمتد بالكامل</div>
+                <div class="bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-xs font-mono px-3 py-2 rounded">div — سطر جديد</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-800 flex items-center gap-3">
+              <code class="text-emerald-400 text-sm font-mono">display: inline</code>
+              <span class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">مثل: span, a, strong</span>
+            </div>
+            <div class="p-5">
+              <p class="text-slate-400 text-sm mb-3 leading-relaxed">يأخذ العنصر فقط المساحة التي يحتاجها — العناصر تتجاور في نفس السطر.</p>
+              <div class="flex flex-wrap gap-1">
+                <span class="bg-violet-600/20 border border-violet-500/30 text-violet-300 text-xs font-mono px-3 py-1.5 rounded">كلمة</span>
+                <span class="bg-violet-600/20 border border-violet-500/30 text-violet-300 text-xs font-mono px-3 py-1.5 rounded">كلمة أخرى</span>
+                <span class="bg-violet-600/20 border border-violet-500/30 text-violet-300 text-xs font-mono px-3 py-1.5 rounded">وكلمة ثالثة</span>
+              </div>
+              <div class="mt-2 bg-amber-950/40 border border-amber-800/30 rounded-lg p-2 text-amber-300 text-xs">⚠ لا يمكن تحديد width أو height للعناصر inline</div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-800 flex items-center gap-3">
+              <code class="text-emerald-400 text-sm font-mono">display: inline-block</code>
+              <span class="text-xs bg-emerald-900 text-emerald-300 px-2 py-0.5 rounded-full">الأفضل للأزرار</span>
+            </div>
+            <div class="p-5">
+              <p class="text-slate-400 text-sm mb-3 leading-relaxed">يجمع ميزتي block و inline — يتجاور مع غيره ويقبل width وheight.</p>
+              <div class="flex flex-wrap gap-2">
+                <span class="bg-emerald-600/20 border border-emerald-500/30 text-emerald-300 text-xs font-mono px-4 py-2 rounded" style="width:90px;height:36px;display:inline-flex;align-items:center;justify-content:center;">زر 1</span>
+                <span class="bg-emerald-600/20 border border-emerald-500/30 text-emerald-300 text-xs font-mono px-4 py-2 rounded" style="width:90px;height:36px;display:inline-flex;align-items:center;justify-content:center;">زر 2</span>
+                <span class="bg-emerald-600/20 border border-emerald-500/30 text-emerald-300 text-xs font-mono px-4 py-2 rounded" style="width:90px;height:36px;display:inline-flex;align-items:center;justify-content:center;">زر 3</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-800 flex items-center gap-3">
+              <code class="text-emerald-400 text-sm font-mono">display: none</code>
+              <span class="text-xs bg-red-900 text-red-300 px-2 py-0.5 rounded-full">يُخفي العنصر</span>
+            </div>
+            <div class="p-5">
+              <p class="text-slate-400 text-sm mb-3 leading-relaxed">يُخفي العنصر كلياً — كأنه غير موجود في الصفحة، ولا يحجز مساحة.</p>
+              <div class="flex gap-3 items-center">
+                <div class="bg-slate-700 text-slate-300 text-xs font-mono px-3 py-2 rounded">عنصر مرئي</div>
+                <div class="text-slate-600 text-xs italic">[عنصر مخفي — display:none]</div>
+                <div class="bg-slate-700 text-slate-300 text-xs font-mono px-3 py-2 rounded">عنصر مرئي</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-800 flex items-center gap-3">
+              <code class="text-emerald-400 text-sm font-mono">display: flex</code>
+              <span class="text-xs bg-indigo-900 text-indigo-300 px-2 py-0.5 rounded-full">قوي جداً</span>
+            </div>
+            <div class="p-5">
+              <p class="text-slate-400 text-sm mb-3 leading-relaxed">يجعل العناصر الداخلية تتوزع بشكل مرن — مفيد للتخطيط الأفقي والعمودي.</p>
+              <pre class="bg-slate-950 rounded-lg p-3 text-sm overflow-x-auto mb-3"><code class="code-line"><span class="prop">.container</span> {
+  <span class="kw">display</span>: <span class="val">flex</span>;
+  <span class="kw">justify-content</span>: <span class="val">space-between</span>; <span class="cmt">/* توزيع أفقي */</span>
+  <span class="kw">align-items</span>: <span class="val">center</span>;          <span class="cmt">/* محاذاة عمودية */</span>
+}</code></pre>
+              <div class="flex justify-between items-center bg-slate-950 rounded-lg p-3 gap-2">
+                <div class="bg-indigo-600/30 border border-indigo-500/30 text-indigo-200 text-xs font-mono px-3 py-2 rounded">عنصر 1</div>
+                <div class="bg-indigo-600/30 border border-indigo-500/30 text-indigo-200 text-xs font-mono px-3 py-2 rounded">عنصر 2</div>
+                <div class="bg-indigo-600/30 border border-indigo-500/30 text-indigo-200 text-xs font-mono px-3 py-2 rounded">عنصر 3</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-800 flex items-center gap-3">
+              <code class="text-emerald-400 text-sm font-mono">display: grid</code>
+              <span class="text-xs bg-indigo-900 text-indigo-300 px-2 py-0.5 rounded-full">شبكة</span>
+            </div>
+            <div class="p-5">
+              <p class="text-slate-400 text-sm mb-3 leading-relaxed">يرتّب العناصر في شبكة من الأعمدة والصفوف — مثالي للتصاميم المعقدة.</p>
+              <pre class="bg-slate-950 rounded-lg p-3 text-sm overflow-x-auto mb-3"><code class="code-line"><span class="prop">.container</span> {
+  <span class="kw">display</span>: <span class="val">grid</span>;
+  <span class="kw">grid-template-columns</span>: <span class="val">1fr 1fr 1fr</span>; <span class="cmt">/* 3 أعمدة */</span>
+  <span class="kw">gap</span>: <span class="val">10px</span>;
+}</code></pre>
+              <div class="grid grid-cols-3 gap-2 bg-slate-950 rounded-lg p-3">
+                <div class="bg-violet-600/30 border border-violet-500/30 text-violet-200 text-xs font-mono p-2 rounded text-center">1</div>
+                <div class="bg-violet-600/30 border border-violet-500/30 text-violet-200 text-xs font-mono p-2 rounded text-center">2</div>
+                <div class="bg-violet-600/30 border border-violet-500/30 text-violet-200 text-xs font-mono p-2 rounded text-center">3</div>
+                <div class="bg-violet-600/30 border border-violet-500/30 text-violet-200 text-xs font-mono p-2 rounded text-center">4</div>
+                <div class="bg-violet-600/30 border border-violet-500/30 text-violet-200 text-xs font-mono p-2 rounded text-center">5</div>
+                <div class="bg-violet-600/30 border border-violet-500/30 text-violet-200 text-xs font-mono p-2 rounded text-center">6</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- quick reference -->
+        <div class="mb-5">
+          <div class="text-xs text-slate-500 uppercase tracking-wider mb-2">جدول مقارنة سريع</div>
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="grid grid-cols-4 text-xs font-mono border-b border-slate-800">
+              <div class="px-4 py-2 text-slate-500">القيمة</div>
+              <div class="px-4 py-2 text-slate-500">سطر جديد؟</div>
+              <div class="px-4 py-2 text-slate-500">يقبل width؟</div>
+              <div class="px-4 py-2 text-slate-500">استخدامه</div>
+            </div>
+            <div class="grid grid-cols-4 text-xs border-b border-slate-800/50">
+              <div class="px-4 py-3 text-emerald-400 font-mono">block</div>
+              <div class="px-4 py-3 text-slate-300">نعم</div>
+              <div class="px-4 py-3 text-slate-300">نعم</div>
+              <div class="px-4 py-3 text-slate-400">div, p, h1</div>
+            </div>
+            <div class="grid grid-cols-4 text-xs border-b border-slate-800/50">
+              <div class="px-4 py-3 text-emerald-400 font-mono">inline</div>
+              <div class="px-4 py-3 text-slate-300">لا</div>
+              <div class="px-4 py-3 text-slate-300">لا</div>
+              <div class="px-4 py-3 text-slate-400">span, a</div>
+            </div>
+            <div class="grid grid-cols-4 text-xs border-b border-slate-800/50">
+              <div class="px-4 py-3 text-emerald-400 font-mono">inline-block</div>
+              <div class="px-4 py-3 text-slate-300">لا</div>
+              <div class="px-4 py-3 text-slate-300">نعم</div>
+              <div class="px-4 py-3 text-slate-400">أزرار</div>
+            </div>
+            <div class="grid grid-cols-4 text-xs border-b border-slate-800/50">
+              <div class="px-4 py-3 text-emerald-400 font-mono">none</div>
+              <div class="px-4 py-3 text-slate-300">—</div>
+              <div class="px-4 py-3 text-slate-300">—</div>
+              <div class="px-4 py-3 text-slate-400">إخفاء</div>
+            </div>
+            <div class="grid grid-cols-4 text-xs border-b border-slate-800/50">
+              <div class="px-4 py-3 text-emerald-400 font-mono">flex</div>
+              <div class="px-4 py-3 text-slate-300">نعم</div>
+              <div class="px-4 py-3 text-slate-300">نعم</div>
+              <div class="px-4 py-3 text-slate-400">تخطيط مرن</div>
+            </div>
+            <div class="grid grid-cols-4 text-xs">
+              <div class="px-4 py-3 text-emerald-400 font-mono">grid</div>
+              <div class="px-4 py-3 text-slate-300">نعم</div>
+              <div class="px-4 py-3 text-slate-300">نعم</div>
+              <div class="px-4 py-3 text-slate-400">شبكة</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-emerald-950/50 border border-emerald-800/40 rounded-xl p-5 flex gap-3 items-start">
+          <span class="text-emerald-400 text-2xl shrink-0">🎉</span>
+          <div>
+            <div class="font-bold text-emerald-300 mb-1">أتممت الدورة كاملة!</div>
+            <p class="text-emerald-300/80 text-sm leading-relaxed">أحسنت! تعلمت 12 درساً تضم أهم خصائص CSS. الآن طبّق ما تعلمته وابنِ مشروعك الأول!</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /lessons-container -->
+
+    <!-- Bottom nav -->
+    <div class="flex justify-between items-center mt-8 pt-6 border-t border-slate-800">
+      <button id="prevBtn" onclick="navigate(-1)" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-5 py-2.5 rounded-xl text-sm transition disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        السابق
+      </button>
+      <span id="lesson-counter" class="text-slate-500 text-sm">1 / 12</span>
+      <button id="nextBtn" onclick="navigate(1)" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm transition shadow-lg shadow-indigo-900/50 disabled:opacity-30 disabled:cursor-not-allowed">
+        التالي
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+  </main>
+
+  <footer class="border-t border-slate-800 mt-16 py-8 text-center">
+    <p class="text-slate-600 text-sm">تعلم CSS من الصفر — 12 درساً مبسطاً للمبتدئين</p>
+  </footer>
+
+  <script>
+    const lessons = [
+      "مقدمة عن CSS",
+      "طرق التضمين",
+      "تركيب الجملة",
+      "المحددات",
+      "التعليقات",
+      "الألوان",
+      "الخلفيات",
+      "Height & Width",
+      "محاذاة النصوص",
+      "CSS Text",
+      "CSS Fonts",
+      "CSS Display"
+    ];
+
+    let current = 0;
+
+    // Build nav pills
+    const navEl = document.getElementById('nav-pills');
+    lessons.forEach((name, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'nav-pill text-sm px-3 py-1.5 rounded-full border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-all';
+      btn.textContent = (i + 1) + '. ' + name;
+      btn.onclick = () => goTo(i);
+      navEl.appendChild(btn);
+    });
+
+    function updateUI() {
+      document.querySelectorAll('.lesson').forEach((l, i) => {
+        l.classList.toggle('active', i === current);
+      });
+      document.querySelectorAll('.nav-pill').forEach((b, i) => {
+        b.classList.toggle('active', i === current);
+      });
+      const pct = ((current + 1) / lessons.length * 100).toFixed(1);
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('progress-text').textContent = (current + 1) + ' / ' + lessons.length;
+      document.getElementById('lesson-counter').textContent = (current + 1) + ' / ' + lessons.length;
+      document.getElementById('prevBtn').disabled = current === 0;
+      document.getElementById('nextBtn').disabled = current === lessons.length - 1;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goTo(n) { current = n; updateUI(); }
+    function navigate(dir) { if (current + dir >= 0 && current + dir < lessons.length) goTo(current + dir); }
+
+    // L10 Text demo
+    const tState = { align:'right', deco:'none', size:'16px' };
+    function setT(prop, val) {
+      tState[prop] = val;
+      const el = document.getElementById('tp');
+      if (!el) return;
+      el.style.textAlign     = tState.align;
+      el.style.textDecoration= tState.deco;
+      el.style.fontSize      = tState.size;
+      document.getElementById('tp-code').textContent =
+        'text-align:' + tState.align + ' | font-size:' + tState.size + ' | text-decoration:' + tState.deco;
+    }
+
+    // L12 Display demo
+    function setD(val) {
+      const dp = document.getElementById('dp');
+      const boxes = [document.getElementById('d1'), document.getElementById('d2'), document.getElementById('d3')];
+      if (!dp || !boxes[0]) return;
+      // reset
+      dp.style.display = 'block';
+      dp.style.gap = '';
+      dp.style.gridTemplateColumns = '';
+      boxes.forEach(b => { b.style.display = ''; b.style.margin = ''; });
+
+      if (val === 'block') {
+        boxes.forEach(b => { b.style.display = 'block'; b.style.margin = '4px 0'; });
+      } else if (val === 'inline') {
+        boxes.forEach(b => { b.style.display = 'inline'; b.style.margin = '2px'; });
+      } else if (val === 'inline-block') {
+        boxes.forEach(b => { b.style.display = 'inline-block'; b.style.margin = '4px'; b.style.width = '80px'; b.style.textAlign = 'center'; });
+      } else if (val === 'none') {
+        boxes[1].style.display = 'none';
+        boxes[0].style.margin = boxes[2].style.margin = '4px 0';
+        boxes[0].style.display = boxes[2].style.display = 'block';
+      } else if (val === 'flex') {
+        dp.style.display = 'flex';
+        dp.style.gap = '8px';
+        boxes.forEach(b => { b.style.flex = '1'; b.style.textAlign = 'center'; });
+      } else if (val === 'grid') {
+        dp.style.display = 'grid';
+        dp.style.gridTemplateColumns = '1fr 1fr 1fr';
+        dp.style.gap = '8px';
+        boxes.forEach(b => { b.style.textAlign = 'center'; });
+      }
+      document.getElementById('d-code').textContent = 'display: ' + val + ';';
+    }
+
+    updateUI();
+  </script>
+</body>
+</html>
