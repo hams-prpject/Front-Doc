@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عائلة الـ Position — دليل تفاعلي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'heading': ['Space Grotesk', 'Noto Kufi Arabic', 'sans-serif'],
+                        'body': ['Inter', 'Noto Kufi Arabic', 'sans-serif'],
+                        'arabic': ['Noto Kufi Arabic', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            font-family: 'Noto Kufi Arabic', 'Inter', sans-serif;
+        }
+
+        /* Grain Texture */
+        .grain::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: overlay;
+        }
+
+        /* Grid Background */
+        .grid-bg {
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+        }
+
+        .delay-1 {
+            animation-delay: 100ms;
+        }
+
+        .delay-2 {
+            animation-delay: 200ms;
+        }
+
+        .delay-3 {
+            animation-delay: 300ms;
+        }
+
+        .delay-4 {
+            animation-delay: 400ms;
+        }
+
+        .delay-5 {
+            animation-delay: 500ms;
+        }
+
+        .delay-6 {
+            animation-delay: 600ms;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(163, 230, 53, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(163, 230, 53, 0.6);
+            }
+        }
+
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(163, 230, 53, 0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes bounce-soft {
+
+            0%,
+            100% {
+                transform: translateY(-25%);
+            }
+
+            50% {
+                transform: translateY(0);
+            }
+        }
+
+        .bounce-arrow {
+            animation: bounce-soft 1.5s infinite;
+        }
+
+        /* Character Illustrations */
+        .character-static {
+            background: linear-gradient(135deg, #64748b, #475569);
+        }
+
+        .character-relative {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .character-absolute {
+            background: linear-gradient(135deg, #f43f5e, #e11d48);
+        }
+
+        .character-fixed {
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+        }
+
+        .character-sticky {
+            background: linear-gradient(135deg, #a3e635, #65a30d);
+        }
+
+        /* Demo Playground */
+        .playground-area {
+            position: relative;
+            min-height: 300px;
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .queue-person {
+            width: 50px;
+            height: 70px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+        }
+
+        /* Product Card Demo */
+        .demo-card {
+            width: 260px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .demo-card:hover {
+            transform: scale(1.02);
+        }
+
+        .demo-badge {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            background: #ff4757;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            z-index: 2;
+        }
+
+        .demo-heart {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            cursor: pointer;
+            font-size: 22px;
+            z-index: 2;
+            transition: transform 0.3s;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .demo-heart:hover {
+            transform: scale(1.3);
+        }
+
+        .demo-heart.active {
+            animation: heartBeat 0.4s ease;
+        }
+
+        @keyframes heartBeat {
+            0% {
+                transform: scale(1);
+            }
+
+            30% {
+                transform: scale(1.4);
+            }
+
+            60% {
+                transform: scale(0.9);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .demo-btn {
+            background: linear-gradient(135deg, #1e90ff, #0066cc);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+            font-family: 'Noto Kufi Arabic', sans-serif;
+            font-weight: 500;
+            width: 100%;
+        }
+
+        .demo-btn:hover {
+            top: -3px;
+            box-shadow: 0 8px 25px rgba(30, 144, 255, 0.4);
+        }
+
+        /* WhatsApp Fixed Button */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 60px;
+            height: 60px;
+            background: #25d366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+            transition: all 0.3s;
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(37, 211, 102, 0.6);
+        }
+
+        /* Sticky Demo */
+        .sticky-header-demo {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(20px);
+            background: rgba(5, 5, 5, 0.85);
+            border-bottom: 1px solid rgba(163, 230, 53, 0.2);
+        }
+
+        /* Tabs */
+        .tab-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #a3a3a3;
+            font-family: 'Noto Kufi Arabic', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .tab-btn:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            background: rgba(163, 230, 53, 0.1);
+            color: #a3e635;
+            border-color: rgba(163, 230, 53, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            direction: ltr;
+            text-align: left;
+            overflow-x: auto;
+            color: #a3a3a3;
+        }
+
+        .code-block .keyword {
+            color: #c084fc;
+        }
+
+        .code-block .property {
+            color: #67e8f9;
+        }
+
+        .code-block .value {
+            color: #a3e635;
+        }
+
+        .code-block .comment {
+            color: #525252;
+        }
+
+        .code-block .selector {
+            color: #fbbf24;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(163, 230, 53, 0.15);
+            border: 1px solid rgba(163, 230, 53, 0.3);
+            color: #a3e635;
+            padding: 12px 24px;
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            font-size: 14px;
+            z-index: 2000;
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #262626;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #404040;
+        }
+
+        /* Position visual demo boxes */
+        .pos-box {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        /* Glow orbs */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+        }
+
+        /* Comparison slider */
+        .comparison-container {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        /* Warning card */
+        .warning-card {
+            background: rgba(244, 63, 94, 0.08);
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        /* Success card */
+        .success-card {
+            background: rgba(163, 230, 53, 0.05);
+            border: 1px solid rgba(163, 230, 53, 0.15);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        /* Interactive controls */
+        .control-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 4px;
+            background: #262626;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .control-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #a3e635;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(163, 230, 53, 0.4);
+        }
+    </style>
+</head>
+
+<body class="bg-[#050505] text-white grain grid-bg min-h-screen">
+
+    <!-- WhatsApp Fixed Button (مثال عملي لـ Fixed) -->
+    <div class="whatsapp-float" id="whatsappBtn" title="هذا عنصر Fixed — يبقى ثابتاً أثناء التمرير">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+            <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+        </svg>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Sticky Nav Demo (مثال عملي لـ Sticky) -->
+    <nav class="sticky-header-demo" id="stickyNav">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-lime-400 rounded-lg flex items-center justify-center">
+                    <span class="text-black font-bold text-sm">P</span>
+                </div>
+                <span class="font-heading font-semibold text-sm">عائلة الـ Position</span>
+            </div>
+            <div class="hidden md:flex items-center gap-6 text-sm text-neutral-400">
+                <a href="#family" class="hover:text-lime-400 transition-colors">الأعضاء</a>
+                <a href="#playground" class="hover:text-lime-400 transition-colors">ملعب تفاعلي</a>
+                <a href="#product" class="hover:text-lime-400 transition-colors">بطاقة المنتج</a>
+                <a href="#tips" class="hover:text-lime-400 transition-colors">نصائح</a>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-neutral-500">
+                <span class="w-2 h-2 bg-lime-400 rounded-full animate-pulse"></span>
+                sticky يعمل الآن
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== HERO ===== -->
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        <!-- Background Orbs -->
+        <div class="glow-orb w-[600px] h-[600px] bg-lime-500/5 top-[-200px] right-[-200px]"></div>
+        <div class="glow-orb w-[400px] h-[400px] bg-blue-500/5 bottom-[-100px] left-[-100px]"></div>
+
+        <div class="max-w-6xl mx-auto px-6 text-center relative z-10">
+            <!-- Badge -->
+            <div
+                class="animate-in inline-flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-800 bg-neutral-900/50 mb-8">
+                <span class="w-2 h-2 bg-lime-400 rounded-full animate-pulse"></span>
+                <span class="text-xs text-neutral-400 tracking-wide">درس تفاعلي — CSS Position</span>
+            </div>
+
+            <!-- Title -->
+            <h1
+                class="animate-in delay-1 font-heading text-5xl md:text-7xl lg:text-8xl font-semibold tracking-tighter leading-[0.85] mb-6">
+                <span
+                    class="bg-gradient-to-b from-white via-neutral-200 to-neutral-500 bg-clip-text text-transparent">عائلة
+                    الـ</span>
+                <br>
+                <span class="text-lime-400">Position</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="animate-in delay-2 text-neutral-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-4">
+                تخيّل أن عناصر HTML أشخاص يعيشون داخل صفحة الويب،
+                <br class="hidden md:block">
+                وخاصية <span class="text-lime-400 font-semibold">position</span> هي "قانون الحركة" الخاص بهم
+            </p>
+
+            <!-- Floating Characters Preview -->
+            <div class="animate-in delay-3 flex items-center justify-center gap-3 mt-12 mb-12">
+                <div class="character-static w-12 h-12 rounded-xl flex items-center justify-center text-lg float"
+                    style="animation-delay: 0s;" title="Static">🧍</div>
+                <div class="character-relative w-12 h-12 rounded-xl flex items-center justify-center text-lg float"
+                    style="animation-delay: 0.3s;" title="Relative">🤸</div>
+                <div class="character-absolute w-12 h-12 rounded-xl flex items-center justify-center text-lg float"
+                    style="animation-delay: 0.6s;" title="Absolute">🦅</div>
+                <div class="character-fixed w-12 h-12 rounded-xl flex items-center justify-center text-lg float"
+                    style="animation-delay: 0.9s;" title="Fixed">🧊</div>
+                <div class="character-sticky w-12 h-12 rounded-xl flex items-center justify-center text-lg float"
+                    style="animation-delay: 1.2s;" title="Sticky">🧠</div>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="animate-in delay-4 flex flex-col items-center gap-2 text-neutral-600">
+                <span class="text-xs">مرّر للأسفل لاستكشاف العائلة</span>
+                <div class="bounce-arrow">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12l7 7 7-7" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FAMILY MEMBERS ===== -->
+    <section id="family" class="py-24 md:py-32 relative">
+        <div class="max-w-6xl mx-auto px-6">
+            <!-- Section Header -->
+            <div class="text-center mb-16 animate-in">
+                <span class="text-xs text-lime-400 tracking-widest uppercase mb-4 block">الأعضاء الخمسة</span>
+                <h2 class="font-heading text-3xl md:text-5xl font-semibold tracking-tight mb-4">
+                    تعرّف على كل عضو في العائلة
+                </h2>
+                <p class="text-neutral-500 max-w-lg mx-auto">كل عضو له شخصية وسلوك مختلف، اضغط على أي بطاقة لرؤية
+                    التفاصيل</p>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <div class="flex flex-wrap justify-center gap-2 mb-12">
+                <button class="tab-btn active" data-tab="static" onclick="switchTab('static')">🧍 Static</button>
+                <button class="tab-btn" data-tab="relative" onclick="switchTab('relative')">🤸 Relative</button>
+                <button class="tab-btn" data-tab="absolute" onclick="switchTab('absolute')">🦅 Absolute</button>
+                <button class="tab-btn" data-tab="fixed" onclick="switchTab('fixed')">🧊 Fixed</button>
+                <button class="tab-btn" data-tab="sticky" onclick="switchTab('sticky')">🧠 Sticky</button>
+            </div>
+
+            <!-- Tab Contents -->
+            <div id="tab-static" class="tab-content active">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <!-- Explanation -->
+                    <div>
+                        <div class="flex items-center gap-4 mb-6">
+                            <div
+                                class="character-static w-16 h-16 rounded-2xl flex items-center justify-center text-3xl">
+                                🧍</div>
+                            <div>
+                                <h3 class="font-heading text-2xl font-semibold">الشخص الملتزم</h3>
+                                <span class="text-neutral-500 text-sm">Static — الوضع الافتراضي</span>
+                            </div>
+                        </div>
+                        <p class="text-neutral-300 leading-relaxed mb-4">
+                            هو الوضع الطبيعي لكل عنصر. يقف في الطابور خلف الشخص الذي سبقه. <strong class="text-white">لا
+                                يمكنك تحريكه</strong> يميناً أو يساراً باستخدام top/right/bottom/left.
+                        </p>
+                        <div class="success-card">
+                            <div class="flex items-start gap-3">
+                                <span class="text-lime-400 mt-1">💡</span>
+                                <div>
+                                    <p class="text-lime-400 font-semibold text-sm mb-1">متى تستخدمه؟</p>
+                                    <p class="text-neutral-400 text-sm">لا تحتاج لكتابته أبداً — هو القيمة الافتراضية!
+                                        كل عنصر HTML يبدأ حياته كـ Static.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Visual Demo -->
+                    <div class="playground-area p-6 flex flex-col items-center justify-center gap-4">
+                        <span class="text-xs text-neutral-600 mb-2">الطابور الطبيعي — لا يمكن تحريك أحد</span>
+                        <div class="flex items-end gap-2">
+                            <div class="queue-person character-static opacity-60"><span>🧍</span></div>
+                            <div class="queue-person character-static opacity-70"><span>🧍</span></div>
+                            <div class="queue-person character-static opacity-80"><span>🧍</span></div>
+                            <div class="queue-person character-static ring-2 ring-white/30"><span>🧍</span></div>
+                            <div class="queue-person character-static opacity-60"><span>🧍</span></div>
+                        </div>
+                        <div class="w-full h-px bg-neutral-800 mt-2"></div>
+                        <p class="text-xs text-neutral-600 text-center">top: 10px ← <span class="text-red-400">لن
+                                يتحرك!</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-relative" class="tab-content">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <div class="flex items-center gap-4 mb-6">
+                            <div
+                                class="character-relative w-16 h-16 rounded-2xl flex items-center justify-center text-3xl">
+                                🤸</div>
+                            <div>
+                                <h3 class="font-heading text-2xl font-semibold">الشخص المرن</h3>
+                                <span class="text-neutral-500 text-sm">Relative — يتحرك لكن مكانه محجوز</span>
+                            </div>
+                        </div>
+                        <p class="text-neutral-300 leading-relaxed mb-4">
+                            يظل واقفاً في مكانه في الطابور، لكنه يستطيع أن <strong class="text-blue-400">يميل بجسده
+                                قليلاً</strong>. المميز هنا أن مكانه في الطابور يظل محجوزاً ولا يجرؤ أحد على الوقوف فيه.
+                        </p>
+                        <!-- Interactive Slider -->
+                        <div class="bg-neutral-900/50 border border-neutral-800 rounded-xl p-4">
+                            <label class="text-xs text-neutral-400 mb-2 block">جرّب تحريكه: <span id="relValue"
+                                    class="text-blue-400">0px</span></label>
+                            <input type="range" min="0" max="80" value="0" class="control-slider" id="relSlider"
+                                oninput="updateRelativeDemo()">
+                        </div>
+                    </div>
+                    <div class="playground-area p-6 flex flex-col items-center justify-center gap-4">
+                        <span class="text-xs text-neutral-600 mb-2">المكان محجوز حتى بعد التحريك</span>
+                        <div class="flex items-end gap-2 relative">
+                            <div class="queue-person character-static opacity-60"><span>🧍</span></div>
+                            <div class="queue-person character-static opacity-70"><span>🧍</span></div>
+                            <!-- Ghost placeholder -->
+                            <div
+                                class="w-[50px] h-[70px] border-2 border-dashed border-blue-400/30 rounded-lg flex items-center justify-center">
+                                <span class="text-blue-400/40 text-xs">فراغ</span>
+                            </div>
+                            <div class="queue-person character-static opacity-60"><span>🧍</span></div>
+                            <!-- The Relative element -->
+                            <div class="queue-person character-relative ring-2 ring-blue-400" id="relativeMover"
+                                style="position: relative; top: 0; right: 0;">
+                                <span>🤸</span>
+                            </div>
+                        </div>
+                        <div class="w-full h-px bg-neutral-800 mt-2"></div>
+                        <p class="text-xs text-blue-400 text-center">مكانه في الطابور ما زال محجوزاً ✅</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-absolute" class="tab-content">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <div class="flex items-center gap-4 mb-6">
+                            <div
+                                class="character-absolute w-16 h-16 rounded-2xl flex items-center justify-center text-3xl">
+                                🦅</div>
+                            <div>
+                                <h3 class="font-heading text-2xl font-semibold">الشخص الحر / المتمرد</h3>
+                                <span class="text-neutral-500 text-sm">Absolute — يخرج من الطابور ويطير</span>
+                            </div>
+                        </div>
+                        <p class="text-neutral-300 leading-relaxed mb-4">
+                            هذا الشخص يخرج من الطابور تماماً (يطير فوقهم). هو لا يرى الطابور، بل يرى <strong
+                                class="text-rose-400">"جدران الغرفة"</strong> (أقرب أب له relative). يذهب لأي زاوية
+                            تريدها، والمكان الذي تركه في الطابور <span class="text-rose-400">يختفي فوراً</span>.
+                        </p>
+                        <div class="warning-card">
+                            <div class="flex items-start gap-3">
+                                <span class="text-rose-400 mt-1">⚠️</span>
+                                <div>
+                                    <p class="text-rose-400 font-semibold text-sm mb-1">تحذير مهم</p>
+                                    <p class="text-neutral-400 text-sm">إذا وضعت كل عناصر الصفحة Absolute ستنهار الصفحة
+                                        فوق بعضها!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="playground-area p-6 flex flex-col items-center justify-center gap-4">
+                        <span class="text-xs text-neutral-600 mb-2">الفراغ اختفى — الباقون تقدموا</span>
+                        <div class="flex items-end gap-2 relative">
+                            <div class="queue-person character-static opacity-60"><span>🧍</span></div>
+                            <div class="queue-person character-static opacity-70"><span>🧍</span></div>
+                            <div class="queue-person character-static opacity-80"><span>🧍</span></div>
+                            <div class="queue-person character-static opacity-60"><span>🧍</span></div>
+                            <!-- No gap for the absolute element! -->
+                            <!-- The Absolute element floating -->
+                            <div class="queue-person character-absolute ring-2 ring-rose-400 float"
+                                style="position: absolute; top: 10px; left: 10px; z-index: 5;">
+                                <span>🦅</span>
+                            </div>
+                        </div>
+                        <div class="w-full h-px bg-neutral-800 mt-2"></div>
+                        <p class="text-xs text-rose-400 text-center">طار فوقهم — فراغه اختفى ❌</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-fixed" class="tab-content">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <div class="flex items-center gap-4 mb-6">
+                            <div
+                                class="character-fixed w-16 h-16 rounded-2xl flex items-center justify-center text-3xl">
+                                🧊</div>
+                            <div>
+                                <h3 class="font-heading text-2xl font-semibold">الشخص المتجمد</h3>
+                                <span class="text-neutral-500 text-sm">Fixed — يلتصق بنظارة المستخدم</span>
+                            </div>
+                        </div>
+                        <p class="text-neutral-300 leading-relaxed mb-4">
+                            هذا الشخص يلتصق بـ <strong class="text-purple-400">"نظارة" المستخدم</strong>. مهما مشى
+                            المستخدم (Scroll) يظل هذا الشخص ظاهراً أمام عينيه في نفس المكان بالضبط. مرجعه هو الشاشة،
+                            وليس أي صندوق أب.
+                        </p>
+                        <div class="success-card">
+                            <div class="flex items-start gap-3">
+                                <span class="text-lime-400 mt-1">👀</span>
+                                <div>
+                                    <p class="text-lime-400 font-semibold text-sm mb-1">شاهد بنفسك!</p>
+                                    <p class="text-neutral-400 text-sm">انظر إلى زر الواتساب الأخضر في الزاوية السفلية
+                                        يسار الصفحة — إنه عنصر Fixed! مرّر الصفحة وستلاحظه يبقى ثابتاً.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="playground-area p-6 flex flex-col items-center justify-center gap-4">
+                        <span class="text-xs text-neutral-600 mb-2">يتجمد مكانه مهما حصل</span>
+                        <div class="relative w-full flex items-center justify-center">
+                            <div
+                                class="w-48 h-64 border-2 border-dashed border-neutral-700 rounded-xl flex flex-col items-center justify-center gap-2">
+                                <span class="text-2xl opacity-30">📱</span>
+                                <span class="text-xs text-neutral-600">الشاشة</span>
+                            </div>
+                            <div class="absolute bottom-4 left-4 character-fixed w-12 h-12 rounded-xl flex items-center justify-center text-xl ring-2 ring-purple-400 pulse-glow"
+                                style="box-shadow: 0 0 20px rgba(168,85,247,0.4);">
+                                <span>🧊</span>
+                            </div>
+                        </div>
+                        <div class="w-full h-px bg-neutral-800 mt-2"></div>
+                        <p class="text-xs text-purple-400 text-center">مرجعه = الشاشة (viewport) 📺</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-sticky" class="tab-content">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <div class="flex items-center gap-4 mb-6">
+                            <div
+                                class="character-sticky w-16 h-16 rounded-2xl flex items-center justify-center text-3xl">
+                                🧠</div>
+                            <div>
+                                <h3 class="font-heading text-2xl font-semibold">الشخص الذكي</h3>
+                                <span class="text-neutral-500 text-sm">Sticky — يمشي ثم يلتصق</span>
+                            </div>
+                        </div>
+                        <p class="text-neutral-300 leading-relaxed mb-4">
+                            يمشي مع الطابور بشكل طبيعي، لكن بمجرد أن يصل لـ <strong class="text-lime-400">سقف
+                                الغرفة</strong> (الحد الذي تحدده بـ top)، يلتصق هناك ولا يغادر. مزيج ذكي بين Static و
+                            Fixed!
+                        </p>
+                        <div class="success-card">
+                            <div class="flex items-start gap-3">
+                                <span class="text-lime-400 mt-1">👀</span>
+                                <div>
+                                    <p class="text-lime-400 font-semibold text-sm mb-1">شاهد بنفسك!</p>
+                                    <p class="text-neutral-400 text-sm">انظر إلى شريط التنقل في أعلى الصفحة — إنه
+                                        Sticky! مرّر للأسفل وستلاحظه يلتصق عند السقف.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="playground-area p-6 flex flex-col items-center justify-center gap-3 overflow-hidden">
+                        <span class="text-xs text-neutral-600 mb-2">يمشي عادي → يوصل السقف → يلتصق</span>
+                        <div class="relative w-full h-full flex flex-col items-center gap-2">
+                            <!-- Ceiling line -->
+                            <div class="w-full h-px bg-lime-400/30 relative">
+                                <span class="absolute -top-4 right-0 text-[10px] text-lime-400/60">السقف (top: 0)</span>
+                            </div>
+                            <!-- Sticky person stuck at ceiling -->
+                            <div class="queue-person character-sticky ring-2 ring-lime-400 mt-1">
+                                <span>🧠</span>
+                            </div>
+                            <span class="text-[10px] text-lime-400">← التصق هنا!</span>
+                            <!-- Others keep scrolling -->
+                            <div class="queue-person character-static opacity-40 translate-y-4"><span>🧍</span></div>
+                            <div class="queue-person character-static opacity-30 translate-y-8"><span>🧍</span></div>
+                            <div class="queue-person character-static opacity-20 translate-y-12"><span>🧍</span></div>
+                        </div>
+                        <div class="w-full h-px bg-neutral-800 mt-2"></div>
+                        <p class="text-xs text-lime-400 text-center">طبيعي أولاً → يلتصق عند السقف ✅</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== INTERACTIVE PLAYGROUND ===== -->
+    <section id="playground" class="py-24 md:py-32 relative">
+        <div class="glow-orb w-[500px] h-[500px] bg-lime-500/5 top-0 left-[-200px]"></div>
+        <div class="max-w-6xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-16">
+                <span class="text-xs text-lime-400 tracking-widest uppercase mb-4 block">تجربة حية</span>
+                <h2 class="font-heading text-3xl md:text-5xl font-semibold tracking-tight mb-4">
+                    الملعب التفاعلي
+                </h2>
+                <p class="text-neutral-500 max-w-lg mx-auto">غيّر نوع الـ Position وشاهد التأثير مباشرة على العنصر
+                    البرتقالي</p>
+            </div>
+
+            <div class="grid md:grid-cols-5 gap-6">
+                <!-- Controls -->
+                <div class="md:col-span-2 space-y-4">
+                    <!-- Position Selector -->
+                    <div class="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-5">
+                        <label class="text-sm font-semibold text-neutral-300 mb-3 block">نوع الـ Position</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button class="pos-type-btn tab-btn active text-xs" data-pos="static"
+                                onclick="changePosition('static')">Static</button>
+                            <button class="pos-type-btn tab-btn text-xs" data-pos="relative"
+                                onclick="changePosition('relative')">Relative</button>
+                            <button class="pos-type-btn tab-btn text-xs" data-pos="absolute"
+                                onclick="changePosition('absolute')">Absolute</button>
+                            <button class="pos-type-btn tab-btn text-xs" data-pos="fixed"
+                                onclick="changePosition('fixed')">Fixed</button>
+                        </div>
+                    </div>
+
+                    <!-- Top Control -->
+                    <div class="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-5">
+                        <label class="text-sm text-neutral-400 mb-2 flex justify-between">
+                            <span>top</span>
+                            <span id="topVal" class="text-lime-400 font-mono">0px</span>
+                        </label>
+                        <input type="range" min="0" max="150" value="0" class="control-slider" id="topSlider"
+                            oninput="updatePlayground()">
+                    </div>
+
+                    <!-- Right Control -->
+                    <div class="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-5">
+                        <label class="text-sm text-neutral-400 mb-2 flex justify-between">
+                            <span>right</span>
+                            <span id="rightVal" class="text-lime-400 font-mono">0px</span>
+                        </label>
+                        <input type="range" min="0" max="150" value="0" class="control-slider" id="rightSlider"
+                            oninput="updatePlayground()">
+                    </div>
+
+                    <!-- Current CSS Output -->
+                    <div class="code-block text-xs" id="cssOutput">
+                        <span class="selector">.element</span> {<br>
+                        &nbsp;&nbsp;<span class="property">position</span>: <span class="value"
+                            id="cssPosValue">static</span>;<br>
+                        &nbsp;&nbsp;<span class="property">top</span>: <span class="value"
+                            id="cssTopValue">0px</span>;<br>
+                        &nbsp;&nbsp;<span class="property">right</span>: <span class="value"
+                            id="cssRightValue">0px</span>;<br>
+                        }
+                    </div>
+                </div>
+
+                <!-- Playground Area -->
+                <div class="md:col-span-3">
+                    <div class="playground-area bg-neutral-900/30" id="playgroundBox" style="min-height: 400px;">
+                        <span class="absolute top-3 left-3 text-[10px] text-neutral-600">الأب (Relative
+                            Container)</span>
+                        <!-- Reference elements -->
+                        <div class="pos-box bg-neutral-800 mt-10 mr-4 text-neutral-500">A</div>
+                        <div class="pos-box bg-neutral-800 mt-2 mr-4 text-neutral-500">B</div>
+                        <!-- The target element -->
+                        <div class="pos-box bg-gradient-to-br from-orange-500 to-amber-600 mt-2 mr-4 text-white ring-2 ring-orange-400/50 transition-all duration-300"
+                            id="targetBox" style="position: static;">
+                            🎯
+                        </div>
+                        <div class="pos-box bg-neutral-800 mt-2 mr-4 text-neutral-500" id="boxD">D</div>
+                        <div class="pos-box bg-neutral-800 mt-2 mr-4 text-neutral-500" id="boxE">E</div>
+
+                        <!-- Ghost placeholder -->
+                        <div class="pos-box border-2 border-dashed border-orange-400/20 mt-2 mr-4 text-orange-400/30 hidden"
+                            id="ghostBox">
+                            فراغ
+                        </div>
+                    </div>
+                    <!-- Status -->
+                    <div class="mt-3 flex items-center gap-2" id="statusMsg">
+                        <span class="w-2 h-2 bg-neutral-600 rounded-full"></span>
+                        <span class="text-xs text-neutral-600">Static: العنصر في مكانه الطبيعي — الأبعاد لا تؤثر</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== PRODUCT CARD DEMO ===== -->
+    <section id="product" class="py-24 md:py-32 relative">
+        <div class="glow-orb w-[400px] h-[400px] bg-blue-500/5 bottom-0 right-[-100px]"></div>
+        <div class="max-w-6xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-16">
+                <span class="text-xs text-lime-400 tracking-widest uppercase mb-4 block">تطبيق عملي</span>
+                <h2 class="font-heading text-3xl md:text-5xl font-semibold tracking-tight mb-4">
+                    بطاقة منتج حقيقية
+                </h2>
+                <p class="text-neutral-500 max-w-lg mx-auto">كل عنصر ملون يشير إلى نوع الـ Position المستخدم فيه</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <!-- The Card -->
+                <div class="flex justify-center">
+                    <div class="demo-card" id="productCard">
+                        <!-- Absolute: Badge -->
+                        <div class="demo-badge">
+                            <span class="inline-block w-2 h-2 bg-white/50 rounded-full ml-1"></span>
+                            خصم 30%
+                        </div>
+                        <!-- Absolute: Heart -->
+                        <div class="demo-heart" id="heartBtn" onclick="toggleHeart()">
+                            🤍
+                        </div>
+                        <!-- Product Image -->
+                        <img src="https://picsum.photos/seed/smartwatch2024/240/200.jpg" alt="ساعة ذكية"
+                            class="w-full h-48 object-cover rounded-xl mb-4">
+                        <!-- Info -->
+                        <div class="info">
+                            <h3 class="font-semibold text-lg mb-1">ساعة ذكية برو</h3>
+                            <p class="text-neutral-500 text-xs mb-4">تتبع اللياقة، الإشعارات، والمزيد</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-lime-400 font-bold text-xl">$99</span>
+                                <span class="text-neutral-600 line-through text-sm">$140</span>
+                            </div>
+                            <!-- Relative: Button -->
+                            <button class="demo-btn" onclick="showToast('تمت إضافة المنتج للمفضلة! ✅')">
+                                اشترِ الآن
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Explanation -->
+                <div class="space-y-5">
+                    <div class="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-5">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-3 h-3 rounded-full bg-[#ff4757]"></span>
+                            <span class="font-semibold text-sm">ملصق الخصم — <span
+                                    class="text-rose-400">Absolute</span></span>
+                        </div>
+                        <p class="text-neutral-400 text-sm leading-relaxed">
+                            يطير فوق الصورة في الزاوية اليسرى العلوية. مرجعه هو البطاقة (التي هي Relative).
+                        </p>
+                        <div class="code-block text-xs mt-3">
+                            <span class="selector">.badge</span> {<br>
+                            &nbsp;&nbsp;<span class="property">position</span>: <span class="value">absolute</span>;<br>
+                            &nbsp;&nbsp;<span class="property">top</span>: <span class="value">18px</span>;<br>
+                            &nbsp;&nbsp;<span class="property">left</span>: <span class="value">18px</span>;<br>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-5">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-3 h-3 rounded-full bg-rose-300"></span>
+                            <span class="font-semibold text-sm">أيقونة القلب — <span
+                                    class="text-rose-400">Absolute</span></span>
+                        </div>
+                        <p class="text-neutral-400 text-sm leading-relaxed">
+                            في الزاوية المقابلة. اضغط عليها وشاهد التفاعل! هي أيضاً Absolute داخل البطاقة.
+                        </p>
+                    </div>
+
+                    <div class="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-5">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                            <span class="font-semibold text-sm">زر "اشترِ الآن" — <span
+                                    class="text-blue-400">Relative</span></span>
+                        </div>
+                        <p class="text-neutral-400 text-sm leading-relaxed">
+                            مرّر الماوس فوق الزر وشاهده يرتفع قليلاً! استخدام Relative يسمح بالتحريك مع الحفاظ على مكانه
+                            في التدفق.
+                        </p>
+                        <div class="code-block text-xs mt-3">
+                            <span class="selector">.btn:hover</span> {<br>
+                            &nbsp;&nbsp;<span class="property">top</span>: <span class="value">-3px</span>; <span
+                                class="comment">/* يرتفع قليلاً */</span><br>
+                            &nbsp;&nbsp;<span class="property">box-shadow</span>: <span class="value">0 8px 25px
+                                ...</span>;<br>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-5">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-3 h-3 rounded-full bg-neutral-500"></span>
+                            <span class="font-semibold text-sm">البطاقة نفسها — <span
+                                    class="text-neutral-300">Relative</span></span>
+                        </div>
+                        <p class="text-neutral-400 text-sm leading-relaxed">
+                            الأب الذي يحتوي الجميع. بدونها، سينتشر الأبناء Absolute في كل الصفحة!
+                        </p>
+                        <div class="code-block text-xs mt-3">
+                            <span class="selector">.card</span> {<br>
+                            &nbsp;&nbsp;<span class="property">position</span>: <span class="value">relative</span>;
+                            <span class="comment">/* الأهم! */</span><br>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== TIPS SECTION ===== -->
+    <section id="tips" class="py-24 md:py-32 relative">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="text-xs text-lime-400 tracking-widest uppercase mb-4 block">خلاصة ذهبية</span>
+                <h2 class="font-heading text-3xl md:text-5xl font-semibold tracking-tight mb-4">
+                    نصائح لا تنساها
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 mb-12">
+                <!-- Golden Rule -->
+                <div class="md:col-span-2 success-card relative overflow-hidden">
+                    <div class="shimmer absolute inset-0"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-3xl">👑</span>
+                            <h3 class="font-heading text-xl font-semibold text-lime-400">القاعدة الذهبية</h3>
+                        </div>
+                        <p class="text-xl text-white font-semibold mb-2 leading-relaxed">
+                            "عشان تشغل Absolute صح، لازم الأب يكون Relative"
+                        </p>
+                        <p class="text-neutral-400 text-sm leading-relaxed">
+                            نسميها في البرمجة <code
+                                class="text-lime-400/80 bg-lime-400/10 px-2 py-0.5 rounded text-xs">Relative-Absolute Parent-Child Relationship</code>.
+                            بدون أب Relative، سيبحث الابن عن أب أبعد، وإن لم يجد فمرجعه يكون الـ body نفسه!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Quick Reference -->
+                <div class="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-6">
+                    <h3 class="font-semibold text-sm mb-4 flex items-center gap-2">
+                        <span>⚡</span> مرجع سريع
+                    </h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between items-center">
+                            <span class="text-neutral-400">Static</span>
+                            <span class="text-neutral-600 text-xs">لا يتحرك أبداً</span>
+                        </div>
+                        <div class="w-full h-px bg-neutral-800"></div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-blue-400">Relative</span>
+                            <span class="text-neutral-600 text-xs">مكانه محجوز</span>
+                        </div>
+                        <div class="w-full h-px bg-neutral-800"></div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-rose-400">Absolute</span>
+                            <span class="text-neutral-600 text-xs">يخرج من التدفق</span>
+                        </div>
+                        <div class="w-full h-px bg-neutral-800"></div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-400">Fixed</span>
+                            <span class="text-neutral-600 text-xs">مرجعه الشاشة</span>
+                        </div>
+                        <div class="w-full h-px bg-neutral-800"></div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-lime-400">Sticky</span>
+                            <span class="text-neutral-600 text-xs">طبيعي ← يلتصق</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Homework -->
+            <div class="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-8 mb-6">
+                <div class="flex items-start gap-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-lime-400/10 border border-lime-400/20 flex items-center justify-center flex-shrink-0">
+                        <span class="text-xl">📝</span>
+                    </div>
+                    <div>
+                        <h3 class="font-heading text-lg font-semibold mb-2">تمرين للمنزل</h3>
+                        <p class="text-neutral-300 leading-relaxed mb-3">
+                            حاول وضع "أيقونة واتساب" ثابتة في ركن الصفحة السفلي باستخدام <code
+                                class="text-purple-400 bg-purple-400/10 px-2 py-0.5 rounded text-sm">fixed</code>. هذا
+                            التدريب يرسخ الفرق بين التموضع داخل صندوق (Absolute) والتموضع داخل الشاشة (Fixed).
+                        </p>
+                        <p class="text-neutral-500 text-sm">
+                            💡 تلميح: انظر إلى زر الواتساب الحقيقي في أسفل الصفحة — هذا بالضبط ما عليك بناؤه!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Table -->
+            <div class="bg-neutral-900/50 border border-neutral-800 rounded-2xl overflow-hidden">
+                <div class="p-5 border-b border-neutral-800">
+                    <h3 class="font-semibold text-sm flex items-center gap-2">
+                        <span>📊</span> جدول مقارنة شامل
+                    </h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-neutral-800">
+                                <th class="text-right p-4 text-neutral-500 font-medium">الخاصية</th>
+                                <th class="p-4 text-center text-neutral-500 font-medium">Static</th>
+                                <th class="p-4 text-center text-blue-400 font-medium">Relative</th>
+                                <th class="p-4 text-center text-rose-400 font-medium">Absolute</th>
+                                <th class="p-4 text-center text-purple-400 font-medium">Fixed</th>
+                                <th class="p-4 text-center text-lime-400 font-medium">Sticky</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-neutral-800/50">
+                                <td class="p-4 text-neutral-400">يخرج من التدفق؟</td>
+                                <td class="p-4 text-center text-neutral-600">❌</td>
+                                <td class="p-4 text-center text-neutral-600">❌</td>
+                                <td class="p-4 text-center text-rose-400">✅</td>
+                                <td class="p-4 text-center text-purple-400">✅</td>
+                                <td class="p-4 text-center text-neutral-600">❌</td>
+                            </tr>
+                            <tr class="border-b border-neutral-800/50">
+                                <td class="p-4 text-neutral-400">يستجيب لـ top/left/right/bottom؟</td>
+                                <td class="p-4 text-center text-neutral-600">❌</td>
+                                <td class="p-4 text-center text-blue-400">✅</td>
+                                <td class="p-4 text-center text-rose-400">✅</td>
+                                <td class="p-4 text-center text-purple-400">✅</td>
+                                <td class="p-4 text-center text-lime-400">✅</td>
+                            </tr>
+                            <tr class="border-b border-neutral-800/50">
+                                <td class="p-4 text-neutral-400">المرجع</td>
+                                <td class="p-4 text-center text-neutral-600 text-xs">—</td>
+                                <td class="p-4 text-center text-neutral-400 text-xs">مكانه الأصلي</td>
+                                <td class="p-4 text-center text-neutral-400 text-xs">أقرب أب relative</td>
+                                <td class="p-4 text-center text-neutral-400 text-xs">الشاشة (viewport)</td>
+                                <td class="p-4 text-center text-neutral-400 text-xs">أقرب سلف + سقف</td>
+                            </tr>
+                            <tr class="border-b border-neutral-800/50">
+                                <td class="p-4 text-neutral-400">المكان محجوز؟</td>
+                                <td class="p-4 text-center text-neutral-600">✅</td>
+                                <td class="p-4 text-center text-blue-400">✅</td>
+                                <td class="p-4 text-center text-rose-400">❌</td>
+                                <td class="p-4 text-center text-purple-400">❌</td>
+                                <td class="p-4 text-center text-lime-400">✅</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 text-neutral-400">الاستخدام الشائع</td>
+                                <td class="p-4 text-center text-neutral-600 text-xs">افتراضي</td>
+                                <td class="p-4 text-center text-neutral-400 text-xs">Hover effects</td>
+                                <td class="p-4 text-center text-neutral-400 text-xs">Badge, Tooltip</td>
+                                <td class="p-4 text-center text-neutral-400 text-xs">Nav, CTA</td>
+                                <td class="p-4 text-center text-neutral-400 text-xs">Sticky Nav</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="border-t border-neutral-800 py-12">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <div class="flex items-center justify-center gap-3 mb-4">
+                <div class="w-8 h-8 bg-lime-400 rounded-lg flex items-center justify-center">
+                    <span class="text-black font-bold text-sm">P</span>
+                </div>
+                <span class="font-heading font-semibold">عائلة الـ Position</span>
+            </div>
+            <p class="text-neutral-600 text-sm mb-2">درس تفاعلي في CSS Position — صُمم لتبسيط المفاهيم</p>
+            <p class="text-neutral-700 text-xs">Static · Relative · Absolute · Fixed · Sticky — الآن تعرفهم جميعاً 🎉
+            </p>
+        </div>
+    </footer>
+
+    <!-- Extra scroll space to demonstrate sticky/fixed -->
+    <div class="h-64"></div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // ===== TAB SWITCHING =====
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.querySelector(`.tab-btn[data-tab="${tabName}"]`).classList.add('active');
+        }
+
+        // ===== RELATIVE DEMO SLIDER =====
+        function updateRelativeDemo() {
+            const val = document.getElementById('relSlider').value;
+            document.getElementById('relValue').textContent = val + 'px';
+            document.getElementById('relativeMover').style.top = -val + 'px';
+        }
+
+        // ===== PLAYGROUND =====
+        let currentPosition = 'static';
+
+        function changePosition(pos) {
+            currentPosition = pos;
+            const target = document.getElementById('targetBox');
+            const ghost = document.getElementById('ghostBox');
+
+            document.querySelectorAll('.pos-type-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.pos-type-btn[data-pos="${pos}"]`).classList.add('active');
+
+            // Reset
+            target.style.top = '0';
+            target.style.right = '0';
+            target.style.position = pos;
+            document.getElementById('topSlider').value = 0;
+            document.getElementById('rightSlider').value = 0;
+            document.getElementById('topVal').textContent = '0px';
+            document.getElementById('rightVal').textContent = '0px';
+
+            // Show/hide ghost
+            ghost.classList.toggle('hidden', pos !== 'absolute');
+
+            // Move ghost to target's natural position
+            if (pos === 'absolute') {
+                const targetRect = target.getBoundingClientRect();
+                const boxRect = document.getElementById('playgroundBox').getBoundingClientRect();
+                ghost.style.marginTop = '8px';
+            }
+
+            // Update CSS output
+            updateCSSOutput();
+            updateStatusMsg();
+        }
+
+        function updatePlayground() {
+            const top = document.getElementById('topSlider').value;
+            const right = document.getElementById('rightSlider').value;
+            const target = document.getElementById('targetBox');
+
+            document.getElementById('topVal').textContent = top + 'px';
+            document.getElementById('rightVal').textContent = right + 'px';
+
+            if (currentPosition === 'static') {
+                // Static ignores these
+                target.style.top = '0';
+                target.style.right = '0';
+            } else {
+                target.style.top = top + 'px';
+                target.style.right = right + 'px';
+            }
+
+            updateCSSOutput();
+        }
+
+        function updateCSSOutput() {
+            const top = document.getElementById('topSlider').value;
+            const right = document.getElementById('rightSlider').value;
+            document.getElementById('cssPosValue').textContent = currentPosition;
+            document.getElementById('cssTopValue').textContent = top + 'px';
+            document.getElementById('cssRightValue').textContent = right + 'px';
+        }
+
+        function updateStatusMsg() {
+            const status = document.getElementById('statusMsg');
+            const messages = {
+                static: { color: 'neutral', text: 'Static: العنصر في مكانه الطبيعي — الأبعاد لا تؤثر' },
+                relative: { color: 'blue', text: 'Relative: العنصر يتحرك لكن مكانه محجوز في الطابور ✅' },
+                absolute: { color: 'rose', text: 'Absolute: العنصر خرج من التدفق — فراغه اختفى ❌ لاحظ ظهور "فراغ"' },
+                fixed: { color: 'purple', text: 'Fixed: العنصر تجمد مكانه — مرّر الصفحة وشاهد!' }
+            };
+            const m = messages[currentPosition];
+            status.innerHTML = `<span class="w-2 h-2 bg-${m.color}-400 rounded-full"></span><span class="text-xs text-${m.color}-400">${m.text}</span>`;
+        }
+
+        // ===== HEART TOGGLE =====
+        let heartActive = false;
+        function toggleHeart() {
+            heartActive = !heartActive;
+            const heart = document.getElementById('heartBtn');
+            if (heartActive) {
+                heart.textContent = '❤️';
+                heart.classList.add('active');
+                showToast('تمت الإضافة للمفضلة! ❤️');
+            } else {
+                heart.textContent = '🤍';
+                heart.classList.remove('active');
+                showToast('تمت الإزالة من المفضلة');
+            }
+        }
+
+        // ===== TOAST =====
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        // ===== WHATSAPP BUTTON =====
+        document.getElementById('whatsappBtn').addEventListener('click', () => {
+            showToast('هذا عنصر Fixed! يبقى ثابتاً أثناء التمرير 🧊');
+        });
+
+        // ===== SCROLL ANIMATIONS =====
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('section > div > .text-center, .success-card, .warning-card, .bg-neutral-900\\/50').forEach(el => {
+            // We skip this to avoid conflicts with tab content
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.querySelector(a.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
