@@ -1,0 +1,2116 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل CSS Grid الشامل</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        kufi: ['Noto Kufi Arabic', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-card: #1a1a1a;
+            --bg-elevated: #242424;
+            --fg: #f0ece4;
+            --fg-muted: #8a8580;
+            --accent: #e8a838;
+            --accent-dim: rgba(232, 168, 56, 0.15);
+            --accent-glow: rgba(232, 168, 56, 0.3);
+            --border: #2a2a2a;
+            --success: #4ade80;
+            --info: #60a5fa;
+            --rose: #f87171;
+            --teal: #2dd4bf;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: 'Noto Kufi Arabic', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 3px;
+        }
+
+        .hero-bg {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(ellipse at 30% 50%, rgba(232, 168, 56, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 20%, rgba(232, 168, 56, 0.04) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 80%, rgba(200, 120, 20, 0.03) 0%, transparent 40%);
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes bgFloat {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            33% {
+                transform: translate(2%, -1%) rotate(1deg);
+            }
+
+            66% {
+                transform: translate(-1%, 2%) rotate(-1deg);
+            }
+        }
+
+        .grid-pattern {
+            background-image:
+                linear-gradient(rgba(232, 168, 56, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(232, 168, 56, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .prop-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prop-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .prop-card:hover {
+            border-color: rgba(232, 168, 56, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(232, 168, 56, 0.1);
+        }
+
+        .prop-card:hover::before {
+            opacity: 1;
+        }
+
+        .playground {
+            background: var(--bg-elevated);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            min-height: 200px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .playground.active {
+            border-color: var(--accent);
+            border-style: solid;
+            box-shadow: inset 0 0 30px rgba(232, 168, 56, 0.05);
+        }
+
+        .grid-item {
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+            cursor: default;
+            min-width: 40px;
+            min-height: 40px;
+        }
+
+        .grid-item:hover {
+            transform: scale(1.03);
+            z-index: 2;
+        }
+
+        .grid-item-1 {
+            background: #e8a838;
+            color: #0f0f0f;
+        }
+
+        .grid-item-2 {
+            background: #ef6461;
+            color: #fff;
+        }
+
+        .grid-item-3 {
+            background: #4ade80;
+            color: #0f0f0f;
+        }
+
+        .grid-item-4 {
+            background: #60a5fa;
+            color: #0f0f0f;
+        }
+
+        .grid-item-5 {
+            background: #c084fc;
+            color: #0f0f0f;
+        }
+
+        .grid-item-6 {
+            background: #f472b6;
+            color: #0f0f0f;
+        }
+
+        .grid-item-7 {
+            background: #2dd4bf;
+            color: #0f0f0f;
+        }
+
+        .grid-item-8 {
+            background: #fb923c;
+            color: #0f0f0f;
+        }
+
+        .grid-item-9 {
+            background: #a78bfa;
+            color: #fff;
+        }
+
+        .val-btn {
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--fg-muted);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.25s;
+            white-space: nowrap;
+        }
+
+        .val-btn:hover {
+            border-color: var(--accent);
+            color: var(--fg);
+        }
+
+        .val-btn.active {
+            background: var(--accent);
+            color: #0f0f0f;
+            border-color: var(--accent);
+            font-weight: 700;
+            box-shadow: 0 0 16px rgba(232, 168, 56, 0.3);
+        }
+
+        .range-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border);
+            outline: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(232, 168, 56, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .code-block {
+            background: #111;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            direction: ltr;
+            text-align: left;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block .prop-name {
+            color: #60a5fa;
+        }
+
+        .code-block .prop-val {
+            color: #e8a838;
+        }
+
+        .code-block .selector {
+            color: #4ade80;
+        }
+
+        .code-block .punctuation {
+            color: #8a8580;
+        }
+
+        .code-block .comment {
+            color: #555;
+            font-style: italic;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--fg-muted);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-family: 'Noto Kufi Arabic', sans-serif;
+        }
+
+        .copy-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .side-nav {
+            position: fixed;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .side-nav a {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: all 0.3s;
+            display: block;
+        }
+
+        .side-nav a.active {
+            background: var(--accent);
+            box-shadow: 0 0 8px rgba(232, 168, 56, 0.5);
+            transform: scale(1.3);
+        }
+
+        .side-nav a:hover {
+            background: var(--fg-muted);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.3;
+            margin: 0 auto;
+            width: 60%;
+        }
+
+        @keyframes pulse-accent {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(232, 168, 56, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 0 8px rgba(232, 168, 56, 0);
+            }
+        }
+
+        .pulse-ring {
+            animation: pulse-accent 2s infinite;
+        }
+
+        .note-box {
+            background: rgba(232, 168, 56, 0.08);
+            border-right: 3px solid var(--accent);
+            border-radius: 0 10px 10px 0;
+            padding: 14px 18px;
+        }
+
+        #gridCanvas {
+            border-radius: 12px;
+            background: var(--bg-elevated);
+        }
+
+        /* حقل إدخال النص للخصائص */
+        .text-input {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 12px;
+            color: var(--fg);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            outline: none;
+            transition: border-color 0.25s;
+            width: 100%;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .text-input:focus {
+            border-color: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .side-nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body class="grid-pattern">
+
+    <!-- تنقل جانبي -->
+    <nav class="side-nav" id="sideNav">
+        <a href="#intro" data-section="intro" title="المقدمة"></a>
+        <a href="#importance" data-section="importance" title="الأهمية"></a>
+        <a href="#mechanism" data-section="mechanism" title="آلية العمل"></a>
+        <a href="#parent-props" data-section="parent-props" title="خصائص الأب"></a>
+        <a href="#child-props" data-section="child-props" title="خصائص الأبناء"></a>
+        <a href="#playground-full" data-section="playground-full" title="الملعب التفاعلي"></a>
+    </nav>
+
+    <!-- ======= القسم 1: المقدمة ======= -->
+    <header id="intro" class="hero-bg min-h-screen flex items-center justify-center relative px-4">
+        <div class="relative z-10 text-center max-w-4xl mx-auto">
+            <div class="grid justify-center grid-cols-3 gap-3 mb-8" id="heroGridDemo"
+                style="display:grid; grid-template-columns:repeat(3, 64px); grid-template-rows:repeat(2, 64px);">
+                <div class="w-16 h-16 rounded-xl flex items-center justify-center font-mono font-bold text-lg"
+                    style="background:#e8a838;color:#0f0f0f;">1</div>
+                <div class="w-16 h-16 rounded-xl flex items-center justify-center font-mono font-bold text-lg"
+                    style="background:#ef6461;color:#fff;">2</div>
+                <div class="w-16 h-16 rounded-xl flex items-center justify-center font-mono font-bold text-lg"
+                    style="background:#4ade80;color:#0f0f0f;">3</div>
+                <div class="w-16 h-16 rounded-xl flex items-center justify-center font-mono font-bold text-lg"
+                    style="background:#60a5fa;color:#0f0f0f;">4</div>
+                <div class="w-16 h-16 rounded-xl flex items-center justify-center font-mono font-bold text-lg"
+                    style="background:#c084fc;color:#0f0f0f;">5</div>
+                <div class="w-16 h-16 rounded-xl flex items-center justify-center font-mono font-bold text-lg"
+                    style="background:#f472b6;color:#0f0f0f;">6</div>
+            </div>
+
+            <p class="text-sm tracking-widest uppercase mb-4"
+                style="color:var(--accent); font-family:'JetBrains Mono',monospace;">CSS Layout Module</p>
+            <h1 class="text-5xl mb-10 md:text-7xl font-black mb-6 leading-tight" style="letter-spacing:-1px;">
+                CSS <span style="color:var(--accent);">Grid</span>
+            </h1>
+            <p class="text-xl mb-10 md:text-2xl font-light mb-8"
+                style="color:var(--fg-muted); max-width:620px; margin:4rem auto;">
+                الدليل الشامل والتفاعلي لفهم وإتقان نظام التخطيط الشبكي في CSS — تخطيط ثنائي الأبعاد بكل سهولة
+            </p>
+
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+                <a href="#parent-props"
+                    class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all hover:scale-105"
+                    style="background:var(--accent);color:#0f0f0f;">
+                    <i class="fas fa-play"></i> ابدأ التعلم
+                </a>
+                <a href="#playground-full"
+                    class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm border transition-all hover:scale-105"
+                    style="border-color:var(--border);color:var(--fg-muted);">
+                    <i class="fas fa-flask"></i> الملعب التفاعلي
+                </a>
+            </div>
+
+            <div class="grid grid-cols-3 gap-6 max-w-md mx-auto">
+                <div>
+                    <div class="text-2xl font-black" style="color:var(--accent);">10+</div>
+                    <div class="text-xs" style="color:var(--fg-muted);">خصائص الأب</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-black" style="color:var(--accent);">8+</div>
+                    <div class="text-xs" style="color:var(--fg-muted);">خصائص الأبناء</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-black" style="color:var(--accent);">2D</div>
+                    <div class="text-xs" style="color:var(--fg-muted);">تخطيط ثنائي البعد</div>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce" style="color:var(--fg-muted);">
+            <i class="fas fa-chevron-down text-xl"></i>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 pb-32">
+
+        <!-- ======= القسم 2: الأهمية ======= -->
+        <section id="importance" class="py-24 reveal">
+            <div class="text-center mb-16">
+                <span class="text-xs font-mono tracking-widest" style="color:var(--accent);">WHY GRID</span>
+                <h2 class="text-4xl md:text-5xl font-black mt-3 mb-4">لماذا CSS Grid؟</h2>
+                <p class="text-lg" style="color:var(--fg-muted); max-width:580px; margin:0 auto;">
+                    أول نظام تخطيط ثنائي الأبعاد في CSS. مصمم خصيصاً لبناء التخطيطات المعقدة
+                </p>
+            </div>
+
+
+
+            <!-- Grid مقابل Flexbox -->
+            <div class="prop-card p-6 md:p-8">
+                <h3 class="text-xl font-bold mb-6 text-center">متى نستخدم Grid ومتى نستخدم Flexbox؟</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="p-5 rounded-xl"
+                        style="background:var(--bg-elevated); border-top:3px solid var(--accent);">
+                        <h4 class="font-bold mb-3 flex items-center gap-2">
+                            <i class="fas fa-th" style="color:var(--accent);"></i> CSS Grid
+                        </h4>
+                        <ul class="space-y-2 text-sm" style="color:var(--fg-muted);">
+                            <li>تخطيط الصفحة الكلية (layout)</li>
+                            <li>هياكل ثنائية الأبعاد (صفوف + أعمدة)</li>
+                            <li>عندما تحتاج محاذاة عناصر في اتجاهين</li>
+                            <li>تصاميم مجلات وبطاقات معقدة</li>
+                            <li>عندما تحتاج مناطق مسماة</li>
+                        </ul>
+                    </div>
+                    <div class="p-5 rounded-xl"
+                        style="background:var(--bg-elevated); border-top:3px solid var(--teal);">
+                        <h4 class="font-bold mb-3 flex items-center gap-2">
+                            <i class="fas fa-grip-lines" style="color:var(--teal);"></i> CSS Flexbox
+                        </h4>
+                        <ul class="space-y-2 text-sm" style="color:var(--fg-muted);">
+                            <li>مكونات واجهة صغيرة (components)</li>
+                            <li>هياكل أحادية البعد (صف أو عمود)</li>
+                            <li>قوائم تنقل وأزرار ومدخلات</li>
+                            <li>توسيط عنصر واحد بسرعة</li>
+                            <li>توزيع مسافات في اتجاه واحد</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="note-box mt-4">
+                    <p class="text-sm"><i class="fas fa-lightbulb ml-2" style="color:var(--accent);"></i><strong>القاعدة
+                            الذهبية:</strong> Grid للتخطيط الكلي، Flexbox للمكونات الداخلية. يمكن استخدامهما معاً — Grid
+                        في الخارج و Flexbox في الداخل.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ======= القسم 3: آلية العمل ======= -->
+        <section id="mechanism" class="py-24 reveal">
+            <div class="text-center mb-16">
+                <span class="text-xs font-mono tracking-widest" style="color:var(--accent);">HOW IT WORKS</span>
+                <h2 class="text-4xl md:text-5xl font-black mt-3 mb-4">آلية العمل</h2>
+                <p class="text-lg" style="color:var(--fg-muted); max-width:600px; margin:0 auto;">
+                    فهم المصطلحات الأساسية هو الأساس لبناء أي تخطيط بشبكة
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-10 items-center">
+                <div class="flex justify-center">
+                    <canvas id="gridCanvas" width="460" height="460"></canvas>
+                </div>
+                <div class="space-y-5">
+                    <div class="p-5 rounded-xl"
+                        style="background:var(--bg-card);border:1px solid var(--border);border-right:3px solid var(--accent);">
+                        <h4 class="font-bold mb-2 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full inline-block" style="background:var(--accent);"></span>
+                            خطوط الشبكة (Grid Lines)
+                        </h4>
+                        <p class="text-sm" style="color:var(--fg-muted);">الخطوط غير المرئية التي تقسم الشبكة. تُرقم
+                            تبدأ من 1. يمكن استخدامها لتحديد مكان العناصر. الخطوط السلبية تُعد من النهاية (-1 = آخر خط).
+                        </p>
+                    </div>
+                    <div class="p-5 rounded-xl"
+                        style="background:var(--bg-card);border:1px solid var(--border);border-right:3px solid var(--info);">
+                        <h4 class="font-bold mb-2 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full inline-block" style="background:var(--info);"></span>
+                            المسارات (Tracks)
+                        </h4>
+                        <p class="text-sm" style="color:var(--fg-muted);">المسافة بين خطين متجاورين. يمكن أن تكون أعمدة
+                            (columns) أو صفوف (rows). تحدد بـ <code class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">grid-template-columns</code> و <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">grid-template-rows</code>.</p>
+                    </div>
+                    <div class="p-5 rounded-xl"
+                        style="background:var(--bg-card);border:1px solid var(--border);border-right:3px solid var(--teal);">
+                        <h4 class="font-bold mb-2 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full inline-block" style="background:var(--teal);"></span>
+                            الخلايا والمناطق (Cells & Areas)
+                        </h4>
+                        <p class="text-sm" style="color:var(--fg-muted);">الخلية = تقاطع صف وعمود. المنطقة = مجموعة
+                            خلايا مسماة تُستخدم لتخطيط مرئي واضح مثل "header" أو "sidebar".</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="p-3 rounded-lg text-center text-xs" style="background:var(--bg-elevated);">
+                            <div class="font-bold mb-1" style="color:var(--accent);">Grid Container</div>
+                            <div style="color:var(--fg-muted);">العنصر الذي يملك display: grid</div>
+                        </div>
+                        <div class="p-3 rounded-lg text-center text-xs" style="background:var(--bg-elevated);">
+                            <div class="font-bold mb-1" style="color:var(--accent);">Grid Items</div>
+                            <div style="color:var(--fg-muted);">الأبناء المباشرون داخل الحاوية</div>
+                        </div>
+                        <div class="p-3 rounded-lg text-center text-xs" style="background:var(--bg-elevated);">
+                            <div class="font-bold mb-1" style="color:var(--accent);">fr (Fraction)</div>
+                            <div style="color:var(--fg-muted);">وحدة نسبية تمثل جزءاً من المساحة</div>
+                        </div>
+                        <div class="p-3 rounded-lg text-center text-xs" style="background:var(--bg-elevated);">
+                            <div class="font-bold mb-1" style="color:var(--accent);">minmax()</div>
+                            <div style="color:var(--fg-muted);">تحديد حد أدنى وأعلى للمسار</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ======= القسم 4: خصائص الأب ======= -->
+        <section id="parent-props" class="py-24 reveal">
+            <div class="text-center mb-16">
+                <span class="text-xs font-mono tracking-widest" style="color:var(--accent);">CONTAINER PROPERTIES</span>
+                <h2 class="text-4xl md:text-5xl font-black mt-3 mb-4">خصائص الحاوية (الأب)</h2>
+                <p class="text-lg" style="color:var(--fg-muted); max-width:600px; margin:0 auto;">
+                    تُطبق على العنصر الذي يحتوي <code class="font-mono px-1.5 py-0.5 rounded text-xs"
+                        style="background:var(--bg-elevated);color:var(--accent);">display: grid</code>
+                </p>
+            </div>
+
+            <!-- === 1. display === -->
+            <div class="prop-card p-6 md:p-8 mb-8">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 pulse-ring"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">01</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">display: grid</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يحول العنصر إلى حاوية شبكية. كل الأبناء
+                            المباشرون يصبحون عناصر grid.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn active" onclick="activateBtn(this);pgDisp('grid')">grid</button>
+                            <button class="val-btn"
+                                onclick="activateBtn(this);pgDisp('inline-grid')">inline-grid</button>
+                            <button class="val-btn" onclick="activateBtn(this);pgDisp('block')">block</button>
+                        </div>
+                        <div class="playground active p-4" id="dispDemo"
+                            style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">
+                            <div class="grid-item grid-item-1">1</div>
+                            <div class="grid-item grid-item-2">2</div>
+                            <div class="grid-item grid-item-3">3</div>
+                            <div class="grid-item grid-item-4">4</div>
+                            <div class="grid-item grid-item-5">5</div>
+                            <div class="grid-item grid-item-6">6</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">display</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="dispCode">grid</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 2. grid-template-columns === -->
+            <div class="prop-card p-6 md:p-8 mb-8">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">02</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">grid-template-columns</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يحدد عدد الأعمدة وعرض كل عمود. يدعم وحدات
+                            <code class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">fr</code> و <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">px</code> و <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">%</code> و <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">minmax()</code> و <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">repeat()</code>.
+                        </p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn active" onclick="activateBtn(this);setCols('repeat(3, 1fr)')">3 أعمدة
+                                متساوية</button>
+                            <button class="val-btn" onclick="activateBtn(this);setCols('1fr 2fr 1fr')">1fr 2fr
+                                1fr</button>
+                            <button class="val-btn" onclick="activateBtn(this);setCols('repeat(4, 1fr)')">4
+                                أعمدة</button>
+                            <button class="val-btn"
+                                onclick="activateBtn(this);setCols('100px 1fr 100px')">ثابت-مرن-ثابت</button>
+                            <button class="val-btn"
+                                onclick="activateBtn(this);setCols('repeat(auto-fill, minmax(100px, 1fr))')">auto-fill</button>
+                        </div>
+                        <div class="playground active p-4" id="colsDemo"
+                            style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; min-height:150px;">
+                            <div class="grid-item grid-item-1">1</div>
+                            <div class="grid-item grid-item-2">2</div>
+                            <div class="grid-item grid-item-3">3</div>
+                            <div class="grid-item grid-item-4">4</div>
+                            <div class="grid-item grid-item-5">5</div>
+                            <div class="grid-item grid-item-6">6</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">display</span><span class="punctuation">:</span> <span
+                            class="prop-val">grid</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">grid-template-columns</span><span
+                            class="punctuation">:</span> <span class="prop-val" id="colsCode">repeat(3, 1fr)</span><span
+                            class="punctuation">;</span><br>
+                        <span class="punctuation">}</span><br><br>
+                        <span class="comment">/* fr = جزء من المساحة المتاحة */</span><br>
+                        <span class="comment">/* repeat(عدد, حجم) = تكرار */</span><br>
+                        <span class="comment">/* minmax(أدنى, أعلى) = مدى مرن */</span><br>
+                        <span class="comment">/* auto-fill = يملأ تلقائياً */</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 3. grid-template-rows === -->
+            <div class="prop-card p-6 md:p-8 mb-8">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">03</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">grid-template-rows</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يحدد عدد الصفوف وارتفاع كل صف. يعمل بنفس طريقة
+                            الأعمدة.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn active"
+                                onclick="activateBtn(this);setRows('auto auto')">تلقائي</button>
+                            <button class="val-btn" onclick="activateBtn(this);setRows('80px 120px')">ثابت</button>
+                            <button class="val-btn" onclick="activateBtn(this);setRows('1fr 2fr')">نسبي</button>
+                            <button class="val-btn" onclick="activateBtn(this);setRows('100px 1fr 60px')">مختلط</button>
+                        </div>
+                        <div class="playground active p-4" id="rowsDemo"
+                            style="display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:auto auto; gap:8px; min-height:250px;">
+                            <div class="grid-item grid-item-1">1</div>
+                            <div class="grid-item grid-item-2">2</div>
+                            <div class="grid-item grid-item-3">3</div>
+                            <div class="grid-item grid-item-4">4</div>
+                            <div class="grid-item grid-item-5">5</div>
+                            <div class="grid-item grid-item-6">6</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">display</span><span class="punctuation">:</span> <span
+                            class="prop-val">grid</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">grid-template-columns</span><span
+                            class="punctuation">:</span> <span class="prop-val">repeat(3, 1fr)</span><span
+                            class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">grid-template-rows</span><span class="punctuation">:</span>
+                        <span class="prop-val" id="rowsCode">auto auto</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span><br><br>
+                        <span class="comment">/* auto = يتكيف مع المحتوى */</span><br>
+                        <span class="comment">/* إذا زادت العناصر عن الصفوف */</span><br>
+                        <span class="comment">/* تُنشأ صفوف إضافية تلقائياً */</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 4. grid-template-areas === -->
+            <div class="prop-card p-6 md:p-8 mb-8">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">04</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">grid-template-areas</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يسمح بتسمية المناطق بصرياً ورسم تخطيط الصفحة
+                            كنص. من أقوى خصائص Grid.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn active" onclick="activateBtn(this);setAreas('layout1')">تخطيط
+                                كلاسيكي</button>
+                            <button class="val-btn" onclick="activateBtn(this);setAreas('layout2')">تخطيط هولي
+                                غريت</button>
+                            <button class="val-btn" onclick="activateBtn(this);setAreas('layout3')">بلا مناطق</button>
+                        </div>
+                        <div class="playground active p-4" id="areasDemo"
+                            style="display:grid; gap:8px; min-height:280px; grid-template-columns:1fr 2fr 1fr; grid-template-rows:60px 1fr 50px; grid-template-areas:'header header header' 'sidebar main aside' 'footer footer footer';">
+                            <div class="grid-item grid-item-1" style="grid-area:header; font-size:12px;">Header</div>
+                            <div class="grid-item grid-item-2" style="grid-area:sidebar; font-size:12px;">Sidebar</div>
+                            <div class="grid-item grid-item-3" style="grid-area:main; font-size:12px;">Main Content
+                            </div>
+                            <div class="grid-item grid-item-4" style="grid-area:aside; font-size:12px;">Aside</div>
+                            <div class="grid-item grid-item-5" style="grid-area:footer; font-size:12px;">Footer</div>
+                        </div>
+                    </div>
+                    <div class="code-block" style="font-size:11px;">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <div id="areasCode">
+                            <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                            &nbsp;&nbsp;<span class="prop-name">display</span><span class="punctuation">:</span> <span
+                                class="prop-val">grid</span><span class="punctuation">;</span><br>
+                            &nbsp;&nbsp;<span class="prop-name">grid-template-columns</span><span
+                                class="punctuation">:</span> <span class="prop-val">1fr 2fr 1fr</span><span
+                                class="punctuation">;</span><br>
+                            &nbsp;&nbsp;<span class="prop-name">grid-template-rows</span><span
+                                class="punctuation">:</span> <span class="prop-val">60px 1fr 50px</span><span
+                                class="punctuation">;</span><br>
+                            &nbsp;&nbsp;<span class="prop-name">grid-template-areas</span><span
+                                class="punctuation">:</span><br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="prop-val">"header header header"</span><br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="prop-val">"sidebar main aside"</span><br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="prop-val">"footer footer footer"</span><span
+                                class="punctuation">;</span><br>
+                            <span class="punctuation">}</span><br><br>
+                            <span class="selector">.header</span> <span class="punctuation">{</span> <span
+                                class="prop-name">grid-area</span><span class="punctuation">:</span> <span
+                                class="prop-val">header</span><span class="punctuation">;</span> <span
+                                class="punctuation">}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 5. gap === -->
+            <div class="prop-card p-6 md:p-8 mb-8">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">05</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">gap / row-gap / column-gap</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">المسافة بين الصفوف والأعمدة. <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">gap</code> اختصار للاثنين معاً.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="mb-3">
+                            <label class="text-xs font-mono mb-1 block" style="color:var(--fg-muted);">row-gap: <span
+                                    id="gRowVal">8</span>px</label>
+                            <input type="range" class="range-slider" id="gRowSlider" min="0" max="30" value="8"
+                                oninput="setGridGap()">
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-xs font-mono mb-1 block" style="color:var(--fg-muted);">column-gap: <span
+                                    id="gColVal">8</span>px</label>
+                            <input type="range" class="range-slider" id="gColSlider" min="0" max="30" value="8"
+                                oninput="setGridGap()">
+                        </div>
+                        <div class="playground active p-4" id="gapDemo"
+                            style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px 8px;">
+                            <div class="grid-item grid-item-1">1</div>
+                            <div class="grid-item grid-item-2">2</div>
+                            <div class="grid-item grid-item-3">3</div>
+                            <div class="grid-item grid-item-4">4</div>
+                            <div class="grid-item grid-item-5">5</div>
+                            <div class="grid-item grid-item-6">6</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">row-gap</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="gRowCode">8px</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">column-gap</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="gColCode">8px</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="comment">/* أو اختصاراً: */</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">gap</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="gapShortCode">8px 8px</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 6. justify-items === -->
+            <div class="prop-card p-6 md:p-8 mb-8">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">06</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">justify-items</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يحاذي العناصر أفقياً داخل خلاياها. يتعامل مع
+                            كل عنصر على حدة داخل مساره.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn active" onclick="activateBtn(this);setJI('stretch')">stretch</button>
+                            <button class="val-btn" onclick="activateBtn(this);setJI('start')">start</button>
+                            <button class="val-btn" onclick="activateBtn(this);setJI('end')">end</button>
+                            <button class="val-btn" onclick="activateBtn(this);setJI('center')">center</button>
+                        </div>
+                        <div class="playground active p-4" id="jiDemo"
+                            style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; justify-items:stretch; min-height:150px;">
+                            <div class="grid-item grid-item-1" style="width:max-content;">1</div>
+                            <div class="grid-item grid-item-2" style="width:max-content;">22</div>
+                            <div class="grid-item grid-item-3" style="width:max-content;">333</div>
+                            <div class="grid-item grid-item-4" style="width:max-content;">44</div>
+                            <div class="grid-item grid-item-5" style="width:max-content;">55555</div>
+                            <div class="grid-item grid-item-6" style="width:max-content;">6</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">display</span><span class="punctuation">:</span> <span
+                            class="prop-val">grid</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">justify-items</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="jiCode">stretch</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span><br><br>
+                        <span class="comment">/* stretch = يملأ العرض (افتراضي) */</span><br>
+                        <span class="comment">/* start / end / center = محاذاة */</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 7. align-items === -->
+            <div class="prop-card p-6 md:p-8 mb-8">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">07</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">align-items</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يحاذي العناصر عمودياً داخل خلاياها. يعمل على
+                            المحور العمودي لكل خلية.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn active" onclick="activateBtn(this);setAI('stretch')">stretch</button>
+                            <button class="val-btn" onclick="activateBtn(this);setAI('start')">start</button>
+                            <button class="val-btn" onclick="activateBtn(this);setAI('end')">end</button>
+                            <button class="val-btn" onclick="activateBtn(this);setAI('center')">center</button>
+                        </div>
+                        <div class="playground active p-4" id="aiDemo"
+                            style="display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(2,100px); gap:8px; align-items:stretch;">
+                            <div class="grid-item grid-item-1">1</div>
+                            <div class="grid-item grid-item-2">22</div>
+                            <div class="grid-item grid-item-3">333</div>
+                            <div class="grid-item grid-item-4">44</div>
+                            <div class="grid-item grid-item-5">55555</div>
+                            <div class="grid-item grid-item-6">6</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">display</span><span class="punctuation">:</span> <span
+                            class="prop-val">grid</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">align-items</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="aiCode">stretch</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span><br><br>
+                        <span class="comment">/* place-items: align-items justify-items */</span><br>
+                        <span class="comment">/* place-items: center = توسيط مثالي */</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 8. justify-content / align-content === -->
+            <div class="prop-card p-6 md:p-8 mb-8">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">08</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">justify-content / align-content</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يحددان موقع الشبكة ككل داخل الحاوية عندما تكون
+                            الشبكة أصغر من الحاوية. يختلف عن justify/align-items التي تتعامل مع العناصر داخل خلاياها.
+                        </p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="mb-2">
+                            <label class="text-xs font-mono block mb-2"
+                                style="color:var(--fg-muted);">justify-content:</label>
+                            <div class="flex gap-2 mb-3 flex-wrap">
+                                <button class="val-btn active" onclick="activateBtn(this);setJC('start')">start</button>
+                                <button class="val-btn" onclick="activateBtn(this);setJC('end')">end</button>
+                                <button class="val-btn" onclick="activateBtn(this);setJC('center')">center</button>
+                                <button class="val-btn"
+                                    onclick="activateBtn(this);setJC('space-between')">space-between</button>
+                                <button class="val-btn"
+                                    onclick="activateBtn(this);setJC('space-around')">space-around</button>
+                                <button class="val-btn"
+                                    onclick="activateBtn(this);setJC('space-evenly')">space-evenly</button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="text-xs font-mono block mb-2"
+                                style="color:var(--fg-muted);">align-content:</label>
+                            <div class="flex gap-2 mb-3 flex-wrap">
+                                <button class="val-btn active" onclick="activateBtn(this);setAC('start')">start</button>
+                                <button class="val-btn" onclick="activateBtn(this);setAC('end')">end</button>
+                                <button class="val-btn" onclick="activateBtn(this);setAC('center')">center</button>
+                                <button class="val-btn"
+                                    onclick="activateBtn(this);setAC('space-between')">space-between</button>
+                                <button class="val-btn"
+                                    onclick="activateBtn(this);setAC('space-around')">space-around</button>
+                            </div>
+                        </div>
+                        <div class="playground active p-4" id="jcDemo"
+                            style="display:grid; grid-template-columns:100px 100px; grid-template-rows:80px 80px; gap:8px; justify-content:start; align-content:start; min-height:320px; width:100%;">
+                            <div class="grid-item grid-item-1">1</div>
+                            <div class="grid-item grid-item-2">2</div>
+                            <div class="grid-item grid-item-3">3</div>
+                            <div class="grid-item grid-item-4">4</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">display</span><span class="punctuation">:</span> <span
+                            class="prop-val">grid</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">grid-template-columns</span><span
+                            class="punctuation">:</span> <span class="prop-val">100px 100px</span><span
+                            class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">justify-content</span><span class="punctuation">:</span>
+                        <span class="prop-val" id="jcCode">start</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">align-content</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="acCode">start</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span><br><br>
+                        <span class="comment">/* يعملان عندما الشبكة */</span><br>
+                        <span class="comment">/* أصغر من الحاوية */</span><br>
+                        <span class="comment">/* place-content: اختصار لهما */</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 9. grid-auto-flow === -->
+            <div class="prop-card p-6 md:p-8 mb-8">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">09</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">grid-auto-flow</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يحدد كيفية وضع العناصر التي لم تُحدد مكانها
+                            بشكل صريح. <code class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">row</code> (افتراضي) يملأ بالصفوف،
+                            <code class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">column</code> يملأ بالأعمدة، <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">dense</code> يملأ الفراغات.
+                        </p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn active" onclick="activateBtn(this);setFlow('row')">row</button>
+                            <button class="val-btn" onclick="activateBtn(this);setFlow('column')">column</button>
+                            <button class="val-btn" onclick="activateBtn(this);setFlow('row dense')">row dense</button>
+                            <button class="val-btn" onclick="activateBtn(this);setFlow('column dense')">column
+                                dense</button>
+                        </div>
+                        <div class="playground active p-4" id="flowDemo"
+                            style="display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:60px; gap:8px; grid-auto-flow:row;">
+                            <div class="grid-item grid-item-1" style="grid-column:span 2;">1 (span 2)</div>
+                            <div class="grid-item grid-item-2">2</div>
+                            <div class="grid-item grid-item-3" style="grid-column:span 2;">3 (span 2)</div>
+                            <div class="grid-item grid-item-4">4</div>
+                            <div class="grid-item grid-item-5">5</div>
+                            <div class="grid-item grid-item-6">6</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">display</span><span class="punctuation">:</span> <span
+                            class="prop-val">grid</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">grid-template-columns</span><span
+                            class="punctuation">:</span> <span class="prop-val">repeat(3, 1fr)</span><span
+                            class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">grid-auto-flow</span><span class="punctuation">:</span>
+                        <span class="prop-val" id="flowCode">row</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span><br><br>
+                        <span class="comment">/* dense يملأ الفراغات تلقائياً */</span><br>
+                        <span class="comment">/* مفيد مع عناصر span مختلفة */</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 10. grid-auto-rows / grid-auto-columns === -->
+            <div class="prop-card p-6 md:p-8 mb-8">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:var(--accent-dim);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--accent);">10</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">grid-auto-rows / grid-auto-columns</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يحدد حجم الصفوف/الأعمدة التي تُنشأ تلقائياً
+                            خارج template المُعرَّف.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn active" onclick="activateBtn(this);setAutoRows('auto')">auto</button>
+                            <button class="val-btn" onclick="activateBtn(this);setAutoRows('60px')">60px</button>
+                            <button class="val-btn"
+                                onclick="activateBtn(this);setAutoRows('minmax(60px, auto)')">minmax(60px,
+                                auto)</button>
+                        </div>
+                        <div class="playground active p-4" id="autoRowsDemo"
+                            style="display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:80px; gap:8px; grid-auto-rows:auto;">
+                            <div class="grid-item grid-item-1" style="padding:10px;">1</div>
+                            <div class="grid-item grid-item-2" style="padding:20px;">2<br>أطول</div>
+                            <div class="grid-item grid-item-3" style="padding:10px;">3</div>
+                            <div class="grid-item grid-item-4" style="padding:10px;">4</div>
+                            <div class="grid-item grid-item-5" style="padding:30px;">5<br>الأطول<br>كثيراً</div>
+                            <div class="grid-item grid-item-6" style="padding:10px;">6</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.container</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">grid-template-rows</span><span class="punctuation">:</span>
+                        <span class="prop-val">80px</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">grid-auto-rows</span><span class="punctuation">:</span>
+                        <span class="prop-val" id="autoRowsCode">auto</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span><br><br>
+                        <span class="comment">/* الصف الأول محدد بـ 80px */</span><br>
+                        <span class="comment">/* الباقي يتبع grid-auto-rows */</span><br>
+                        <span class="comment">/* minmax() يضمن حد أدنى */</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ======= القسم 5: خصائص الأبناء ======= -->
+        <section id="child-props" class="py-24 reveal">
+            <div class="text-center mb-16">
+                <span class="text-xs font-mono tracking-widest" style="color:var(--accent);">ITEM PROPERTIES</span>
+                <h2 class="text-4xl md:text-5xl font-black mt-3 mb-4">خصائص العناصر (الأبناء)</h2>
+                <p class="text-lg" style="color:var(--fg-muted); max-width:600px; margin:0 auto;">
+                    تُطبق على العناصر الفرعية للتحكم بوضعها وامتدادها داخل الشبكة
+                </p>
+            </div>
+
+            <!-- === 1. grid-column / grid-row === -->
+            <div class="prop-card p-6 md:p-8 mb-8">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:rgba(96,165,250,0.15);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--info);">01</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">grid-column / grid-row</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يحدد موقع وامتداد العنصر باستخدام خطوط الشبكة.
+                            <code class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">grid-column: start / end</code> و
+                            <code class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">grid-row: start / end</code>. يمكن
+                            استخدام <code class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">span</code> لتحديد عدد الخلايا.
+                        </p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-xs mb-2" style="color:var(--fg-muted);">العنصر البرتقالي (2) — جرّب القيم
+                            المختلفة:</p>
+                        <div class="mb-2">
+                            <label class="text-xs font-mono block mb-1"
+                                style="color:var(--fg-muted);">grid-column:</label>
+                            <div class="flex gap-2 flex-wrap">
+                                <button class="val-btn active"
+                                    onclick="activateBtn(this);setChildCR('col','auto / auto')">auto</button>
+                                <button class="val-btn" onclick="activateBtn(this);setChildCR('col','1 / 3')">1 /
+                                    3</button>
+                                <button class="val-btn" onclick="activateBtn(this);setChildCR('col','2 / 4')">2 /
+                                    4</button>
+                                <button class="val-btn" onclick="activateBtn(this);setChildCR('col','1 / -1')">1 /
+                                    -1</button>
+                                <button class="val-btn" onclick="activateBtn(this);setChildCR('col','span 2')">span
+                                    2</button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-xs font-mono block mb-1" style="color:var(--fg-muted);">grid-row:</label>
+                            <div class="flex gap-2 flex-wrap">
+                                <button class="val-btn active"
+                                    onclick="activateBtn(this);setChildCR('row','auto / auto')">auto</button>
+                                <button class="val-btn" onclick="activateBtn(this);setChildCR('row','1 / 3')">1 /
+                                    3</button>
+                                <button class="val-btn" onclick="activateBtn(this);setChildCR('row','2 / 4')">2 /
+                                    4</button>
+                                <button class="val-btn" onclick="activateBtn(this);setChildCR('row','1 / -1')">1 /
+                                    -1</button>
+                                <button class="val-btn" onclick="activateBtn(this);setChildCR('row','span 2')">span
+                                    2</button>
+                            </div>
+                        </div>
+                        <div class="playground active p-4" id="crDemo"
+                            style="display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,70px); gap:8px;">
+                            <div class="grid-item grid-item-1">1</div>
+                            <div class="grid-item grid-item-2" id="crTarget"
+                                style="grid-column:auto/auto; grid-row:auto/auto;">2</div>
+                            <div class="grid-item grid-item-3">3</div>
+                            <div class="grid-item grid-item-4">4</div>
+                            <div class="grid-item grid-item-5">5</div>
+                            <div class="grid-item grid-item-6">6</div>
+                            <div class="grid-item grid-item-7">7</div>
+                            <div class="grid-item grid-item-8">8</div>
+                            <div class="grid-item grid-item-9">9</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.item-2</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">grid-column</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="crColCode">auto / auto</span><span class="punctuation">;</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">grid-row</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="crRowCode">auto / auto</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span><br><br>
+                        <span class="comment">/* start / end = رقم خط البداية والنهاية */</span><br>
+                        <span class="comment">/* span N = يمتد N خلايا */</span><br>
+                        <span class="comment">/* -1 = آخر خط (خطوط سالبة) */</span><br><br>
+                        <span class="comment">/* اختصارات: */</span><br>
+                        <span class="comment">/* grid-column: 2 = يبدأ عند خط 2 */</span><br>
+                        <span class="comment">/* grid-column: 2 / span 2 */</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 2. grid-area === -->
+            <div class="prop-card p-6 md:p-8 mb-8">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:rgba(96,165,250,0.15);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--info);">02</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">grid-area</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">اختصار لتحديد row-start / column-start /
+                            row-end / column-end دفعة واحدة. أو يمكن استخدامه مع <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">grid-template-areas</code> لربط العنصر
+                            باسم المنطقة.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn active" onclick="activateBtn(this);setArea('auto')">auto</button>
+                            <button class="val-btn" onclick="activateBtn(this);setArea('1 / 2 / 3 / 4')">1/2/3/4 (عمود
+                                كامل)</button>
+                            <button class="val-btn" onclick="activateBtn(this);setArea('2 / 1 / 4 / 3')">صفين
+                                وعمودين</button>
+                        </div>
+                        <div class="playground active p-4" id="areaDemo"
+                            style="display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,70px); gap:8px;">
+                            <div class="grid-item grid-item-1">1</div>
+                            <div class="grid-item grid-item-2" id="areaTarget" style="grid-area:auto;">2</div>
+                            <div class="grid-item grid-item-3">3</div>
+                            <div class="grid-item grid-item-4">4</div>
+                            <div class="grid-item grid-item-5">5</div>
+                            <div class="grid-item grid-item-6">6</div>
+                            <div class="grid-item grid-item-7">7</div>
+                            <div class="grid-item grid-item-8">8</div>
+                            <div class="grid-item grid-item-9">9</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="comment">/* الصيغة: row-start / col-start / row-end / col-end */</span><br>
+                        <span class="selector">.item</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">grid-area</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="areaCode">auto</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span><br><br>
+                        <span class="comment">/* أو مع template-areas: */</span><br>
+                        <span class="selector">.header</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">grid-area</span><span class="punctuation">:</span> <span
+                            class="prop-val">header</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 3. justify-self === -->
+            <div class="prop-card p-6 md:p-8 mb-8">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:rgba(96,165,250,0.15);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--info);">03</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">justify-self</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يتجاوز <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">justify-items</code> لعنصر واحد. يتحكم
+                            بمحاذاة العنصر أفقياً داخل خليته.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn active" onclick="activateBtn(this);setJS('auto')">auto</button>
+                            <button class="val-btn" onclick="activateBtn(this);setJS('start')">start</button>
+                            <button class="val-btn" onclick="activateBtn(this);setJS('end')">end</button>
+                            <button class="val-btn" onclick="activateBtn(this);setJS('center')">center</button>
+                            <button class="val-btn" onclick="activateBtn(this);setJS('stretch')">stretch</button>
+                        </div>
+                        <div class="playground active p-4" id="jsDemo"
+                            style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; min-height:100px;">
+                            <div class="grid-item grid-item-1" style="width:max-content;">1</div>
+                            <div class="grid-item grid-item-2" id="jsTarget"
+                                style="width:max-content; justify-self:auto;">2 (هدف)</div>
+                            <div class="grid-item grid-item-3" style="width:max-content;">3</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.target</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">justify-self</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="jsCode">auto</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span><br><br>
+                        <span class="comment">/* auto = يتبع justify-items */</span><br>
+                        <span class="comment">/* place-self: align-self justify-self */</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 4. align-self === -->
+            <div class="prop-card p-6 md:p-8 mb-8">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:rgba(96,165,250,0.15);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--info);">04</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">align-self</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">يتجاوز <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">align-items</code> لعنصر واحد. يتحكم
+                            بمحاذاة العنصر عمودياً داخل خليته.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <button class="val-btn active" onclick="activateBtn(this);setAS('auto')">auto</button>
+                            <button class="val-btn" onclick="activateBtn(this);setAS('start')">start</button>
+                            <button class="val-btn" onclick="activateBtn(this);setAS('end')">end</button>
+                            <button class="val-btn" onclick="activateBtn(this);setAS('center')">center</button>
+                            <button class="val-btn" onclick="activateBtn(this);setAS('stretch')">stretch</button>
+                        </div>
+                        <div class="playground active p-4" id="asDemo"
+                            style="display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:120px; gap:8px;">
+                            <div class="grid-item grid-item-1">1</div>
+                            <div class="grid-item grid-item-2" id="asTarget" style="align-self:auto; height:50px;">2
+                                (هدف)</div>
+                            <div class="grid-item grid-item-3">3</div>
+                        </div>
+                    </div>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                        <span class="selector">.target</span> <span class="punctuation">{</span><br>
+                        &nbsp;&nbsp;<span class="prop-name">align-self</span><span class="punctuation">:</span> <span
+                            class="prop-val" id="asCode">auto</span><span class="punctuation">;</span><br>
+                        <span class="punctuation">}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === 5. place-self === -->
+            <div class="prop-card p-6 md:p-8 mb-8">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background:rgba(96,165,250,0.15);">
+                        <span class="font-mono font-bold text-sm" style="color:var(--info);">05</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">place-self</h3>
+                        <p class="text-sm" style="color:var(--fg-muted);">اختصار لـ <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">align-self</code> و <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">justify-self</code>. مثال: <code
+                                class="font-mono text-xs px-1 rounded"
+                                style="background:var(--bg);color:var(--accent);">place-self: center</code> = توسيط
+                            مثالي للعنصر في خليته.</p>
+                    </div>
+                </div>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy ml-1"></i>نسخ</button>
+                    <span class="selector">.item</span> <span class="punctuation">{</span><br>
+                    &nbsp;&nbsp;<span class="prop-name">place-self</span><span class="punctuation">:</span> <span
+                        class="prop-val">center center</span><span class="punctuation">;</span> <span class="comment">/*
+                        توسيط في الخلية */</span><br>
+                    &nbsp;&nbsp;<span class="prop-name">place-self</span><span class="punctuation">:</span> <span
+                        class="prop-val">end start</span><span class="punctuation">;</span> <span class="comment">/*
+                        أسفل اليمين */</span><br>
+                    &nbsp;&nbsp;<span class="prop-name">place-self</span><span class="punctuation">:</span> <span
+                        class="prop-val">stretch</span><span class="punctuation">;</span> <span class="comment">/* يملأ
+                        الخلية */</span><br>
+                    <span class="punctuation">}</span>
+                </div>
+            </div>
+
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ======= القسم 6: الملعب التفاعلي الكامل ======= -->
+        <section id="playground-full" class="py-24 reveal">
+            <div class="text-center mb-16">
+                <span class="text-xs font-mono tracking-widest" style="color:var(--accent);">FULL PLAYGROUND</span>
+                <h2 class="text-4xl md:text-5xl font-black mt-3 mb-4">الملعب التفاعلي</h2>
+                <p class="text-lg" style="color:var(--fg-muted); max-width:600px; margin:0 auto;">
+                    جرّب جميع خصائص Grid معاً — أدخل القيم يدوياً وشاهد النتيجة فوراً
+                </p>
+            </div>
+
+            <div class="prop-card p-6 md:p-8">
+                <div class="grid lg:grid-cols-3 gap-6">
+                    <!-- لوحة التحكم -->
+                    <div class="space-y-3" style="max-height:650px; overflow-y:auto; padding-left:8px;">
+                        <h4 class="font-bold text-sm flex items-center gap-2" style="color:var(--accent);">
+                            <i class="fas fa-sliders-h"></i> لوحة التحكم
+                        </h4>
+
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2"
+                                style="color:var(--fg-muted);">grid-template-columns</label>
+                            <input type="text" class="text-input" id="fpCols" value="repeat(3, 1fr)"
+                                oninput="applyFullPlayground()">
+                        </div>
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2"
+                                style="color:var(--fg-muted);">grid-template-rows</label>
+                            <input type="text" class="text-input" id="fpRows" value="auto"
+                                oninput="applyFullPlayground()">
+                        </div>
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2" style="color:var(--fg-muted);">gap</label>
+                            <input type="text" class="text-input" id="fpGap" value="10px"
+                                oninput="applyFullPlayground()">
+                        </div>
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2"
+                                style="color:var(--fg-muted);">justify-items</label>
+                            <div class="flex gap-1 flex-wrap">
+                                <button class="val-btn text-xs active"
+                                    onclick="activateBtn(this);fpState.justifyItems='stretch';applyFullPlayground()">stretch</button>
+                                <button class="val-btn text-xs"
+                                    onclick="activateBtn(this);fpState.justifyItems='start';applyFullPlayground()">start</button>
+                                <button class="val-btn text-xs"
+                                    onclick="activateBtn(this);fpState.justifyItems='end';applyFullPlayground()">end</button>
+                                <button class="val-btn text-xs"
+                                    onclick="activateBtn(this);fpState.justifyItems='center';applyFullPlayground()">center</button>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2"
+                                style="color:var(--fg-muted);">align-items</label>
+                            <div class="flex gap-1 flex-wrap">
+                                <button class="val-btn text-xs active"
+                                    onclick="activateBtn(this);fpState.alignItems='stretch';applyFullPlayground()">stretch</button>
+                                <button class="val-btn text-xs"
+                                    onclick="activateBtn(this);fpState.alignItems='start';applyFullPlayground()">start</button>
+                                <button class="val-btn text-xs"
+                                    onclick="activateBtn(this);fpState.alignItems='end';applyFullPlayground()">end</button>
+                                <button class="val-btn text-xs"
+                                    onclick="activateBtn(this);fpState.alignItems='center';applyFullPlayground()">center</button>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2"
+                                style="color:var(--fg-muted);">justify-content</label>
+                            <div class="flex gap-1 flex-wrap">
+                                <button class="val-btn text-xs active"
+                                    onclick="activateBtn(this);fpState.justifyContent='start';applyFullPlayground()">start</button>
+                                <button class="val-btn text-xs"
+                                    onclick="activateBtn(this);fpState.justifyContent='center';applyFullPlayground()">center</button>
+                                <button class="val-btn text-xs"
+                                    onclick="activateBtn(this);fpState.justifyContent='end';applyFullPlayground()">end</button>
+                                <button class="val-btn text-xs"
+                                    onclick="activateBtn(this);fpState.justifyContent='space-between';applyFullPlayground()">space-between</button>
+                                <button class="val-btn text-xs"
+                                    onclick="activateBtn(this);fpState.justifyContent='space-evenly';applyFullPlayground()">space-evenly</button>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2"
+                                style="color:var(--fg-muted);">align-content</label>
+                            <div class="flex gap-1 flex-wrap">
+                                <button class="val-btn text-xs active"
+                                    onclick="activateBtn(this);fpState.alignContent='start';applyFullPlayground()">start</button>
+                                <button class="val-btn text-xs"
+                                    onclick="activateBtn(this);fpState.alignContent='center';applyFullPlayground()">center</button>
+                                <button class="val-btn text-xs"
+                                    onclick="activateBtn(this);fpState.alignContent='end';applyFullPlayground()">end</button>
+                                <button class="val-btn text-xs"
+                                    onclick="activateBtn(this);fpState.alignContent='space-between';applyFullPlayground()">space-between</button>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2"
+                                style="color:var(--fg-muted);">grid-auto-flow</label>
+                            <div class="flex gap-1 flex-wrap">
+                                <button class="val-btn text-xs active"
+                                    onclick="activateBtn(this);fpState.gridAutoFlow='row';applyFullPlayground()">row</button>
+                                <button class="val-btn text-xs"
+                                    onclick="activateBtn(this);fpState.gridAutoFlow='column';applyFullPlayground()">column</button>
+                                <button class="val-btn text-xs"
+                                    onclick="activateBtn(this);fpState.gridAutoFlow='dense';applyFullPlayground()">dense</button>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-lg" style="background:var(--bg-elevated);">
+                            <label class="text-xs font-mono block mb-2" style="color:var(--fg-muted);">عدد العناصر:
+                                <span id="fpCountVal">6</span></label>
+                            <input type="range" class="range-slider" min="1" max="12" value="6"
+                                oninput="fpState.count=+this.value;document.getElementById('fpCountVal').textContent=this.value;rebuildFPItems();applyFullPlayground();">
+                        </div>
+                    </div>
+
+                    <!-- منطقة العرض -->
+                    <div class="lg:col-span-2 space-y-4">
+                        <div class="playground active p-4" id="fpDemo"
+                            style="display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:auto; gap:10px; min-height:350px;">
+                            <div class="grid-item grid-item-1">1</div>
+                            <div class="grid-item grid-item-2">2</div>
+                            <div class="grid-item grid-item-3">3</div>
+                            <div class="grid-item grid-item-4">4</div>
+                            <div class="grid-item grid-item-5">5</div>
+                            <div class="grid-item grid-item-6">6</div>
+                        </div>
+                        <div class="code-block" style="font-size:12px;">
+                            <button class="copy-btn" onclick="copyCode(this)"><i
+                                    class="fas fa-copy ml-1"></i>نسخ</button>
+                            <div id="fpCode"></div>
+                        </div>
+                        <button onclick="resetFullPlayground()"
+                            class="px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-105"
+                            style="background:var(--bg-elevated);border:1px solid var(--border);color:var(--fg-muted);">
+                            <i class="fas fa-undo ml-2"></i>إعادة تعيين
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ملخص سريع -->
+        <section class="py-16 reveal">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-black mb-4">جدول مرجعي سريع</h2>
+                <p class="text-sm" style="color:var(--fg-muted);">جميع خصائص CSS Grid في نظرة واحدة</p>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm" style="border-collapse:separate; border-spacing:0;">
+                    <thead>
+                        <tr>
+                            <th class="p-3 text-right rounded-tr-xl" style="background:var(--accent);color:#0f0f0f;">
+                                الخاصية</th>
+                            <th class="p-3 text-right" style="background:var(--accent);color:#0f0f0f;">التطبيق على</th>
+                            <th class="p-3 text-right" style="background:var(--accent);color:#0f0f0f;">الوظيفة</th>
+                            <th class="p-3 text-right rounded-tl-xl" style="background:var(--accent);color:#0f0f0f;">
+                                الافتراضي</th>
+                        </tr>
+                    </thead>
+                    <tbody id="summaryTable"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="py-8 text-center text-xs" style="color:var(--fg-muted); border-top:1px solid var(--border);">
+        <p>دليل CSS Grid الشامل — ملف تعليمي تفاعلي</p>
+    </footer>
+
+    <script>
+        // ========== بيانات جدول الملخص ==========
+        const summaryData = [
+            { prop: 'display', on: 'الأب', desc: 'تفعيل Grid', def: 'block' },
+            { prop: 'grid-template-columns', on: 'الأب', desc: 'تعريف الأعمدة', def: 'none' },
+            { prop: 'grid-template-rows', on: 'الأب', desc: 'تعريف الصفوف', def: 'none' },
+            { prop: 'grid-template-areas', on: 'الأب', desc: 'تسمية المناطق', def: 'none' },
+            { prop: 'gap', on: 'الأب', desc: 'المسافات', def: '0' },
+            { prop: 'justify-items', on: 'الأب', desc: 'محاذاة أفقية للعناصر', def: 'stretch' },
+            { prop: 'align-items', on: 'الأب', desc: 'محاذاة عمودية للعناصر', def: 'stretch' },
+            { prop: 'justify-content', on: 'الأب', desc: 'محاذاة أفقية للشبكة', def: 'start' },
+            { prop: 'align-content', on: 'الأب', desc: 'محاذاة عمودية للشبكة', def: 'start' },
+            { prop: 'grid-auto-flow', on: 'الأب', desc: 'اتجاه التعبئة التلقائية', def: 'row' },
+            { prop: 'grid-auto-rows', on: 'الأب', desc: 'حجم الصفوف التلقائية', def: 'auto' },
+            { prop: 'grid-auto-columns', on: 'الأب', desc: 'حجم الأعمدة التلقائية', def: 'auto' },
+            { prop: 'grid-column', on: 'الابن', desc: 'موقع وامتداد أفقي', def: 'auto / auto' },
+            { prop: 'grid-row', on: 'الابن', desc: 'موقع وامتداد عمودي', def: 'auto / auto' },
+            { prop: 'grid-area', on: 'الابن', desc: 'اختصار أو اسم منطقة', def: 'auto' },
+            { prop: 'justify-self', on: 'الابن', desc: 'محاذاة أفقية فردية', def: 'auto' },
+            { prop: 'align-self', on: 'الابن', desc: 'محاذاة عمودية فردية', def: 'auto' },
+            { prop: 'place-self', on: 'الابن', desc: 'اختصار align + justify self', def: 'auto' },
+        ];
+
+        const summaryTable = document.getElementById('summaryTable');
+        summaryData.forEach((row, i) => {
+            const isParent = row.on === 'الأب';
+            const bgColor = i % 2 === 0 ? 'var(--bg-card)' : 'var(--bg-elevated)';
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="p-3 font-mono text-xs" style="background:${bgColor};color:var(--accent);">${row.prop}</td>
+                <td class="p-3 text-xs" style="background:${bgColor};">
+                    <span class="px-2 py-0.5 rounded text-xs" style="background:${isParent ? 'var(--accent-dim)' : 'rgba(96,165,250,0.15)'};color:${isParent ? 'var(--accent)' : 'var(--info)'};">${row.on}</span>
+                </td>
+                <td class="p-3 text-xs" style="background:${bgColor};color:var(--fg-muted);">${row.desc}</td>
+                <td class="p-3 font-mono text-xs" style="background:${bgColor};color:var(--fg-muted);">${row.def}</td>
+            `;
+            summaryTable.appendChild(tr);
+        });
+
+        // ========== أدوات مساعدة ==========
+        function activateBtn(btn) {
+            const siblings = btn.parentElement.querySelectorAll('.val-btn');
+            siblings.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function copyCode(btn) {
+            const codeBlock = btn.parentElement;
+            const text = codeBlock.innerText.replace('نسخ', '').trim();
+            navigator.clipboard.writeText(text).then(() => {
+                const orig = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check ml-1"></i>تم';
+                btn.style.color = 'var(--success)';
+                btn.style.borderColor = 'var(--success)';
+                setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; btn.style.borderColor = ''; }, 1500);
+            });
+        }
+
+        // ========== خصائص الأب ==========
+
+        // display
+        function pgDisp(val) {
+            const d = document.getElementById('dispDemo');
+            d.style.display = val;
+            d.classList.toggle('active', val !== 'block');
+            document.getElementById('dispCode').textContent = val;
+        }
+
+        // grid-template-columns
+        function setCols(val) {
+            document.getElementById('colsDemo').style.gridTemplateColumns = val;
+            document.getElementById('colsCode').textContent = val;
+        }
+
+        // grid-template-rows
+        function setRows(val) {
+            document.getElementById('rowsDemo').style.gridTemplateRows = val;
+            document.getElementById('rowsCode').textContent = val;
+        }
+
+        // grid-template-areas
+        function setAreas(layout) {
+            const demo = document.getElementById('areasDemo');
+            const code = document.getElementById('areasCode');
+            if (layout === 'layout1') {
+                demo.style.gridTemplateColumns = '1fr 2fr 1fr';
+                demo.style.gridTemplateRows = '60px 1fr 50px';
+                demo.style.gridTemplateAreas = '"header header header" "sidebar main aside" "footer footer footer"';
+                code.innerHTML = `<span class="selector">.container</span> <span class="punctuation">{</span><br>&nbsp;&nbsp;<span class="prop-name">grid-template-columns</span><span class="punctuation">:</span> <span class="prop-val">1fr 2fr 1fr</span><span class="punctuation">;</span><br>&nbsp;&nbsp;<span class="prop-name">grid-template-rows</span><span class="punctuation">:</span> <span class="prop-val">60px 1fr 50px</span><span class="punctuation">;</span><br>&nbsp;&nbsp;<span class="prop-name">grid-template-areas</span><span class="punctuation">:</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="prop-val">"header  header  header"</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="prop-val">"sidebar main    aside"</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="prop-val">"footer  footer  footer"</span><span class="punctuation">;</span><br><span class="punctuation">}</span>`;
+            } else if (layout === 'layout2') {
+                demo.style.gridTemplateColumns = '200px 1fr';
+                demo.style.gridTemplateRows = 'auto 1fr auto auto';
+                demo.style.gridTemplateAreas = '"header header" "sidebar main" "aside main" "footer footer"';
+                code.innerHTML = `<span class="selector">.container</span> <span class="punctuation">{</span><br>&nbsp;&nbsp;<span class="prop-name">grid-template-columns</span><span class="punctuation">:</span> <span class="prop-val">200px 1fr</span><span class="punctuation">;</span><br>&nbsp;&nbsp;<span class="prop-name">grid-template-rows</span><span class="punctuation">:</span> <span class="prop-val">auto 1fr auto auto</span><span class="punctuation">;</span><br>&nbsp;&nbsp;<span class="prop-name">grid-template-areas</span><span class="punctuation">:</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="prop-val">"header  header"</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="prop-val">"sidebar main"</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="prop-val">"aside   main"</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="prop-val">"footer  footer"</span><span class="punctuation">;</span><br><span class="punctuation">}</span>`;
+            } else {
+                demo.style.gridTemplateColumns = 'repeat(3, 1fr)';
+                demo.style.gridTemplateRows = 'repeat(2, 1fr)';
+                demo.style.gridTemplateAreas = 'none';
+                code.innerHTML = `<span class="selector">.container</span> <span class="punctuation">{</span><br>&nbsp;&nbsp;<span class="prop-name">grid-template-columns</span><span class="punctuation">:</span> <span class="prop-val">repeat(3, 1fr)</span><span class="punctuation">;</span><br>&nbsp;&nbsp;<span class="prop-name">grid-template-rows</span><span class="punctuation">:</span> <span class="prop-val">repeat(2, 1fr)</span><span class="punctuation">;</span><br>&nbsp;&nbsp;<span class="comment">/* بدون مناطق مسماة */</span><br><span class="punctuation">}</span>`;
+            }
+            // تحديث عناصر المناطق
+            const items = demo.querySelectorAll('.grid-item');
+            if (layout === 'layout3') {
+                items.forEach((it, i) => { it.style.gridArea = 'auto'; });
+            } else if (layout === 'layout1') {
+                const areas = ['header', 'sidebar', 'main', 'aside', 'footer'];
+                items.forEach((it, i) => { it.style.gridArea = areas[i] || 'auto'; });
+            } else {
+                const areas = ['header', 'header', 'sidebar', 'main', 'aside', 'footer'];
+                items.forEach((it, i) => { it.style.gridArea = areas[i] || 'auto'; });
+            }
+        }
+
+        // gap
+        function setGridGap() {
+            const rv = document.getElementById('gRowSlider').value;
+            const cv = document.getElementById('gColSlider').value;
+            document.getElementById('gapDemo').style.gap = rv + 'px ' + cv + 'px';
+            document.getElementById('gRowVal').textContent = rv;
+            document.getElementById('gColVal').textContent = cv;
+            document.getElementById('gRowCode').textContent = rv + 'px';
+            document.getElementById('gColCode').textContent = cv + 'px';
+            document.getElementById('gapShortCode').textContent = rv + 'px ' + cv + 'px';
+        }
+
+        // justify-items
+        function setJI(val) {
+            document.getElementById('jiDemo').style.justifyItems = val;
+            document.getElementById('jiCode').textContent = val;
+        }
+
+        // align-items
+        function setAI(val) {
+            document.getElementById('aiDemo').style.alignItems = val;
+            document.getElementById('aiCode').textContent = val;
+        }
+
+        // justify-content
+        function setJC(val) {
+            document.getElementById('jcDemo').style.justifyContent = val;
+            document.getElementById('jcCode').textContent = val;
+        }
+
+        // align-content
+        function setAC(val) {
+            document.getElementById('jcDemo').style.alignContent = val;
+            document.getElementById('acCode').textContent = val;
+        }
+
+        // grid-auto-flow
+        function setFlow(val) {
+            document.getElementById('flowDemo').style.gridAutoFlow = val;
+            document.getElementById('flowCode').textContent = val;
+        }
+
+        // grid-auto-rows
+        function setAutoRows(val) {
+            document.getElementById('autoRowsDemo').style.gridAutoRows = val;
+            document.getElementById('autoRowsCode').textContent = val;
+        }
+
+        // ========== خصائص الأبناء ==========
+
+        // grid-column / grid-row
+        function setChildCR(axis, val) {
+            const target = document.getElementById('crTarget');
+            if (axis === 'col') {
+                target.style.gridColumn = val;
+                document.getElementById('crColCode').textContent = val;
+            } else {
+                target.style.gridRow = val;
+                document.getElementById('crRowCode').textContent = val;
+            }
+        }
+
+        // grid-area
+        function setArea(val) {
+            const target = document.getElementById('areaTarget');
+            target.style.gridArea = val;
+            document.getElementById('areaCode').textContent = val;
+        }
+
+        // justify-self
+        function setJS(val) {
+            document.getElementById('jsTarget').style.justifySelf = val;
+            document.getElementById('jsCode').textContent = val;
+        }
+
+        // align-self
+        function setAS(val) {
+            document.getElementById('asTarget').style.alignSelf = val;
+            document.getElementById('asCode').textContent = val;
+        }
+
+        // ========== الملعب التفاعلي الكامل ==========
+        const fpState = {
+            count: 6,
+            justifyItems: 'stretch',
+            alignItems: 'stretch',
+            justifyContent: 'start',
+            alignContent: 'start',
+            gridAutoFlow: 'row'
+        };
+        const fpItemClasses = ['grid-item-1', 'grid-item-2', 'grid-item-3', 'grid-item-4', 'grid-item-5', 'grid-item-6', 'grid-item-7', 'grid-item-8', 'grid-item-9', 'grid-item-1', 'grid-item-2', 'grid-item-3'];
+
+        function rebuildFPItems() {
+            const demo = document.getElementById('fpDemo');
+            demo.innerHTML = '';
+            for (let i = 0; i < fpState.count; i++) {
+                const div = document.createElement('div');
+                div.className = 'grid-item ' + fpItemClasses[i];
+                div.style.padding = '14px 20px';
+                div.textContent = i + 1;
+                demo.appendChild(div);
+            }
+        }
+
+        function applyFullPlayground() {
+            const demo = document.getElementById('fpDemo');
+            const cols = document.getElementById('fpCols').value;
+            const rows = document.getElementById('fpRows').value;
+            const gap = document.getElementById('fpGap').value;
+
+            try { demo.style.gridTemplateColumns = cols; } catch (e) { }
+            try { demo.style.gridTemplateRows = rows; } catch (e) { }
+            demo.style.gap = gap;
+            demo.style.justifyItems = fpState.justifyItems;
+            demo.style.alignItems = fpState.alignItems;
+            demo.style.justifyContent = fpState.justifyContent;
+            demo.style.alignContent = fpState.alignContent;
+            demo.style.gridAutoFlow = fpState.gridAutoFlow;
+
+            updateFPCode(cols, rows, gap);
+        }
+
+        function updateFPCode(cols, rows, gap) {
+            const el = document.getElementById('fpCode');
+            const lines = [
+                `<span class="selector">.container</span> <span class="punctuation">{</span>`,
+                `  <span class="prop-name">display</span><span class="punctuation">:</span> <span class="prop-val">grid</span><span class="punctuation">;</span>`,
+                `  <span class="prop-name">grid-template-columns</span><span class="punctuation">:</span> <span class="prop-val">${cols}</span><span class="punctuation">;</span>`,
+                `  <span class="prop-name">grid-template-rows</span><span class="punctuation">:</span> <span class="prop-val">${rows}</span><span class="punctuation">;</span>`,
+                `  <span class="prop-name">gap</span><span class="punctuation">:</span> <span class="prop-val">${gap}</span><span class="punctuation">;</span>`,
+                `  <span class="prop-name">justify-items</span><span class="punctuation">:</span> <span class="prop-val">${fpState.justifyItems}</span><span class="punctuation">;</span>`,
+                `  <span class="prop-name">align-items</span><span class="punctuation">:</span> <span class="prop-val">${fpState.alignItems}</span><span class="punctuation">;</span>`,
+                `  <span class="prop-name">justify-content</span><span class="punctuation">:</span> <span class="prop-val">${fpState.justifyContent}</span><span class="punctuation">;</span>`,
+                `  <span class="prop-name">align-content</span><span class="punctuation">:</span> <span class="prop-val">${fpState.alignContent}</span><span class="punctuation">;</span>`,
+                `  <span class="prop-name">grid-auto-flow</span><span class="punctuation">:</span> <span class="prop-val">${fpState.gridAutoFlow}</span><span class="punctuation">;</span>`,
+                `<span class="punctuation">}</span>`
+            ];
+            el.innerHTML = lines.join('<br>');
+        }
+
+        function resetFullPlayground() {
+            fpState.count = 6;
+            fpState.justifyItems = 'stretch';
+            fpState.alignItems = 'stretch';
+            fpState.justifyContent = 'start';
+            fpState.alignContent = 'start';
+            fpState.gridAutoFlow = 'row';
+
+            document.getElementById('fpCols').value = 'repeat(3, 1fr)';
+            document.getElementById('fpRows').value = 'auto';
+            document.getElementById('fpGap').value = '10px';
+            document.getElementById('fpCountVal').textContent = '6';
+
+            // إعادة الأزرار
+            const card = document.querySelector('#playground-full .prop-card');
+            card.querySelectorAll('.val-btn').forEach(b => b.classList.remove('active'));
+            const groups = card.querySelectorAll('.p-3.rounded-lg');
+            const defaults = ['stretch', 'stretch', 'start', 'start', 'row'];
+            groups.forEach((g, gi) => {
+                if (gi >= 3 && gi <= 7) {
+                    const btns = g.querySelectorAll('.val-btn');
+                    btns.forEach(b => { if (b.textContent.trim() === defaults[gi - 3]) b.classList.add('active'); });
+                }
+            });
+
+            document.querySelector('#playground-full input[type=range]').value = 6;
+            rebuildFPItems();
+            applyFullPlayground();
+        }
+
+        // تهيئة أولية
+        updateFPCode('repeat(3, 1fr)', 'auto', '10px');
+
+        // ========== رسم توضيحي Canvas ==========
+        function drawGridDiagram() {
+            const canvas = document.getElementById('gridCanvas');
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+            ctx.fillStyle = '#1a1a1a';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, w, h, 12);
+            ctx.fill();
+
+            // إطار الشبكة
+            const ox = 60, oy = 60;
+            const cols = 3, rows = 3;
+            const cellW = 110, cellH = 100;
+            const gw = cols * cellW, gh = rows * cellH;
+
+            // خطوط الشبكة العمودية
+            ctx.strokeStyle = 'rgba(232, 168, 56, 0.25)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            for (let i = 0; i <= cols; i++) {
+                const x = ox + i * cellW;
+                ctx.beginPath();
+                ctx.moveTo(x, oy);
+                ctx.lineTo(x, oy + gh);
+                ctx.stroke();
+            }
+            // خطوط الشبكة الأفقية
+            for (let j = 0; j <= rows; j++) {
+                const y = oy + j * cellH;
+                ctx.beginPath();
+                ctx.moveTo(ox, y);
+                ctx.lineTo(ox + gw, y);
+                ctx.stroke();
+            }
+            ctx.setLineDash([]);
+
+            // أرقام خطوط الأعمدة
+            ctx.font = 'bold 11px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            for (let i = 0; i <= cols; i++) {
+                const x = ox + i * cellW;
+                ctx.fillStyle = '#e8a838';
+                ctx.fillText(i + 1, x, oy - 15);
+                // خطوط سالبة
+                ctx.fillStyle = 'rgba(232, 168, 56, 0.4)';
+                ctx.fillText(i - cols, x, oy + gh + 20);
+            }
+
+            // أرقام خطوط الصفوف
+            ctx.textAlign = 'right';
+            for (let j = 0; j <= rows; j++) {
+                const y = oy + j * cellH;
+                ctx.fillStyle = '#60a5fa';
+                ctx.fillText(j + 1, ox - 15, y + 4);
+                ctx.fillStyle = 'rgba(96, 165, 250, 0.4)';
+                ctx.fillText(j - rows, ox - 30, y + 4);
+            }
+
+            // تسميات المحاور
+            ctx.save();
+            ctx.font = '10px "JetBrains Mono", monospace';
+            ctx.fillStyle = 'rgba(232, 168, 56, 0.5)';
+            ctx.textAlign = 'center';
+            ctx.fillText('Column Lines', ox + gw / 2, oy - 32);
+
+            ctx.fillStyle = 'rgba(96, 165, 250, 0.5)';
+            ctx.save();
+            ctx.translate(ox - 48, oy + gh / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Row Lines', 0, 0);
+            ctx.restore();
+            ctx.restore();
+
+            // عناصر ملونة في الخلايا
+            const colors = ['#e8a838', '#ef6461', '#4ade80', '#60a5fa', '#c084fc', '#f472b6', '#2dd4bf', '#fb923c', '#a78bfa'];
+            const textColors = ['#0f0f0f', '#fff', '#0f0f0f', '#0f0f0f', '#0f0f0f', '#0f0f0f', '#0f0f0f', '#0f0f0f', '#fff'];
+            let idx = 0;
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const x = ox + c * cellW + 4;
+                    const y = oy + r * cellH + 4;
+                    const iw = cellW - 8;
+                    const ih = cellH - 8;
+
+                    ctx.globalAlpha = 0.85;
+                    ctx.fillStyle = colors[idx];
+                    ctx.beginPath();
+                    ctx.roundRect(x, y, iw, ih, 6);
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+
+                    ctx.font = 'bold 18px "JetBrains Mono", monospace';
+                    ctx.fillStyle = textColors[idx];
+                    ctx.textAlign = 'center';
+                    ctx.fillText(idx + 1, x + iw / 2, y + ih / 2 + 6);
+                    idx++;
+                }
+            }
+
+            // تسمية "Grid Line" مع سهم يشير لخط
+            ctx.strokeStyle = '#e8a838';
+            ctx.lineWidth = 2;
+            const arrowX = ox + 1 * cellW;
+            ctx.beginPath();
+            ctx.moveTo(arrowX + 30, oy + gh + 35);
+            ctx.lineTo(arrowX + 5, oy + gh + 15);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(arrowX + 5, oy + gh + 15);
+            ctx.lineTo(arrowX + 12, oy + gh + 22);
+            ctx.moveTo(arrowX + 5, oy + gh + 15);
+            ctx.lineTo(arrowX + 2, oy + gh + 24);
+            ctx.stroke();
+
+            ctx.font = '10px "Noto Kufi Arabic", sans-serif';
+            ctx.fillStyle = 'rgba(232, 168, 56, 0.6)';
+            ctx.textAlign = 'left';
+            ctx.fillText('خط شبكة عمودي', arrowX + 34, oy + gh + 40);
+
+            // مسار (Track) توضيح
+            ctx.strokeStyle = '#2dd4bf';
+            ctx.lineWidth = 2;
+            const trackY = oy + 0 * cellH + 15;
+            const trackH = cellH - 30;
+            ctx.beginPath();
+            ctx.roundRect(ox + gw + 15, trackY, 16, trackH, 3);
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(45, 212, 191, 0.15)';
+            ctx.beginPath();
+            ctx.roundRect(ox + gw + 15, trackY, 16, trackH, 3);
+            ctx.fill();
+
+            ctx.font = '9px "Noto Kufi Arabic", sans-serif';
+            ctx.fillStyle = '#2dd4bf';
+            ctx.textAlign = 'left';
+            ctx.fillText('مسار صف', ox + gw + 36, trackY + trackH / 2 + 3);
+
+            // خلية (Cell) توضيح
+            ctx.strokeStyle = '#c084fc';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            ctx.roundRect(ox + 2 * cellW + 10, oy + 2 * cellH + 10, cellW - 20, cellH - 20, 4);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.font = '9px "Noto Kufi Arabic", sans-serif';
+            ctx.fillStyle = '#c084fc';
+            ctx.textAlign = 'center';
+            ctx.fillText('خلية (Cell)', ox + 2 * cellW + cellW / 2, oy + 2 * cellH + cellH + 18);
+        }
+        drawGridDiagram();
+
+        // ========== حركة الظهور ==========
+        const revealElements = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        revealElements.forEach(el => observer.observe(el));
+
+        // ========== التنقل الجانبي ==========
+        const sections = ['intro', 'importance', 'mechanism', 'parent-props', 'child-props', 'playground-full'];
+        const navLinks = document.querySelectorAll('#sideNav a');
+        const navObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    navLinks.forEach(link => link.classList.toggle('active', link.dataset.section === id));
+                }
+            });
+        }, { threshold: 0.2 });
+        sections.forEach(id => { const el = document.getElementById(id); if (el) navObserver.observe(el); });
+
+        // ========== حركة البطل ==========
+        const heroItems = document.querySelectorAll('#heroGridDemo .flex-item, #heroGridDemo .grid-item');
+        // تصحيح: العناصر في البطل هي divs عادية
+        const heroGridItems = document.querySelectorAll('#heroGridDemo > div');
+        let heroTime = 0;
+        let heroFrame;
+
+        function animateHero() {
+            heroTime += 0.025;
+            heroGridItems.forEach((item, i) => {
+                const row = Math.floor(i / 3);
+                const col = i % 3;
+                const offset = Math.sin(heroTime + i * 0.7) * 4;
+                const rotate = Math.sin(heroTime + i * 0.5) * 2;
+                item.style.transform = `translateY(${offset}px) rotate(${rotate}deg)`;
+            });
+            heroFrame = requestAnimationFrame(animateHero);
+        }
+        animateHero();
+
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            cancelAnimationFrame(heroFrame);
+        }
+    </script>
+</body>
+
+</html>
