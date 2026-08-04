@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>دليل Transform و Animation — شرح مفصل بالأمثلة</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Amiri:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink:    #1a1a1a;
+    --paper:  #fdfaf3;
+    --accent: #d4453d;
+    --gold:   #c5a572;
+    --rule:   #e8e0cc;
+    --blue:   #2b6cb0;
+    --green:  #2f855a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.7;
+  }
+  .display { font-family: 'Amiri', serif; }
+  .mono    { font-family: 'JetBrains Mono', monospace; direction: ltr; text-align: left; }
+
+  .rule       { border-color: var(--rule); }
+  .accent     { color: var(--accent); }
+  .accent-bg  { background: var(--accent); }
+  .gold       { color: var(--gold); }
+  .ink        { color: var(--ink); }
+
+  .section-num {
+    font-family: 'Amiri', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .ornament {
+    display: inline-block;
+    width: 50px;
+    height: 2px;
+    background: var(--accent);
+    margin: 0 12px;
+    vertical-align: middle;
+  }
+
+  /* ─── Code box ─────────────────────────────────────────── */
+  .code-box {
+    background: #1a1a1a;
+    color: #f8e8c8;
+    padding: 1.25rem 1.5rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    direction: ltr;
+    text-align: left;
+    overflow-x: auto;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    border-right: 4px solid var(--accent);
+  }
+  .code-box .kw   { color: #ff9b85; }
+  .code-box .prop { color: #95d5b2; }
+  .code-box .val  { color: #ffd6a5; }
+  .code-box .num  { color: #b5d8eb; }
+  .code-box .com  { color: #888; font-style: italic; }
+  .code-box .sel  { color: #c5a572; font-weight: 700; }
+
+  .code-label {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--gold);
+    padding: 2px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    border-radius: 3px;
+    margin-bottom: 0.5rem;
+    direction: ltr;
+  }
+
+  .dropcap::first-letter {
+    font-family: 'Amiri', serif;
+    font-size: 4.5rem;
+    font-weight: 700;
+    float: right;
+    line-height: 1;
+    margin-left: 0.5rem;
+    margin-top: 0.3rem;
+    color: var(--accent);
+  }
+
+  /* ─── Demo box ─────────────────────────────────────────── */
+  .demo-wrap {
+    background: #fff;
+    border: 1px solid var(--rule);
+    padding: 2rem;
+    border-radius: 6px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .demo-box {
+    width: 100px;
+    height: 100px;
+    background: var(--accent);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+    border-radius: 6px;
+    transition: transform 0.4s ease;
+  }
+
+  /* Hover demos — التأثير يطبّق بـ hover على الحاوية الخارجية */
+  .demo-wrap:hover .hover-translate    { transform: translateX(80px); }
+  .demo-wrap:hover .hover-translate-y  { transform: translateY(20px); }
+  .demo-wrap:hover .hover-rotate       { transform: rotate(45deg); }
+  .demo-wrap:hover .hover-rotate-360   { transform: rotate(360deg); }
+  .demo-wrap:hover .hover-scale-up     { transform: scale(1.5); }
+  .demo-wrap:hover .hover-scale-down   { transform: scale(0.5); }
+  .demo-wrap:hover .hover-skew         { transform: skewX(20deg); }
+  .demo-wrap:hover .hover-combo        { transform: translateX(60px) rotate(180deg) scale(1.2); }
+
+  .demo-wrap p.hint {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 1rem;
+    font-style: italic;
+  }
+
+  /* ─── Animation demos ──────────────────────────────────── */
+  @keyframes demoSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes demoBounce {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-30px); }
+  }
+  @keyframes demoPulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.2); }
+  }
+  @keyframes demoSlide {
+    0%   { transform: translateX(-80px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes demoShake {
+    0%, 100% { transform: translateX(0); }
+    25%      { transform: translateX(-10px); }
+    75%      { transform: translateX(10px); }
+  }
+  @keyframes demoFlip {
+    0%   { transform: rotateY(0); }
+    100% { transform: rotateY(360deg); }
+  }
+
+  .anim-spin   { animation: demoSpin 2s linear infinite; }
+  .anim-bounce { animation: demoBounce 1s ease infinite; }
+  .anim-pulse  { animation: demoPulse 1.5s ease-in-out infinite; }
+  .anim-slide  { animation: demoSlide 1.5s ease-out infinite; }
+  .anim-shake  { animation: demoShake 0.5s ease-in-out infinite; }
+  .anim-flip   { animation: demoFlip 2s ease-in-out infinite; }
+
+  /* ─── Timing function chart ────────────────────────────── */
+  .timing-track {
+    background: #faf6e9;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    height: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .timing-ball {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    background: var(--accent);
+    border-radius: 50%;
+    right: 15px;
+    animation: ballMove 3s infinite;
+  }
+  .timing-ball.linear      { animation-timing-function: linear; }
+  .timing-ball.ease        { animation-timing-function: ease; }
+  .timing-ball.ease-in     { animation-timing-function: ease-in; }
+  .timing-ball.ease-out    { animation-timing-function: ease-out; }
+  .timing-ball.ease-in-out { animation-timing-function: ease-in-out; }
+  .timing-ball.bouncy      { animation-timing-function: cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+
+  @keyframes ballMove {
+    0%, 10%   { right: 15px; }
+    50%       { right: calc(100% - 45px); }
+    90%, 100% { right: 15px; }
+  }
+
+  /* ─── Sandbox ──────────────────────────────────────────── */
+  .sandbox-stage {
+    background: #faf6e9;
+    border: 2px dashed var(--gold);
+    border-radius: 8px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  #sandboxBox {
+    width: 100px;
+    height: 100px;
+    background: var(--accent);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    border-radius: 6px;
+    transition: transform 0.5s ease;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--rule);
+    border-radius: 3px;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  /* ─── Loader spinner sample ────────────────────────────── */
+  .loader {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--rule);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: demoSpin 1s linear infinite;
+    display: inline-block;
+  }
+
+  /* ─── Hover card sample ────────────────────────────────── */
+  .hover-card {
+    width: 140px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 0.25rem;
+  }
+  .hover-card:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 12px 24px rgba(212,69,61,0.2);
+    border-color: var(--accent);
+  }
+  .hover-card .icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* ─── Notification slide-in ────────────────────────────── */
+  @keyframes slideInRight {
+    from { transform: translateX(120%); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+  }
+  .notif-demo {
+    background: var(--green);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    display: inline-block;
+    font-weight: 700;
+    animation: slideInRight 0.6s ease-out;
+  }
+
+  /* ─── Button press ─────────────────────────────────────── */
+  .press-btn {
+    background: var(--accent);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-family: inherit;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .press-btn:hover  { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+  .press-btn:active { transform: translateY(1px); box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+
+  /* ─── Highlight ────────────────────────────────────────── */
+  .highlight {
+    background: linear-gradient(90deg, rgba(212,69,61,0.08), transparent);
+    border-right: 3px solid var(--accent);
+    padding: 1rem 1.25rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+  }
+
+  .prop-card {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1.5rem;
+    transition: all 0.2s;
+    height: 100%;
+  }
+  .prop-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(212,69,61,0.08);
+  }
+
+  .quiz-option {
+    background: white;
+    border: 2px solid var(--rule);
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 0.5rem;
+  }
+  .quiz-option:hover { border-color: var(--gold); }
+  .quiz-option.correct   { border-color: #16a34a; background: #f0fdf4; color: #15803d; font-weight: 700; }
+  .quiz-option.incorrect { border-color: #dc2626; background: #fef2f2; color: #991b1b; }
+
+  .divider {
+    text-align: center;
+    margin: 4rem 0;
+    color: var(--accent);
+    font-family: 'Amiri', serif;
+    font-size: 1.5rem;
+    letter-spacing: 1rem;
+  }
+
+  .ex-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    font-family: 'Amiri', serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-left: 0.75rem;
+  }
+
+  @media print {
+    body { font-size: 11pt; }
+    .no-print { display: none !important; }
+    .anim-spin, .anim-bounce, .anim-pulse, .anim-slide, .anim-shake, .anim-flip { animation: none !important; }
+  }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ════════════════════════════════════════════════════
+     HEADER
+═════════════════════════════════════════════════════ -->
+<header class="border-b-4 border-double rule pt-8 pb-6 mb-12">
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="flex justify-between items-center text-xs mb-4 mono">
+      <span class="ink">DOCUMENTATION · VOL. 02</span>
+      <span class="accent">FRONT-END · CSS</span>
+    </div>
+    <h1 class="display text-center text-5xl md:text-7xl font-bold ink leading-none mb-4">
+      الـ<span class="accent italic">Transform</span> والـ<span class="accent italic">Animation</span>
+    </h1>
+    <p class="text-center text-lg gold mb-2">
+      <span class="ornament"></span>
+      تحريكُ العناصر وتحويلها في الويب
+      <span class="ornament"></span>
+    </p>
+    <p class="text-center text-sm mt-4" style="color:#777;">
+      دليل الطالب · المستوى المتوسط · يحتاج معرفة أساسية بـ HTML و CSS
+    </p>
+  </div>
+</header>
+
+<main class="max-w-4xl mx-auto px-6 pb-24">
+
+<!-- ════════════════════════════════════════════════════
+     INTRODUCTION
+═════════════════════════════════════════════════════ -->
+<section class="mb-16">
+  <div class="section-num mb-2">المقدمة · ٠١</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">لماذا نتعلّم Transform و Animation؟</h2>
+
+  <p class="text-lg dropcap mb-4">
+    الواجهات الجامدة تُمَلّ المستخدم. عندما يحرّك الزائر مؤشّر الفأرة فوق زرٍّ ولا يتغيّر شيء، يشعر أنّ الموقع <strong class="accent">ميّت</strong>. أمّا عندما يكبر الزر قليلاً أو يتغيّر لونه بسلاسة، يشعر بأنّ الموقع يتجاوب معه.
+  </p>
+
+  <p class="text-base mb-4">
+    الـ <strong class="accent">Transform</strong> هو ما يسمح لنا بتحويل العنصر — تحريكه، تكبيره، تدويره، إمالته. والـ <strong class="accent">Animation</strong> هو ما يجعل هذا التحويل يحدث على مدى زمنٍ معيّن وبسلاسة.
+  </p>
+
+  <div class="highlight">
+    <strong class="accent">الفرق بينهما باختصار:</strong>
+    <ul class="text-sm mt-2 space-y-1">
+      <li>• <strong>Transform</strong> = ماذا يحدث للعنصر (الشكل النهائي)</li>
+      <li>• <strong>Transition</strong> = تحوّلٌ سلس عند تغيير حالة (مثل hover)</li>
+      <li>• <strong>Animation</strong> = حركة مستمرة بعدة مراحل (keyframes)</li>
+    </ul>
+  </div>
+
+  <p class="text-base">
+    سنبدأ بـ Transform أولاً، لأنه الأساس. ثم نستخدمه داخل Animation لخلق حركاتٍ ساحرة.
+  </p>
+</section>
+
+<div class="divider">۞ ۞ ۞</div>
+
+<!-- ════════════════════════════════════════════════════
+     TRANSFORM
+═════════════════════════════════════════════════════ -->
+<section class="mb-16">
+  <div class="section-num mb-2">الجزء الأول · ٠٢</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">خصائص Transform</h2>
+
+  <p class="mb-6">
+    خاصية واحدة (<code class="bg-amber-100 px-2 py-0.5 rounded mono text-sm">transform</code>) تستقبل عدة دوال للتحويل. لنرَ أهمها:
+  </p>
+
+  <!-- 2.1 translate -->
+  <div class="mb-12">
+    <h3 class="text-2xl font-bold mb-3 ink"><span class="ex-num">١</span>translate — التحريك</h3>
+    <p class="mb-4">
+      ينقل العنصر من مكانه دون التأثير على بقيّة العناصر حوله.
+    </p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box mb-4"><span class="com">/* تحريك أفقي (يميناً موجب، يساراً سالب) */</span>
+<span class="prop">transform</span>: <span class="kw">translateX</span>(<span class="num">50px</span>);
+
+<span class="com">/* تحريك رأسي (للأسفل موجب، للأعلى سالب) */</span>
+<span class="prop">transform</span>: <span class="kw">translateY</span>(<span class="num">-20px</span>);
+
+<span class="com">/* في الاتجاهين معاً */</span>
+<span class="prop">transform</span>: <span class="kw">translate</span>(<span class="num">50px</span>, <span class="num">-20px</span>);</pre>
+
+    <h4 class="font-bold mb-2">جرّب: مرّر الفأرة فوق الصندوق</h4>
+    <div class="demo-wrap">
+      <div class="demo-box hover-translate">→</div>
+      <p class="hint">translateX(80px) — تحريك يمين 80px</p>
+    </div>
+
+    <div class="highlight mt-4">
+      <strong class="accent">سؤال شائع:</strong> ما الفرق بين <code class="mono text-sm">translate</code> و <code class="mono text-sm">margin</code>؟
+      <br>الـ <code class="mono text-sm">margin</code> يُزيح العناصر المجاورة. أمّا <code class="mono text-sm">translate</code> ينقل العنصر بصرياً فقط دون التأثير على غيره — ولذلك هو أسرع وأنعم في الحركات.
+    </div>
+  </div>
+
+  <!-- 2.2 rotate -->
+  <div class="mb-12">
+    <h3 class="text-2xl font-bold mb-3 ink"><span class="ex-num">٢</span>rotate — التدوير</h3>
+    <p class="mb-4">يدوّر العنصر حول مركزه بزاوية معيّنة.</p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box mb-4"><span class="com">/* بالدرجات (الأكثر استخداماً) */</span>
+<span class="prop">transform</span>: <span class="kw">rotate</span>(<span class="num">45deg</span>);
+
+<span class="com">/* قيمة سالبة = عكس عقارب الساعة */</span>
+<span class="prop">transform</span>: <span class="kw">rotate</span>(<span class="num">-30deg</span>);
+
+<span class="com">/* دورة كاملة */</span>
+<span class="prop">transform</span>: <span class="kw">rotate</span>(<span class="num">360deg</span>);</pre>
+
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="demo-wrap">
+        <div class="demo-box hover-rotate">↻</div>
+        <p class="hint">rotate(45deg)</p>
+      </div>
+      <div class="demo-wrap">
+        <div class="demo-box hover-rotate-360">↻</div>
+        <p class="hint">rotate(360deg) — دورة كاملة</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.3 scale -->
+  <div class="mb-12">
+    <h3 class="text-2xl font-bold mb-3 ink"><span class="ex-num">٣</span>scale — التكبير والتصغير</h3>
+    <p class="mb-4">
+      يكبّر العنصر أو يصغّره. القيمة <strong>1</strong> تعني الحجم الطبيعي، أكبر من <strong>1</strong> تكبير، وأقل من <strong>1</strong> تصغير.
+    </p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box mb-4"><span class="com">/* تكبير 1.5 ضعف */</span>
+<span class="prop">transform</span>: <span class="kw">scale</span>(<span class="num">1.5</span>);
+
+<span class="com">/* تصغير للنصف */</span>
+<span class="prop">transform</span>: <span class="kw">scale</span>(<span class="num">0.5</span>);
+
+<span class="com">/* تكبير الأفقي فقط */</span>
+<span class="prop">transform</span>: <span class="kw">scaleX</span>(<span class="num">2</span>);
+
+<span class="com">/* تكبير الرأسي فقط */</span>
+<span class="prop">transform</span>: <span class="kw">scaleY</span>(<span class="num">2</span>);
+
+<span class="com">/* تكبير مختلف للاتجاهين */</span>
+<span class="prop">transform</span>: <span class="kw">scale</span>(<span class="num">1.2</span>, <span class="num">0.8</span>);</pre>
+
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="demo-wrap">
+        <div class="demo-box hover-scale-up">+</div>
+        <p class="hint">scale(1.5) — تكبير</p>
+      </div>
+      <div class="demo-wrap">
+        <div class="demo-box hover-scale-down">−</div>
+        <p class="hint">scale(0.5) — تصغير</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.4 skew -->
+  <div class="mb-12">
+    <h3 class="text-2xl font-bold mb-3 ink"><span class="ex-num">٤</span>skew — الإمالة</h3>
+    <p class="mb-4">
+      يميل العنصر بزاوية معيّنة، كأنّك تنظر إليه من جانب.
+    </p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box mb-4"><span class="prop">transform</span>: <span class="kw">skewX</span>(<span class="num">20deg</span>);    <span class="com">/* إمالة أفقية */</span>
+<span class="prop">transform</span>: <span class="kw">skewY</span>(<span class="num">10deg</span>);    <span class="com">/* إمالة رأسية */</span>
+<span class="prop">transform</span>: <span class="kw">skew</span>(<span class="num">20deg</span>, <span class="num">5deg</span>);</pre>
+
+    <div class="demo-wrap">
+      <div class="demo-box hover-skew">▱</div>
+      <p class="hint">skewX(20deg)</p>
+    </div>
+  </div>
+
+  <!-- 2.5 combining -->
+  <div class="mb-12">
+    <h3 class="text-2xl font-bold mb-3 ink"><span class="ex-num">٥</span>دمج عدة تحويلات معاً</h3>
+    <p class="mb-4">
+      يمكنك تطبيق أكثر من تحويل في نفس الوقت — فقط افصل بينها بمسافة.
+    </p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box mb-4"><span class="prop">transform</span>: <span class="kw">translateX</span>(<span class="num">60px</span>) <span class="kw">rotate</span>(<span class="num">180deg</span>) <span class="kw">scale</span>(<span class="num">1.2</span>);</pre>
+
+    <div class="highlight mb-4">
+      <strong class="accent">⚠️ تنبيه مهم:</strong> الترتيب يهم!
+      <br>
+      <code class="mono text-sm">translate(50px) rotate(45deg)</code> ≠ <code class="mono text-sm">rotate(45deg) translate(50px)</code>
+      <br>
+      <span class="text-sm">في الأولى يتحرّك ثم يدور في مكانه. في الثانية يدور أولاً ثم يتحرّك في الاتجاه الجديد.</span>
+    </div>
+
+    <div class="demo-wrap">
+      <div class="demo-box hover-combo">★</div>
+      <p class="hint">translateX(60px) rotate(180deg) scale(1.2)</p>
+    </div>
+  </div>
+
+  <!-- 2.6 transform-origin -->
+  <div class="mb-12">
+    <h3 class="text-2xl font-bold mb-3 ink"><span class="ex-num">٦</span>transform-origin — نقطة الارتكاز</h3>
+    <p class="mb-4">
+      افتراضياً يدور العنصر حول مركزه. لكن يمكنك تغيير نقطة الارتكاز:
+    </p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box"><span class="prop">transform-origin</span>: <span class="val">center</span>;       <span class="com">/* الافتراضي */</span>
+<span class="prop">transform-origin</span>: <span class="val">top left</span>;     <span class="com">/* الزاوية اليسرى العلوية */</span>
+<span class="prop">transform-origin</span>: <span class="num">0 0</span>;             <span class="com">/* نفس الأعلى يسار */</span>
+<span class="prop">transform-origin</span>: <span class="num">100% 50%</span>;        <span class="com">/* الجانب الأيمن */</span></pre>
+  </div>
+</section>
+
+<div class="divider">۞ ۞ ۞</div>
+
+<!-- ════════════════════════════════════════════════════
+     TRANSITION (PRELUDE TO ANIMATION)
+═════════════════════════════════════════════════════ -->
+<section class="mb-16">
+  <div class="section-num mb-2">الجزء الثاني · ٠٣</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">Transition — التحوّل السلس</h2>
+
+  <p class="mb-4">
+    لاحظت أن أمثلة Transform السابقة كانت تنتقل <strong class="accent">بسلاسة</strong> عند الـ hover، لا بقفزة فجائية. السبب: استخدمنا <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-sm">transition</code>.
+  </p>
+
+  <p class="mb-4">
+    الـ Transition يقول للمتصفح: "إذا تغيّرت قيمة هذه الخاصية، لا تنفّذ التغيير فوراً، بل انتقل إليه تدريجياً خلال زمن معيّن".
+  </p>
+
+  <div class="code-label">CSS</div>
+  <pre class="code-box mb-4"><span class="sel">.box</span> {
+  <span class="prop">background</span>: <span class="val">red</span>;
+  <span class="prop">transition</span>: <span class="prop">background</span> <span class="num">0.5s</span> <span class="val">ease</span>;
+}
+<span class="sel">.box:hover</span> {
+  <span class="prop">background</span>: <span class="val">blue</span>;  <span class="com">/* سينتقل من أحمر لأزرق خلال نصف ثانية */</span>
+}</pre>
+
+  <h3 class="font-bold text-lg mb-3 ink">صيغة transition الكاملة:</h3>
+  <pre class="code-box mb-4"><span class="prop">transition</span>: <span class="com">[الخاصية]</span> <span class="com">[المدة]</span> <span class="com">[الدالة الزمنية]</span> <span class="com">[التأخير]</span>;
+
+<span class="prop">transition</span>: <span class="prop">transform</span> <span class="num">0.3s</span> <span class="val">ease-out</span> <span class="num">0.1s</span>;
+
+<span class="com">/* لجميع الخصائص دفعة واحدة */</span>
+<span class="prop">transition</span>: <span class="val">all</span> <span class="num">0.3s</span> <span class="val">ease</span>;
+
+<span class="com">/* عدة خصائص بقيم مختلفة */</span>
+<span class="prop">transition</span>:
+  <span class="prop">transform</span> <span class="num">0.3s</span> <span class="val">ease</span>,
+  <span class="prop">background</span> <span class="num">0.5s</span> <span class="val">linear</span>;</pre>
+
+  <h3 class="font-bold text-lg mb-3 ink">الدوال الزمنية (Timing Functions):</h3>
+  <p class="mb-4 text-sm">
+    تحدّد <strong>كيف</strong> يحدث الانتقال — هل يبدأ سريعاً ثم يبطئ؟ أم العكس؟ شاهد الفروق:
+  </p>
+
+  <div class="space-y-3 mb-4">
+    <div>
+      <div class="flex justify-between mb-1 text-xs mono"><span>linear</span><span class="gold">سرعة ثابتة</span></div>
+      <div class="timing-track"><div class="timing-ball linear"></div></div>
+    </div>
+    <div>
+      <div class="flex justify-between mb-1 text-xs mono"><span>ease</span><span class="gold">الافتراضي — بداية بطيئة، تسارع، نهاية بطيئة</span></div>
+      <div class="timing-track"><div class="timing-ball ease"></div></div>
+    </div>
+    <div>
+      <div class="flex justify-between mb-1 text-xs mono"><span>ease-in</span><span class="gold">يبدأ بطيء ويسرع</span></div>
+      <div class="timing-track"><div class="timing-ball ease-in"></div></div>
+    </div>
+    <div>
+      <div class="flex justify-between mb-1 text-xs mono"><span>ease-out</span><span class="gold">يبدأ سريع ويبطئ — الأفضل للـ UI</span></div>
+      <div class="timing-track"><div class="timing-ball ease-out"></div></div>
+    </div>
+    <div>
+      <div class="flex justify-between mb-1 text-xs mono"><span>cubic-bezier(0.68, -0.55, 0.27, 1.55)</span><span class="gold">ارتدادي — للحركات المرحة</span></div>
+      <div class="timing-track"><div class="timing-ball bouncy"></div></div>
+    </div>
+  </div>
+
+  <div class="highlight">
+    <strong class="accent">قاعدة ذهبية:</strong> استخدم <code class="mono text-sm">ease-out</code> للأشياء التي تظهر، و <code class="mono text-sm">ease-in</code> للأشياء التي تختفي. هذا يعطي شعوراً طبيعياً بالحركة.
+  </div>
+</section>
+
+<div class="divider">۞ ۞ ۞</div>
+
+<!-- ════════════════════════════════════════════════════
+     ANIMATION
+═════════════════════════════════════════════════════ -->
+<section class="mb-16">
+  <div class="section-num mb-2">الجزء الثالث · ٠٤</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">Animation و @keyframes</h2>
+
+  <p class="mb-4">
+    الـ Transition يحتاج <strong>محفّزاً</strong> (مثل hover) لكي يعمل. لكن ماذا لو أردتَ حركةً <strong class="accent">دائمة</strong> (مثل دوران مؤشّر التحميل)؟
+  </p>
+
+  <p class="mb-6">
+    هنا يأتي دور <strong class="accent">@keyframes</strong> + <strong class="accent">animation</strong>.
+  </p>
+
+  <h3 class="text-2xl font-bold mb-3 ink"><span class="ex-num">١</span>تعريف الحركة بـ @keyframes</h3>
+  <p class="mb-4">
+    أولاً نُعرّف "مراحل" الحركة (المفاتيح). كل مرحلة تحدّد كيف يبدو العنصر عند نسبة معيّنة من الحركة.
+  </p>
+
+  <div class="code-label">CSS</div>
+  <pre class="code-box mb-4"><span class="com">/* الصيغة المختصرة: مرحلتين فقط */</span>
+<span class="kw">@keyframes</span> <span class="sel">spin</span> {
+  <span class="kw">from</span> { <span class="prop">transform</span>: <span class="kw">rotate</span>(<span class="num">0deg</span>); }
+  <span class="kw">to</span>   { <span class="prop">transform</span>: <span class="kw">rotate</span>(<span class="num">360deg</span>); }
+}
+
+<span class="com">/* الصيغة الكاملة: مراحل متعددة بنسب مئوية */</span>
+<span class="kw">@keyframes</span> <span class="sel">bounce</span> {
+  <span class="num">0%</span>   { <span class="prop">transform</span>: <span class="kw">translateY</span>(<span class="num">0</span>); }
+  <span class="num">50%</span>  { <span class="prop">transform</span>: <span class="kw">translateY</span>(<span class="num">-30px</span>); }
+  <span class="num">100%</span> { <span class="prop">transform</span>: <span class="kw">translateY</span>(<span class="num">0</span>); }
+}</pre>
+
+  <h3 class="text-2xl font-bold mb-3 mt-8 ink"><span class="ex-num">٢</span>تطبيق الحركة بـ animation</h3>
+  <p class="mb-4">بعد تعريف الـ keyframes، نطبّقها على العنصر:</p>
+
+  <div class="code-label">CSS</div>
+  <pre class="code-box mb-4"><span class="sel">.loader</span> {
+  <span class="prop">animation</span>: <span class="val">spin</span> <span class="num">1s</span> <span class="val">linear</span> <span class="val">infinite</span>;
+}
+
+<span class="com">/* مفصّلة */</span>
+<span class="sel">.loader</span> {
+  <span class="prop">animation-name</span>:            <span class="val">spin</span>;
+  <span class="prop">animation-duration</span>:        <span class="num">1s</span>;
+  <span class="prop">animation-timing-function</span>: <span class="val">linear</span>;
+  <span class="prop">animation-iteration-count</span>: <span class="val">infinite</span>;
+  <span class="prop">animation-delay</span>:           <span class="num">0.5s</span>;
+  <span class="prop">animation-direction</span>:       <span class="val">alternate</span>;
+  <span class="prop">animation-fill-mode</span>:       <span class="val">forwards</span>;
+}</pre>
+
+  <h3 class="text-2xl font-bold mb-3 mt-8 ink"><span class="ex-num">٣</span>أمثلة حيّة</h3>
+  <p class="mb-4 text-sm">كل صندوق أدناه يستخدم نوع حركة مختلف — راقبها وانظر إلى الكود:</p>
+
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+    <div class="demo-wrap" style="padding:1.5rem;">
+      <div class="demo-box anim-spin" style="width:60px;height:60px;font-size:1.5rem;">↻</div>
+      <p class="hint">spin — دوران</p>
+    </div>
+    <div class="demo-wrap" style="padding:1.5rem;">
+      <div class="demo-box anim-bounce" style="width:60px;height:60px;font-size:1.5rem;">⬆</div>
+      <p class="hint">bounce — ارتداد</p>
+    </div>
+    <div class="demo-wrap" style="padding:1.5rem;">
+      <div class="demo-box anim-pulse" style="width:60px;height:60px;font-size:1.5rem;">♥</div>
+      <p class="hint">pulse — نبض</p>
+    </div>
+    <div class="demo-wrap" style="padding:1.5rem;">
+      <div class="demo-box anim-slide" style="width:60px;height:60px;font-size:1.5rem;">→</div>
+      <p class="hint">slide-in</p>
+    </div>
+    <div class="demo-wrap" style="padding:1.5rem;">
+      <div class="demo-box anim-shake" style="width:60px;height:60px;font-size:1.5rem;">!</div>
+      <p class="hint">shake — اهتزاز</p>
+    </div>
+    <div class="demo-wrap" style="padding:1.5rem;">
+      <div class="demo-box anim-flip" style="width:60px;height:60px;font-size:1.5rem;">↺</div>
+      <p class="hint">flip — انقلاب</p>
+    </div>
+  </div>
+
+  <h3 class="text-2xl font-bold mb-3 mt-8 ink"><span class="ex-num">٤</span>الخصائص الفرعية للـ animation</h3>
+
+  <div class="grid md:grid-cols-2 gap-4 mb-4">
+    <div class="prop-card">
+      <code class="mono text-sm font-bold accent">animation-iteration-count</code>
+      <p class="text-xs mt-2">عدد مرات تكرار الحركة. <code class="mono">3</code> أو <code class="mono">infinite</code> للتكرار اللانهائي.</p>
+    </div>
+    <div class="prop-card">
+      <code class="mono text-sm font-bold accent">animation-direction</code>
+      <p class="text-xs mt-2"><code class="mono">normal</code> · <code class="mono">reverse</code> · <code class="mono">alternate</code> (ذهاب وعودة).</p>
+    </div>
+    <div class="prop-card">
+      <code class="mono text-sm font-bold accent">animation-delay</code>
+      <p class="text-xs mt-2">تأخير قبل بدء الحركة. مفيد لتسلسل عدة عناصر.</p>
+    </div>
+    <div class="prop-card">
+      <code class="mono text-sm font-bold accent">animation-fill-mode</code>
+      <p class="text-xs mt-2"><code class="mono">forwards</code> = ابقَ في النهاية. <code class="mono">backwards</code> = ابدأ من البداية قبل الـ delay.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider">۞ ۞ ۞</div>
+
+<!-- ════════════════════════════════════════════════════
+     PRACTICAL EXAMPLES
+═════════════════════════════════════════════════════ -->
+<section class="mb-16">
+  <div class="section-num mb-2">أمثلة عملية · ٠٥</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">تطبيقاتٌ من الواقع</h2>
+
+  <!-- Example 1: Loader -->
+  <div class="mb-12">
+    <h3 class="text-xl font-bold mb-3 ink">⏳ مؤشّر التحميل (Loader)</h3>
+    <p class="mb-3 text-sm">دائرة دوّارة لإظهار حالة الانتظار:</p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box mb-4"><span class="sel">.loader</span> {
+  <span class="prop">width</span>: <span class="num">40px</span>;
+  <span class="prop">height</span>: <span class="num">40px</span>;
+  <span class="prop">border</span>: <span class="num">4px</span> <span class="val">solid</span> <span class="val">#eee</span>;
+  <span class="prop">border-top-color</span>: <span class="val">crimson</span>;
+  <span class="prop">border-radius</span>: <span class="num">50%</span>;
+  <span class="prop">animation</span>: <span class="val">spin</span> <span class="num">1s</span> <span class="val">linear</span> <span class="val">infinite</span>;
+}
+<span class="kw">@keyframes</span> <span class="sel">spin</span> {
+  <span class="kw">to</span> { <span class="prop">transform</span>: <span class="kw">rotate</span>(<span class="num">360deg</span>); }
+}</pre>
+
+    <div class="demo-wrap">
+      <div class="loader"></div>
+      <p class="hint">جارٍ التحميل...</p>
+    </div>
+  </div>
+
+  <!-- Example 2: Hover cards -->
+  <div class="mb-12">
+    <h3 class="text-xl font-bold mb-3 ink">🃏 بطاقات تتفاعل مع المؤشّر</h3>
+    <p class="mb-3 text-sm">عند الـ hover، البطاقة ترتفع وتكبر قليلاً:</p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box mb-4"><span class="sel">.card</span> {
+  <span class="prop">transition</span>: <span class="val">all</span> <span class="num">0.3s</span> <span class="val">ease</span>;
+}
+<span class="sel">.card:hover</span> {
+  <span class="prop">transform</span>: <span class="kw">translateY</span>(<span class="num">-8px</span>) <span class="kw">scale</span>(<span class="num">1.05</span>);
+  <span class="prop">box-shadow</span>: <span class="num">0 12px 24px rgba(0,0,0,.2)</span>;
+}</pre>
+
+    <div class="demo-wrap" style="padding:2rem 1rem;">
+      <div class="hover-card">
+        <div class="icon">🚀</div>
+        <div class="font-bold text-sm">السرعة</div>
+      </div>
+      <div class="hover-card">
+        <div class="icon">🎨</div>
+        <div class="font-bold text-sm">التصميم</div>
+      </div>
+      <div class="hover-card">
+        <div class="icon">⚡</div>
+        <div class="font-bold text-sm">الأداء</div>
+      </div>
+      <p class="hint">مرّر فوق البطاقات</p>
+    </div>
+  </div>
+
+  <!-- Example 3: Notification -->
+  <div class="mb-12">
+    <h3 class="text-xl font-bold mb-3 ink">💬 تنبيه ينزلق من الجانب</h3>
+    <p class="mb-3 text-sm">إشعار يدخل من اليمين عند ظهوره:</p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box mb-4"><span class="kw">@keyframes</span> <span class="sel">slideInRight</span> {
+  <span class="kw">from</span> {
+    <span class="prop">transform</span>: <span class="kw">translateX</span>(<span class="num">120%</span>);
+    <span class="prop">opacity</span>: <span class="num">0</span>;
+  }
+  <span class="kw">to</span> {
+    <span class="prop">transform</span>: <span class="kw">translateX</span>(<span class="num">0</span>);
+    <span class="prop">opacity</span>: <span class="num">1</span>;
+  }
+}
+<span class="sel">.notification</span> {
+  <span class="prop">animation</span>: <span class="val">slideInRight</span> <span class="num">0.6s</span> <span class="val">ease-out</span>;
+}</pre>
+
+    <div class="demo-wrap text-center">
+      <div class="notif-demo">✓ تم الحفظ بنجاح</div>
+      <p class="hint">انتعش الصفحة لرؤيته يدخل مرة أخرى</p>
+    </div>
+  </div>
+
+  <!-- Example 4: Button press -->
+  <div class="mb-12">
+    <h3 class="text-xl font-bold mb-3 ink">🔘 زر بتفاعل لمسي</h3>
+    <p class="mb-3 text-sm">يرتفع عند hover ويُضغط للأسفل عند active:</p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box mb-4"><span class="sel">.btn</span> {
+  <span class="prop">transition</span>: <span class="prop">transform</span> <span class="num">0.1s</span>, <span class="prop">box-shadow</span> <span class="num">0.1s</span>;
+}
+<span class="sel">.btn:hover</span> {
+  <span class="prop">transform</span>: <span class="kw">translateY</span>(<span class="num">-2px</span>);
+  <span class="prop">box-shadow</span>: <span class="num">0 6px 12px rgba(0,0,0,.15)</span>;
+}
+<span class="sel">.btn:active</span> {
+  <span class="prop">transform</span>: <span class="kw">translateY</span>(<span class="num">1px</span>);
+  <span class="prop">box-shadow</span>: <span class="num">0 2px 4px rgba(0,0,0,.15)</span>;
+}</pre>
+
+    <div class="demo-wrap">
+      <button class="press-btn">اضغطني</button>
+      <p class="hint">جرّب الـ hover ثم الضغط</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider">۞ ۞ ۞</div>
+
+<!-- ════════════════════════════════════════════════════
+     SANDBOX
+═════════════════════════════════════════════════════ -->
+<section class="mb-16">
+  <div class="section-num mb-2">معمل تفاعلي · ٠٦</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">جرّب بنفسك! 🎮</h2>
+
+  <p class="mb-6">حرّك الأزرار وشاهد الصندوق يتحوّل لحظياً:</p>
+
+  <div class="bg-white border rule rounded-lg p-6 mb-4">
+    <div class="grid md:grid-cols-2 gap-6 mb-6 no-print">
+      <div>
+        <label class="font-bold text-sm block mb-2">
+          translateX: <span id="txValue" class="accent mono">0px</span>
+        </label>
+        <input type="range" id="txSlider" min="-150" max="150" value="0" />
+      </div>
+      <div>
+        <label class="font-bold text-sm block mb-2">
+          rotate: <span id="rotValue" class="accent mono">0deg</span>
+        </label>
+        <input type="range" id="rotSlider" min="0" max="360" value="0" />
+      </div>
+      <div>
+        <label class="font-bold text-sm block mb-2">
+          scale: <span id="scaleValue" class="accent mono">1</span>
+        </label>
+        <input type="range" id="scaleSlider" min="50" max="200" value="100" />
+      </div>
+      <div>
+        <label class="font-bold text-sm block mb-2">
+          skewX: <span id="skewValue" class="accent mono">0deg</span>
+        </label>
+        <input type="range" id="skewSlider" min="-45" max="45" value="0" />
+      </div>
+    </div>
+
+    <div class="sandbox-stage mb-4">
+      <div id="sandboxBox">جرّبني</div>
+    </div>
+
+    <div class="code-box">
+<span class="sel">.box</span> {
+  <span class="prop">transform</span>: <span class="kw">translateX</span>(<span id="txOut" class="num">0px</span>) <span class="kw">rotate</span>(<span id="rotOut" class="num">0deg</span>) <span class="kw">scale</span>(<span id="scaleOut" class="num">1</span>) <span class="kw">skewX</span>(<span id="skewOut" class="num">0deg</span>);
+}
+    </div>
+
+    <button id="btnReset" class="press-btn mt-4 no-print">إعادة الضبط</button>
+  </div>
+</section>
+
+<div class="divider">۞ ۞ ۞</div>
+
+<!-- ════════════════════════════════════════════════════
+     EXERCISE
+═════════════════════════════════════════════════════ -->
+<section class="mb-16">
+  <div class="section-num mb-2">تمرينٌ تطبيقي · ٠٧</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">المهمة العملية</h2>
+
+  <div class="bg-white border-r-4 border-r-red-600 rule p-6 rounded-lg mb-6">
+    <h3 class="font-bold text-xl mb-3 accent">🎯 المطلوب:</h3>
+    <p class="mb-4">
+      صمّم بطاقة منتج تفاعلية لمتجر إلكتروني، تحتوي على:
+    </p>
+    <ul class="space-y-2 mb-4 text-sm">
+      <li>• صورة (أو emoji) في الأعلى تكبر بـ <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-xs">scale(1.1)</code> عند hover على البطاقة</li>
+      <li>• البطاقة كلها ترتفع 8px للأعلى عند hover</li>
+      <li>• زر "أضف للسلة" يهتزّ (shake) عند الضغط</li>
+      <li>• شارة "خصم" تنبض باستمرار (animation pulse)</li>
+      <li>• عند تحميل الصفحة، البطاقة تظهر بانزلاق من الأسفل</li>
+    </ul>
+    <p class="text-sm" style="color:#777;">
+      <strong>تلميح:</strong> استخدم <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-xs">transition</code> للتفاعلات (hover/active) و <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-xs">@keyframes</code> للحركات المستمرة.
+    </p>
+  </div>
+
+  <h3 class="font-bold mb-3 ink">📋 الخطوات المقترحة:</h3>
+  <ol class="space-y-3 list-decimal list-inside text-sm mb-6">
+    <li>أنشئ HTML بسيطاً للبطاقة: صورة، عنوان، سعر، شارة، زر</li>
+    <li>أضف <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-xs">transition: all 0.3s ease</code> على البطاقة والصورة</li>
+    <li>طبّق <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-xs">transform</code> داخل <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-xs">:hover</code></li>
+    <li>عرّف <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-xs">@keyframes pulse</code> للشارة</li>
+    <li>عرّف <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-xs">@keyframes shake</code> وطبّقه في <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-xs">:active</code> للزر</li>
+    <li>عرّف <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-xs">@keyframes slideUp</code> وطبّقه على البطاقة عند التحميل</li>
+  </ol>
+
+  <div class="highlight">
+    <strong class="accent">معايير التقييم:</strong> الحركات سلسة (مدة بين 0.2s و 0.6s)، التحويلات لا تؤثر على بقيّة العناصر، الكود نظيف ومنظم، الـ keyframes معرّفة في مكان واحد.
+  </div>
+</section>
+
+<div class="divider">۞ ۞ ۞</div>
+
+<!-- ════════════════════════════════════════════════════
+     QUIZ
+═════════════════════════════════════════════════════ -->
+<section class="mb-16 no-print">
+  <div class="section-num mb-2">اختبر فهمك · ٠٨</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">أسئلة سريعة</h2>
+
+  <div class="mb-8">
+    <p class="font-bold mb-3"><span class="accent mono">س١:</span> ما الفرق الأساسي بين <code class="mono bg-amber-100 px-1.5 rounded text-sm">transition</code> و <code class="mono bg-amber-100 px-1.5 rounded text-sm">animation</code>؟</p>
+    <div class="quiz-option" data-correct="false">animation أسرع من transition</div>
+    <div class="quiz-option" data-correct="true">transition يحتاج محفّزاً (hover مثلاً)، animation يعمل تلقائياً ويدعم مراحل متعددة</div>
+    <div class="quiz-option" data-correct="false">transition يعمل فقط على الألوان</div>
+  </div>
+
+  <div class="mb-8">
+    <p class="font-bold mb-3"><span class="accent mono">س٢:</span> ماذا يفعل <code class="mono bg-amber-100 px-1.5 rounded text-sm">transform: scale(0.5)</code>؟</p>
+    <div class="quiz-option" data-correct="false">يدوّر العنصر بـ 0.5 درجة</div>
+    <div class="quiz-option" data-correct="true">يصغّر العنصر للنصف</div>
+    <div class="quiz-option" data-correct="false">يحرّك العنصر 50px</div>
+  </div>
+
+  <div class="mb-8">
+    <p class="font-bold mb-3"><span class="accent mono">س٣:</span> ما معنى <code class="mono bg-amber-100 px-1.5 rounded text-sm">animation-iteration-count: infinite</code>؟</p>
+    <div class="quiz-option" data-correct="false">الحركة تنتهي بسرعة لانهائية</div>
+    <div class="quiz-option" data-correct="true">الحركة تتكرر بلا توقّف</div>
+    <div class="quiz-option" data-correct="false">الحركة تشتغل مرة واحدة فقط</div>
+  </div>
+
+  <div class="mb-8">
+    <p class="font-bold mb-3"><span class="accent mono">س٤:</span> أي دالة زمنية تجعل الحركة تبدأ سريعة وتنتهي ببطء؟</p>
+    <div class="quiz-option" data-correct="false">linear</div>
+    <div class="quiz-option" data-correct="false">ease-in</div>
+    <div class="quiz-option" data-correct="true">ease-out</div>
+  </div>
+
+  <div class="mb-8">
+    <p class="font-bold mb-3"><span class="accent mono">س٥:</span> أيّهما يؤثر على بقيّة العناصر المجاورة؟</p>
+    <div class="quiz-option" data-correct="false">transform: translateX(50px)</div>
+    <div class="quiz-option" data-correct="true">margin-left: 50px</div>
+    <div class="quiz-option" data-correct="false">كلاهما لا يؤثر</div>
+  </div>
+
+  <div class="mb-8">
+    <p class="font-bold mb-3"><span class="accent mono">س٦:</span> داخل <code class="mono bg-amber-100 px-1.5 rounded text-sm">@keyframes</code> ماذا يعني <code class="mono bg-amber-100 px-1.5 rounded text-sm">50%</code>؟</p>
+    <div class="quiz-option" data-correct="false">الحركة تنفّذ بنصف سرعتها</div>
+    <div class="quiz-option" data-correct="true">منتصف مدّة الحركة الزمنية</div>
+    <div class="quiz-option" data-correct="false">العنصر يُصغَّر للنصف</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     CHEATSHEET
+═════════════════════════════════════════════════════ -->
+<section class="mb-16">
+  <div class="section-num mb-2">الخلاصة · ٠٩</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">ورقة المرجع السريعة</h2>
+
+  <div class="bg-stone-900 text-amber-50 rounded-lg p-6 mono text-sm" style="direction: ltr; text-align: left;">
+<pre>/* ═══ TRANSFORM ═══ */
+transform: translateX(50px);          /* تحريك */
+transform: translateY(-20px);
+transform: rotate(45deg);             /* تدوير */
+transform: scale(1.5);                /* تكبير */
+transform: scale(0.5);                /* تصغير */
+transform: skewX(20deg);              /* إمالة */
+
+/* الدمج (الترتيب يهم!) */
+transform: translateX(50px) rotate(180deg) scale(1.2);
+
+transform-origin: center;             /* نقطة الارتكاز */
+
+/* ═══ TRANSITION ═══ */
+transition: transform 0.3s ease;
+transition: all 0.3s ease-out;
+transition:
+  transform   0.3s ease,
+  background  0.5s linear;
+
+/* ═══ ANIMATION ═══ */
+@keyframes myAnim {
+  from { transform: scale(1); }
+  to   { transform: scale(1.2); }
+}
+
+@keyframes complex {
+  0%   { opacity: 0;  transform: translateY(20px); }
+  50%  { opacity: 0.5; }
+  100% { opacity: 1;  transform: translateY(0); }
+}
+
+.element {
+  animation: myAnim 1s ease-in-out infinite alternate;
+}
+
+/* خصائص مفصّلة */
+animation-name: myAnim;
+animation-duration: 1s;
+animation-timing-function: ease-out;
+animation-iteration-count: infinite;  /* أو رقم */
+animation-delay: 0.5s;
+animation-direction: alternate;       /* normal | reverse | alternate */
+animation-fill-mode: forwards;        /* forwards | backwards | both */</pre>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     FOOTER
+═════════════════════════════════════════════════════ -->
+<footer class="border-t-4 border-double rule pt-8 text-center">
+  <p class="display text-2xl mb-2 ink">— نهاية الدرس —</p>
+  <p class="text-sm" style="color:#777;">
+    لا تخف من تجربة قيم عشوائية. أحياناً أجمل الحركات تأتي من الصدفة.
+  </p>
+  <p class="text-xs mt-4 mono accent">CSS TRANSFORM & ANIMATION DOC · STUDENT EDITION</p>
+</footer>
+
+</main>
+
+<script>
+  // ─── Sandbox interactivity ──────────────────────────────
+  const txSlider     = document.getElementById('txSlider');
+  const rotSlider    = document.getElementById('rotSlider');
+  const scaleSlider  = document.getElementById('scaleSlider');
+  const skewSlider   = document.getElementById('skewSlider');
+  const sandboxBox   = document.getElementById('sandboxBox');
+
+  const txValue      = document.getElementById('txValue');
+  const rotValue     = document.getElementById('rotValue');
+  const scaleValue   = document.getElementById('scaleValue');
+  const skewValue    = document.getElementById('skewValue');
+
+  const txOut        = document.getElementById('txOut');
+  const rotOut       = document.getElementById('rotOut');
+  const scaleOut     = document.getElementById('scaleOut');
+  const skewOut      = document.getElementById('skewOut');
+
+  function updateSandbox() {
+    const tx    = txSlider.value;
+    const rot   = rotSlider.value;
+    const sc    = (scaleSlider.value / 100).toFixed(2);
+    const sk    = skewSlider.value;
+    sandboxBox.style.transform = `translateX(${tx}px) rotate(${rot}deg) scale(${sc}) skewX(${sk}deg)`;
+    txValue.textContent     = tx + 'px';
+    rotValue.textContent    = rot + 'deg';
+    scaleValue.textContent  = sc;
+    skewValue.textContent   = sk + 'deg';
+    txOut.textContent       = tx + 'px';
+    rotOut.textContent      = rot + 'deg';
+    scaleOut.textContent    = sc;
+    skewOut.textContent     = sk + 'deg';
+  }
+
+  [txSlider, rotSlider, scaleSlider, skewSlider].forEach(s => s.addEventListener('input', updateSandbox));
+
+  document.getElementById('btnReset').addEventListener('click', () => {
+    txSlider.value     = 0;
+    rotSlider.value    = 0;
+    scaleSlider.value  = 100;
+    skewSlider.value   = 0;
+    updateSandbox();
+  });
+
+  // ─── Quiz logic ─────────────────────────────────────────
+  document.querySelectorAll('.quiz-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const isCorrect = opt.dataset.correct === 'true';
+      opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+      const siblings = opt.parentElement.querySelectorAll('.quiz-option');
+      siblings.forEach(s => {
+        s.style.pointerEvents = 'none';
+        if (s !== opt && s.dataset.correct === 'true') {
+          s.classList.add('correct');
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

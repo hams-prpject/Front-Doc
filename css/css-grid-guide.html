@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>دليل CSS Grid — شرح مفصل بالأمثلة</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Amiri:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink:    #1a1a1a;
+    --paper:  #fdfaf3;
+    --accent: #d4453d;
+    --gold:   #c5a572;
+    --rule:   #e8e0cc;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.7;
+  }
+  .display { font-family: 'Amiri', serif; }
+  .mono    { font-family: 'JetBrains Mono', monospace; direction: ltr; text-align: left; }
+
+  /* ─── Newspaper / Magazine details ────────────────────────── */
+  .rule       { border-color: var(--rule); }
+  .accent     { color: var(--accent); }
+  .accent-bg  { background: var(--accent); }
+  .gold       { color: var(--gold); }
+  .ink        { color: var(--ink); }
+
+  .section-num {
+    font-family: 'Amiri', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* خط زخرفي تحت العنوان */
+  .ornament {
+    display: inline-block;
+    width: 50px;
+    height: 2px;
+    background: var(--accent);
+    margin: 0 12px;
+    vertical-align: middle;
+  }
+
+  /* صناديق الكود */
+  .code-box {
+    background: #1a1a1a;
+    color: #f8e8c8;
+    padding: 1.25rem 1.5rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    direction: ltr;
+    text-align: left;
+    overflow-x: auto;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    border-right: 4px solid var(--accent);
+  }
+  .code-box .kw   { color: #ff9b85; }
+  .code-box .prop { color: #95d5b2; }
+  .code-box .val  { color: #ffd6a5; }
+  .code-box .num  { color: #b5d8eb; }
+  .code-box .com  { color: #888; font-style: italic; }
+
+  /* Drop cap */
+  .dropcap::first-letter {
+    font-family: 'Amiri', serif;
+    font-size: 4.5rem;
+    font-weight: 700;
+    float: right;
+    line-height: 1;
+    margin-left: 0.5rem;
+    margin-top: 0.3rem;
+    color: var(--accent);
+  }
+
+  /* ─── Demo Grid Items ────────────────────────────────────── */
+  .demo-wrap {
+    background: #fff;
+    border: 1px solid var(--rule);
+    padding: 1rem;
+    border-radius: 4px;
+  }
+  .demo-grid {
+    display: grid;
+    gap: 8px;
+  }
+  .demo-grid > div {
+    background: var(--accent);
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    font-weight: 700;
+    border-radius: 4px;
+    font-family: 'Cairo', sans-serif;
+  }
+  .demo-grid > div:nth-child(even) { background: var(--ink); }
+  .demo-grid > div:nth-child(3n)   { background: var(--gold); color: var(--ink); }
+
+  /* ─── Interactive Sandbox ─────────────────────────────────── */
+  .sandbox-grid {
+    display: grid;
+    gap: var(--gap, 10px);
+    grid-template-columns: var(--cols, repeat(3, 1fr));
+    grid-template-rows: var(--rows, auto);
+    background: #faf6e9;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 2px dashed var(--gold);
+    min-height: 200px;
+  }
+  .sandbox-grid > div {
+    background: var(--accent);
+    color: #fff;
+    padding: 1.5rem;
+    text-align: center;
+    font-weight: 800;
+    font-size: 1.25rem;
+    border-radius: 4px;
+    transition: all 0.3s;
+  }
+  .sandbox-grid > div:nth-child(2n) { background: var(--ink); }
+  .sandbox-grid > div:nth-child(3n) { background: var(--gold); color: var(--ink); }
+
+  /* Slider */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--rule);
+    border-radius: 3px;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+
+  /* ─── Page break ornament ─────────────────────────────────── */
+  .divider {
+    text-align: center;
+    margin: 4rem 0;
+    color: var(--accent);
+    font-family: 'Amiri', serif;
+    font-size: 1.5rem;
+    letter-spacing: 1rem;
+  }
+
+  /* Highlight box */
+  .highlight {
+    background: linear-gradient(90deg, rgba(212,69,61,0.08), transparent);
+    border-right: 3px solid var(--accent);
+    padding: 1rem 1.25rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+  }
+
+  /* Property card */
+  .prop-card {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1.5rem;
+    transition: all 0.2s;
+    height: 100%;
+  }
+  .prop-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(212,69,61,0.08);
+  }
+
+  /* Quiz */
+  .quiz-option {
+    background: white;
+    border: 2px solid var(--rule);
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 0.5rem;
+  }
+  .quiz-option:hover { border-color: var(--gold); }
+  .quiz-option.correct   { border-color: #16a34a; background: #f0fdf4; color: #15803d; font-weight: 700; }
+  .quiz-option.incorrect { border-color: #dc2626; background: #fef2f2; color: #991b1b; }
+
+  /* Print */
+  @media print {
+    body { font-size: 11pt; }
+    .no-print { display: none !important; }
+  }
+
+  /* RTL Code label */
+  .code-label {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--gold);
+    padding: 2px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    border-radius: 3px;
+    margin-bottom: 0.5rem;
+    direction: ltr;
+  }
+
+  /* Numbered example */
+  .ex-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    font-family: 'Amiri', serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-left: 0.75rem;
+  }
+
+  /* Visual diagram */
+  .grid-diagram {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    padding: 8px;
+    background: #faf6e9;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+  }
+  .grid-diagram > div {
+    background: rgba(212,69,61,0.15);
+    border: 1px dashed var(--accent);
+    padding: 12px 4px;
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+  }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ════════════════════════════════════════════════════
+     HEADER / MASTHEAD
+═════════════════════════════════════════════════════ -->
+<header class="border-b-4 border-double rule pt-8 pb-6 mb-12">
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="flex justify-between items-center text-xs mb-4 mono">
+      <span class="ink">DOCUMENTATION · VOL. 01</span>
+      <span class="accent">FRONT-END · CSS</span>
+    </div>
+    <h1 class="display text-center text-6xl md:text-8xl font-bold ink leading-none mb-4">
+      دليلُ الـ<span class="accent italic">Grid</span>
+    </h1>
+    <p class="text-center text-lg gold mb-2">
+      <span class="ornament"></span>
+      شرحٌ مفصّل لِبناء التخطيطات الحديثة في الويب
+      <span class="ornament"></span>
+    </p>
+    <p class="text-center text-sm mt-4" style="color:#777;">
+      دليل الطالب · المستوى المتوسط · يحتاج معرفة أساسية بـ HTML و CSS
+    </p>
+  </div>
+</header>
+
+<main class="max-w-4xl mx-auto px-6 pb-24">
+
+<!-- ════════════════════════════════════════════════════
+     INTRODUCTION
+═════════════════════════════════════════════════════ -->
+<section class="mb-16">
+  <div class="section-num mb-2">المقدمة · ٠١</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">ما هو CSS Grid؟</h2>
+
+  <p class="text-lg dropcap mb-4">
+    الـ <strong class="accent">CSS Grid</strong> نظامُ تخطيطٍ ثنائي الأبعاد، يعني أنه يتعامل مع <strong>الصفوف والأعمدة معاً</strong> في الوقت ذاته. وهذا ما يميّزه عن نظام <code class="bg-amber-100 px-2 py-0.5 rounded mono text-sm">Flexbox</code> الذي يعمل في بُعدٍ واحدٍ فقط (إما صفّ أو عمود).
+  </p>
+
+  <p class="text-base mb-4">
+    تخيّل أنك تريد رسم جدولٍ على ورقة: تحدّد عدد الأعمدة، عدد الصفوف، ثم تضع كل عنصرٍ في خانته المناسبة. هذا بالضبط ما يفعله Grid في صفحة الويب — لكن بمرونةٍ أكبر بكثير.
+  </p>
+
+  <div class="highlight">
+    <strong class="accent">متى تستخدم Grid؟</strong> عندما تحتاج إلى تخطيطٍ ثنائي الأبعاد (شبكة معارض الصور، لوحات التحكم، تصميمات المجلات). أمّا للقوائم والأشرطة الأفقية البسيطة فاستخدم <code class="bg-amber-100 px-1.5 py-0.5 rounded mono text-sm">Flexbox</code>.
+  </div>
+</section>
+
+<div class="divider">۞ ۞ ۞</div>
+
+<!-- ════════════════════════════════════════════════════
+     BASIC TERMS
+═════════════════════════════════════════════════════ -->
+<section class="mb-16">
+  <div class="section-num mb-2">المصطلحات · ٠٢</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">المفاهيم الأساسية</h2>
+
+  <p class="mb-6">قبل أن نبدأ، يجب أن نتفق على هذه المصطلحات:</p>
+
+  <div class="grid md:grid-cols-2 gap-4 mb-8">
+    <div class="prop-card">
+      <div class="text-2xl mb-2">📦</div>
+      <h3 class="font-bold text-lg mb-2 accent">الحاوية (Grid Container)</h3>
+      <p class="text-sm">
+        هي العنصر الأب الذي نطبّق عليه <code class="mono text-xs bg-amber-100 px-1.5 py-0.5 rounded">display: grid</code>. كل العناصر داخلها تصبح عناصرَ شبكية.
+      </p>
+    </div>
+    <div class="prop-card">
+      <div class="text-2xl mb-2">🧱</div>
+      <h3 class="font-bold text-lg mb-2 accent">العنصر (Grid Item)</h3>
+      <p class="text-sm">
+        هو كل عنصرٍ مباشرٍ داخل الحاوية. لا تحتاج إلى إعدادٍ إضافي — يصبح Grid Item تلقائياً.
+      </p>
+    </div>
+    <div class="prop-card">
+      <div class="text-2xl mb-2">📏</div>
+      <h3 class="font-bold text-lg mb-2 accent">الخطوط (Grid Lines)</h3>
+      <p class="text-sm">
+        الخطوط التي تفصل بين الأعمدة والصفوف. ترقّم من <strong>1</strong> ابتداءً (أو <strong>-1</strong> من النهاية).
+      </p>
+    </div>
+    <div class="prop-card">
+      <div class="text-2xl mb-2">🔲</div>
+      <h3 class="font-bold text-lg mb-2 accent">الخلية (Grid Cell)</h3>
+      <p class="text-sm">
+        أصغر وحدة في الشبكة، تتشكل من تقاطع صفٍّ وعمود.
+      </p>
+    </div>
+  </div>
+
+  <h3 class="font-bold text-xl mb-3 ink">رسم توضيحي للخطوط:</h3>
+  <div class="grid-diagram mb-4" style="position:relative;">
+    <div>1,1</div><div>1,2</div><div>1,3</div><div>1,4</div>
+    <div>2,1</div><div>2,2</div><div>2,3</div><div>2,4</div>
+    <div>3,1</div><div>3,2</div><div>3,3</div><div>3,4</div>
+  </div>
+  <p class="text-sm text-center" style="color:#777;">
+    شبكة 3×4 — كل خانة محدّدة برقمي الصف والعمود
+  </p>
+</section>
+
+<div class="divider">۞ ۞ ۞</div>
+
+<!-- ════════════════════════════════════════════════════
+     CONTAINER PROPERTIES
+═════════════════════════════════════════════════════ -->
+<section class="mb-16">
+  <div class="section-num mb-2">خصائص الحاوية · ٠٣</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">خصائصُ الحاوية الأساسية</h2>
+
+  <!-- 3.1 display -->
+  <div class="mb-12">
+    <h3 class="text-2xl font-bold mb-3 ink"><span class="ex-num">١</span>display: grid</h3>
+    <p class="mb-4">الخطوة الأولى دائماً. بدونها لا يوجد Grid أصلاً.</p>
+    <div class="code-label">CSS</div>
+    <pre class="code-box"><span class="prop">.container</span> {
+  <span class="prop">display</span>: <span class="val">grid</span>;
+}</pre>
+  </div>
+
+  <!-- 3.2 grid-template-columns -->
+  <div class="mb-12">
+    <h3 class="text-2xl font-bold mb-3 ink"><span class="ex-num">٢</span>grid-template-columns</h3>
+    <p class="mb-4">
+      تحدّد عدد الأعمدة وعرض كل عمود. هذه الخاصية هي <strong class="accent">قلب Grid</strong> — لن تستغني عنها.
+    </p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box mb-4"><span class="com">/* ٣ أعمدة بأحجام ثابتة */</span>
+<span class="prop">grid-template-columns</span>: <span class="num">200px 200px 200px</span>;
+
+<span class="com">/* ٣ أعمدة متساوية بنسب */</span>
+<span class="prop">grid-template-columns</span>: <span class="val">1fr 1fr 1fr</span>;
+
+<span class="com">/* اختصار باستخدام repeat */</span>
+<span class="prop">grid-template-columns</span>: <span class="kw">repeat</span>(<span class="num">3</span>, <span class="val">1fr</span>);
+
+<span class="com">/* أعمدة مختلطة: ثابت + مرن */</span>
+<span class="prop">grid-template-columns</span>: <span class="num">200px</span> <span class="val">1fr</span> <span class="num">100px</span>;</pre>
+
+    <div class="highlight">
+      <strong class="accent">ما هو الـ fr؟</strong> اختصار لـ <em>fraction</em> (كسر). هو وحدة مرنة تأخذ من المساحة المتبقية. مثلاً <code class="mono text-sm">1fr 2fr</code> يعني العمود الثاني ضعف الأول.
+    </div>
+
+    <h4 class="font-bold mb-2 mt-6">مثال عملي:</h4>
+    <div class="demo-wrap">
+      <div class="demo-grid" style="grid-template-columns: 1fr 2fr 1fr;">
+        <div>1fr</div><div>2fr</div><div>1fr</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3.3 grid-template-rows -->
+  <div class="mb-12">
+    <h3 class="text-2xl font-bold mb-3 ink"><span class="ex-num">٣</span>grid-template-rows</h3>
+    <p class="mb-4">نفس فكرة الأعمدة، لكن للصفوف.</p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box"><span class="prop">grid-template-rows</span>: <span class="num">100px 200px 100px</span>;
+
+<span class="com">/* مع الأعمدة معاً */</span>
+<span class="prop">.container</span> {
+  <span class="prop">display</span>: <span class="val">grid</span>;
+  <span class="prop">grid-template-columns</span>: <span class="kw">repeat</span>(<span class="num">3</span>, <span class="val">1fr</span>);
+  <span class="prop">grid-template-rows</span>: <span class="num">80px 200px</span>;
+}</pre>
+  </div>
+
+  <!-- 3.4 gap -->
+  <div class="mb-12">
+    <h3 class="text-2xl font-bold mb-3 ink"><span class="ex-num">٤</span>gap (المسافات)</h3>
+    <p class="mb-4">
+      تحدّد المسافة بين العناصر. أبسط طريقة وأكثرها استخداماً.
+    </p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box mb-4"><span class="com">/* مسافة موحدة */</span>
+<span class="prop">gap</span>: <span class="num">20px</span>;
+
+<span class="com">/* صفوف 20px وأعمدة 10px */</span>
+<span class="prop">gap</span>: <span class="num">20px 10px</span>;
+
+<span class="com">/* تحكّم منفصل */</span>
+<span class="prop">row-gap</span>: <span class="num">20px</span>;
+<span class="prop">column-gap</span>: <span class="num">10px</span>;</pre>
+
+    <h4 class="font-bold mb-2">مع <code class="mono text-sm bg-amber-100 px-1.5 rounded">gap: 20px</code>:</h4>
+    <div class="demo-wrap">
+      <div class="demo-grid" style="grid-template-columns: repeat(3, 1fr); gap: 20px;">
+        <div>1</div><div>2</div><div>3</div>
+        <div>4</div><div>5</div><div>6</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3.5 repeat with auto-fit -->
+  <div class="mb-12">
+    <h3 class="text-2xl font-bold mb-3 ink"><span class="ex-num">٥</span>repeat() مع auto-fit و minmax()</h3>
+    <p class="mb-4">
+      من أقوى الميزات في Grid. تجعل التخطيط <strong class="accent">متجاوباً تلقائياً</strong> بدون media queries!
+    </p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box mb-4"><span class="prop">grid-template-columns</span>: <span class="kw">repeat</span>(<span class="kw">auto-fit</span>, <span class="kw">minmax</span>(<span class="num">200px</span>, <span class="val">1fr</span>));</pre>
+
+    <p class="mb-4 text-sm" style="color:#555;">
+      <strong>الترجمة:</strong> أنشئ أعمدةً تلقائياً، كل عمود لا يقلّ عن <strong>200px</strong> وإذا توفّرت مساحة فليأخذ الباقي بالتساوي. عند تصغير الشاشة تنتقل العناصر للسطر التالي تلقائياً.
+    </p>
+
+    <div class="demo-wrap">
+      <div class="demo-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
+        <div>📱</div><div>💻</div><div>⌚</div><div>🖥️</div><div>📷</div>
+      </div>
+    </div>
+    <p class="text-xs mt-2 text-center" style="color:#777;">
+      جرّب تصغير نافذة المتصفح أو تكبيرها لترى السحر يحدث ✨
+    </p>
+  </div>
+
+  <!-- 3.6 alignment -->
+  <div class="mb-12">
+    <h3 class="text-2xl font-bold mb-3 ink"><span class="ex-num">٦</span>المحاذاة (Alignment)</h3>
+    <p class="mb-4">للتحكم بمحاذاة العناصر داخل الحاوية.</p>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-4">
+      <div class="prop-card">
+        <code class="mono text-sm font-bold accent">justify-items</code>
+        <p class="text-xs mt-2">محاذاة أفقية لكل عنصر داخل خليّته (start / center / end / stretch)</p>
+      </div>
+      <div class="prop-card">
+        <code class="mono text-sm font-bold accent">align-items</code>
+        <p class="text-xs mt-2">محاذاة رأسية لكل عنصر داخل خليّته</p>
+      </div>
+      <div class="prop-card">
+        <code class="mono text-sm font-bold accent">justify-content</code>
+        <p class="text-xs mt-2">محاذاة الشبكة كلّها أفقياً داخل الحاوية</p>
+      </div>
+      <div class="prop-card">
+        <code class="mono text-sm font-bold accent">align-content</code>
+        <p class="text-xs mt-2">محاذاة الشبكة كلّها رأسياً داخل الحاوية</p>
+      </div>
+    </div>
+
+    <div class="highlight">
+      <strong class="accent">الاختصار الذهبي:</strong> <code class="mono text-sm">place-items: center</code> يطبّق <code class="mono text-sm">justify-items</code> و <code class="mono text-sm">align-items</code> معاً — لتوسيط أي شيء في وسط أي شيء بسطرٍ واحد!
+    </div>
+  </div>
+</section>
+
+<div class="divider">۞ ۞ ۞</div>
+
+<!-- ════════════════════════════════════════════════════
+     ITEM PROPERTIES
+═════════════════════════════════════════════════════ -->
+<section class="mb-16">
+  <div class="section-num mb-2">خصائص العناصر · ٠٤</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">خصائصُ العناصر داخل الشبكة</h2>
+
+  <p class="mb-6">
+    حتى الآن طبّقنا الخصائص على الحاوية. لكن أحياناً نريد أن يأخذ عنصرٌ معيّنٌ مساحةً أكبر، أو يبدأ من خانةٍ معيّنة. هنا تأتي خصائص العناصر.
+  </p>
+
+  <!-- 4.1 grid-column -->
+  <div class="mb-12">
+    <h3 class="text-2xl font-bold mb-3 ink"><span class="ex-num">١</span>grid-column</h3>
+    <p class="mb-4">يحدّد بأي خط يبدأ العنصر وبأي خط ينتهي أفقياً.</p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box mb-4"><span class="com">/* يبدأ من الخط 1 وينتهي عند الخط 3 (يأخذ عمودين) */</span>
+<span class="prop">.item</span> {
+  <span class="prop">grid-column</span>: <span class="num">1</span> / <span class="num">3</span>;
+}
+
+<span class="com">/* اختصار باستخدام span (يأخذ عمودين من حيث ما بدأ) */</span>
+<span class="prop">.item</span> {
+  <span class="prop">grid-column</span>: <span class="kw">span</span> <span class="num">2</span>;
+}
+
+<span class="com">/* من البداية إلى النهاية (طول الصف كله) */</span>
+<span class="prop">.item</span> {
+  <span class="prop">grid-column</span>: <span class="num">1</span> / <span class="num">-1</span>;
+}</pre>
+
+    <h4 class="font-bold mb-2">مثال — العنصر الأول يأخذ عمودين:</h4>
+    <div class="demo-wrap">
+      <div class="demo-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <div style="grid-column: 1 / 3;">عنصر بعرض عمودين</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+        <div>6</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4.2 grid-row -->
+  <div class="mb-12">
+    <h3 class="text-2xl font-bold mb-3 ink"><span class="ex-num">٢</span>grid-row</h3>
+    <p class="mb-4">نفس فكرة grid-column لكن للصفوف.</p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box"><span class="prop">.item</span> {
+  <span class="prop">grid-row</span>: <span class="num">1</span> / <span class="num">3</span>;        <span class="com">/* يأخذ صفّين */</span>
+  <span class="prop">grid-row</span>: <span class="kw">span</span> <span class="num">2</span>;       <span class="com">/* اختصار */</span>
+}</pre>
+  </div>
+
+  <!-- 4.3 grid-area -->
+  <div class="mb-12">
+    <h3 class="text-2xl font-bold mb-3 ink"><span class="ex-num">٣</span>grid-area</h3>
+    <p class="mb-4">اختصار يجمع الصف والعمود في سطرٍ واحد.</p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box"><span class="com">/* row-start / column-start / row-end / column-end */</span>
+<span class="prop">.item</span> {
+  <span class="prop">grid-area</span>: <span class="num">1</span> / <span class="num">1</span> / <span class="num">3</span> / <span class="num">3</span>;
+}</pre>
+  </div>
+</section>
+
+<div class="divider">۞ ۞ ۞</div>
+
+<!-- ════════════════════════════════════════════════════
+     PRACTICAL EXAMPLES
+═════════════════════════════════════════════════════ -->
+<section class="mb-16">
+  <div class="section-num mb-2">أمثلة عملية · ٠٥</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">تطبيقاتٌ من الواقع</h2>
+
+  <!-- Example 1: Gallery -->
+  <div class="mb-12">
+    <h3 class="text-xl font-bold mb-3 ink">📸 معرض صور متجاوب</h3>
+    <p class="mb-3 text-sm">معرض يتكيّف تلقائياً مع حجم الشاشة بدون أي media query:</p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box mb-4"><span class="prop">.gallery</span> {
+  <span class="prop">display</span>: <span class="val">grid</span>;
+  <span class="prop">grid-template-columns</span>: <span class="kw">repeat</span>(<span class="kw">auto-fit</span>, <span class="kw">minmax</span>(<span class="num">180px</span>, <span class="val">1fr</span>));
+  <span class="prop">gap</span>: <span class="num">12px</span>;
+}</pre>
+
+    <div class="demo-wrap">
+      <div class="demo-grid" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px;">
+        <div style="height:90px;display:flex;align-items:center;justify-content:center;">🌅</div>
+        <div style="height:90px;display:flex;align-items:center;justify-content:center;">🌄</div>
+        <div style="height:90px;display:flex;align-items:center;justify-content:center;">🏔️</div>
+        <div style="height:90px;display:flex;align-items:center;justify-content:center;">🌊</div>
+        <div style="height:90px;display:flex;align-items:center;justify-content:center;">🏝️</div>
+        <div style="height:90px;display:flex;align-items:center;justify-content:center;">🌋</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Example 2: Page layout -->
+  <div class="mb-12">
+    <h3 class="text-xl font-bold mb-3 ink">🖼️ تخطيط صفحة كامل (Header / Sidebar / Main / Footer)</h3>
+    <p class="mb-3 text-sm">تخطيطُ تطبيقٍ كامل بشبكةٍ واحدة:</p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box mb-4"><span class="prop">.app</span> {
+  <span class="prop">display</span>: <span class="val">grid</span>;
+  <span class="prop">grid-template-columns</span>: <span class="num">240px</span> <span class="val">1fr</span>;
+  <span class="prop">grid-template-rows</span>: <span class="num">60px 1fr 50px</span>;
+  <span class="prop">min-height</span>: <span class="num">100vh</span>;
+}
+<span class="prop">.header</span> { <span class="prop">grid-column</span>: <span class="num">1</span> / <span class="num">-1</span>; }
+<span class="prop">.footer</span> { <span class="prop">grid-column</span>: <span class="num">1</span> / <span class="num">-1</span>; }</pre>
+
+    <div class="demo-wrap">
+      <div style="display:grid;grid-template-columns:80px 1fr;grid-template-rows:40px 120px 30px;gap:6px;">
+        <div style="grid-column:1/-1;background:var(--accent);color:#fff;padding:0.5rem;text-align:center;font-weight:700;border-radius:4px;font-size:0.75rem;">HEADER</div>
+        <div style="background:var(--ink);color:#fff;padding:0.5rem;text-align:center;font-weight:700;border-radius:4px;font-size:0.75rem;display:flex;align-items:center;justify-content:center;">SIDEBAR</div>
+        <div style="background:var(--gold);color:var(--ink);padding:0.5rem;text-align:center;font-weight:700;border-radius:4px;font-size:0.75rem;display:flex;align-items:center;justify-content:center;">MAIN CONTENT</div>
+        <div style="grid-column:1/-1;background:var(--accent);color:#fff;padding:0.5rem;text-align:center;font-weight:700;border-radius:4px;font-size:0.75rem;">FOOTER</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Example 3: Card with featured -->
+  <div class="mb-12">
+    <h3 class="text-xl font-bold mb-3 ink">⭐ شبكة بطاقات مع بطاقة مميّزة</h3>
+    <p class="mb-3 text-sm">البطاقة الأولى تأخذ مساحة أكبر:</p>
+
+    <div class="code-label">CSS</div>
+    <pre class="code-box mb-4"><span class="prop">.cards</span> {
+  <span class="prop">display</span>: <span class="val">grid</span>;
+  <span class="prop">grid-template-columns</span>: <span class="kw">repeat</span>(<span class="num">3</span>, <span class="val">1fr</span>);
+  <span class="prop">gap</span>: <span class="num">16px</span>;
+}
+<span class="prop">.featured</span> {
+  <span class="prop">grid-column</span>: <span class="kw">span</span> <span class="num">2</span>;
+  <span class="prop">grid-row</span>: <span class="kw">span</span> <span class="num">2</span>;
+}</pre>
+
+    <div class="demo-wrap">
+      <div class="demo-grid" style="grid-template-columns: repeat(3, 1fr); grid-auto-rows: 70px;">
+        <div style="grid-column: span 2; grid-row: span 2;">⭐ مميّزة</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider">۞ ۞ ۞</div>
+
+<!-- ════════════════════════════════════════════════════
+     INTERACTIVE SANDBOX
+═════════════════════════════════════════════════════ -->
+<section class="mb-16">
+  <div class="section-num mb-2">معمل تفاعلي · ٠٦</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">جرّب بنفسك! 🎮</h2>
+
+  <p class="mb-6">حرّك الأزرار وشاهد التغييرات الفورية على الشبكة:</p>
+
+  <div class="bg-white border rule rounded-lg p-6 mb-4">
+    <div class="grid md:grid-cols-2 gap-6 mb-6 no-print">
+      <div>
+        <label class="font-bold text-sm block mb-2">
+          عدد الأعمدة: <span id="colsValue" class="accent mono">3</span>
+        </label>
+        <input type="range" id="colsSlider" min="1" max="6" value="3" />
+      </div>
+      <div>
+        <label class="font-bold text-sm block mb-2">
+          المسافة بين العناصر: <span id="gapValue" class="accent mono">10px</span>
+        </label>
+        <input type="range" id="gapSlider" min="0" max="40" value="10" />
+      </div>
+    </div>
+
+    <div id="sandboxGrid" class="sandbox-grid">
+      <div>1</div><div>2</div><div>3</div>
+      <div>4</div><div>5</div><div>6</div>
+    </div>
+
+    <div class="mt-4 code-box">
+<span class="prop">.grid</span> {
+  <span class="prop">display</span>: <span class="val">grid</span>;
+  <span class="prop">grid-template-columns</span>: <span class="kw">repeat</span>(<span id="cssOut" class="num">3</span>, <span class="val">1fr</span>);
+  <span class="prop">gap</span>: <span id="gapOut" class="num">10px</span>;
+}
+    </div>
+  </div>
+</section>
+
+<div class="divider">۞ ۞ ۞</div>
+
+<!-- ════════════════════════════════════════════════════
+     EXERCISE
+═════════════════════════════════════════════════════ -->
+<section class="mb-16">
+  <div class="section-num mb-2">تمرينٌ تطبيقي · ٠٧</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">المهمة العملية</h2>
+
+  <div class="bg-white border-r-4 border-r-red-600 rule p-6 rounded-lg mb-6">
+    <h3 class="font-bold text-xl mb-3 accent">🎯 المطلوب:</h3>
+    <p class="mb-4">
+      صمّم صفحة بطاقات منتجات لمتجر إلكتروني. الصفحة تحتوي على:
+    </p>
+    <ul class="space-y-2 mb-4 text-sm">
+      <li>• <strong>هيدر</strong> يمتد على كامل عرض الصفحة (يأخذ كل الأعمدة)</li>
+      <li>• <strong>قائمة جانبية</strong> ثابتة بعرض 240px</li>
+      <li>• منطقة <strong>منتجات</strong> فيها 6 بطاقات على الأقل</li>
+      <li>• البطاقات تتكيّف مع حجم الشاشة (auto-fit + minmax)</li>
+      <li>• <strong>المنتج المميّز</strong> يأخذ عمودين</li>
+      <li>• <strong>فوتر</strong> في الأسفل يمتد بعرض الصفحة</li>
+    </ul>
+    <p class="text-sm" style="color:#777;">
+      <strong>تلميح:</strong> كل ما تحتاجه موجود في هذا الدرس. ابدأ بالحاوية الكبرى ثم اعمل من الخارج إلى الداخل.
+    </p>
+  </div>
+
+  <h3 class="font-bold mb-3 ink">📋 الخطوات المقترحة:</h3>
+  <ol class="space-y-3 list-decimal list-inside text-sm mb-6">
+    <li>أنشئ ملف HTML مع البنية الأساسية (header, aside, main, footer)</li>
+    <li>طبّق <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-xs">display: grid</code> على body</li>
+    <li>حدّد <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-xs">grid-template-columns: 240px 1fr</code></li>
+    <li>اجعل header و footer يمتدّان بـ <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-xs">grid-column: 1 / -1</code></li>
+    <li>داخل main، أنشئ شبكة جديدة للبطاقات بـ <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-xs">repeat(auto-fit, minmax(200px, 1fr))</code></li>
+    <li>اجعل البطاقة الأولى مميّزة بـ <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-xs">grid-column: span 2</code></li>
+  </ol>
+
+  <div class="highlight">
+    <strong class="accent">معايير التقييم:</strong> الصفحة تعمل بدون media queries، البطاقات تنتقل تلقائياً عند تصغير الشاشة، التخطيط نظيف وغير متداخل.
+  </div>
+</section>
+
+<div class="divider">۞ ۞ ۞</div>
+
+<!-- ════════════════════════════════════════════════════
+     QUIZ
+═════════════════════════════════════════════════════ -->
+<section class="mb-16 no-print">
+  <div class="section-num mb-2">اختبر فهمك · ٠٨</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">أسئلة سريعة</h2>
+
+  <!-- Q1 -->
+  <div class="mb-8">
+    <p class="font-bold mb-3"><span class="accent mono">س١:</span> ما الفرق الأساسي بين Grid و Flexbox؟</p>
+    <div class="quiz-option" data-correct="false">Grid أسرع من Flexbox</div>
+    <div class="quiz-option" data-correct="true">Grid ثنائي الأبعاد (صفوف وأعمدة)، Flexbox أحادي البُعد</div>
+    <div class="quiz-option" data-correct="false">Flexbox لا يدعم المتصفحات القديمة</div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="mb-8">
+    <p class="font-bold mb-3"><span class="accent mono">س٢:</span> ماذا يفعل <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-sm">repeat(auto-fit, minmax(200px, 1fr))</code>؟</p>
+    <div class="quiz-option" data-correct="false">يكرّر العمود 200 مرة</div>
+    <div class="quiz-option" data-correct="false">ينشئ عموداً واحداً متوسطه 200px</div>
+    <div class="quiz-option" data-correct="true">ينشئ أعمدة بأقل عرض 200px وتتكيّف تلقائياً مع الشاشة</div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="mb-8">
+    <p class="font-bold mb-3"><span class="accent mono">س٣:</span> كيف تجعل عنصراً يأخذ عمودين؟</p>
+    <div class="quiz-option" data-correct="false">width: 200%</div>
+    <div class="quiz-option" data-correct="true">grid-column: span 2</div>
+    <div class="quiz-option" data-correct="false">grid-cols: 2</div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="mb-8">
+    <p class="font-bold mb-3"><span class="accent mono">س٤:</span> ما معنى وحدة <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-sm">1fr</code>؟</p>
+    <div class="quiz-option" data-correct="false">1 frame</div>
+    <div class="quiz-option" data-correct="true">1 fraction — كسر من المساحة المتبقية</div>
+    <div class="quiz-option" data-correct="false">1 pixel</div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="mb-8">
+    <p class="font-bold mb-3"><span class="accent mono">س٥:</span> ماذا يعني <code class="mono bg-amber-100 px-1.5 py-0.5 rounded text-sm">grid-column: 1 / -1</code>؟</p>
+    <div class="quiz-option" data-correct="false">لا يأخذ أي عمود</div>
+    <div class="quiz-option" data-correct="false">يأخذ أول عمود فقط</div>
+    <div class="quiz-option" data-correct="true">يمتد من أول عمود إلى آخر عمود (كامل العرض)</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     SUMMARY / CHEATSHEET
+═════════════════════════════════════════════════════ -->
+<section class="mb-16">
+  <div class="section-num mb-2">الخلاصة · ٠٩</div>
+  <h2 class="display text-4xl font-bold mb-6 ink">ورقة المرجع السريعة</h2>
+
+  <div class="bg-stone-900 text-amber-50 rounded-lg p-6 mono text-sm" style="direction: ltr; text-align: left;">
+<pre>/* ═══ الحاوية ═══ */
+.container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto;
+  gap: 16px;
+  place-items: center;        /* محاذاة العناصر */
+}
+
+/* ═══ تخطيط متجاوب ═══ */
+.responsive {
+  grid-template-columns:
+    repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* ═══ العناصر ═══ */
+.item-wide   { grid-column: span 2; }
+.item-tall   { grid-row: span 2; }
+.item-corner { grid-area: 1 / 1 / 3 / 3; }
+.full-width  { grid-column: 1 / -1; }</pre>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     FOOTER
+═════════════════════════════════════════════════════ -->
+<footer class="border-t-4 border-double rule pt-8 text-center">
+  <p class="display text-2xl mb-2 ink">— نهاية الدرس —</p>
+  <p class="text-sm" style="color:#777;">
+    استمر في التطبيق. لا أحد يتعلم Grid من القراءة فقط — اكتب الكود بنفسك.
+  </p>
+  <p class="text-xs mt-4 mono accent">CSS GRID DOC · STUDENT EDITION</p>
+</footer>
+
+</main>
+
+<script>
+  // ─── Sandbox interactivity ──────────────────────────────
+  const colsSlider = document.getElementById('colsSlider');
+  const gapSlider  = document.getElementById('gapSlider');
+  const sandbox    = document.getElementById('sandboxGrid');
+  const colsValue  = document.getElementById('colsValue');
+  const gapValue   = document.getElementById('gapValue');
+  const cssOut     = document.getElementById('cssOut');
+  const gapOut     = document.getElementById('gapOut');
+
+  function updateSandbox() {
+    const cols = colsSlider.value;
+    const gap  = gapSlider.value;
+    sandbox.style.setProperty('--cols', `repeat(${cols}, 1fr)`);
+    sandbox.style.setProperty('--gap',  `${gap}px`);
+    colsValue.textContent = cols;
+    gapValue.textContent  = gap + 'px';
+    cssOut.textContent    = cols;
+    gapOut.textContent    = gap + 'px';
+  }
+  colsSlider.addEventListener('input', updateSandbox);
+  gapSlider.addEventListener('input',  updateSandbox);
+
+  // ─── Quiz logic ─────────────────────────────────────────
+  document.querySelectorAll('.quiz-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const isCorrect = opt.dataset.correct === 'true';
+      opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+      // disable other siblings
+      const siblings = opt.parentElement.querySelectorAll('.quiz-option');
+      siblings.forEach(s => {
+        s.style.pointerEvents = 'none';
+        if (s !== opt && s.dataset.correct === 'true') {
+          s.classList.add('correct');
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

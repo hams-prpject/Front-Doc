@@ -1,0 +1,2000 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="شرح عملي ومنظم للـ Pseudo-classes والـ Pseudo-elements في CSS" />
+  <title>شرح Pseudo-classes وPseudo-elements في CSS</title>
+  <style>
+    /* =========================================================
+   1. ط§ظ„ظ…طھط؛ظٹط±ط§طھ ظˆط§ظ„ط¥ط¹ط¯ط§ط¯ط§طھ ط§ظ„ط¹ط§ظ…ط©
+   ========================================================= */
+
+    :root {
+      --primary-color: #7c3aed;
+      --primary-dark: #5b21b6;
+      --primary-soft: #f5f3ff;
+      --secondary-color: #2563eb;
+      --pseudo-color: #0891b2;
+      --pseudo-soft: #ecfeff;
+      --page-background: #f8fafc;
+      --card-background: #ffffff;
+      --text-color: #1e293b;
+      --muted-color: #64748b;
+      --border-color: #e2e8f0;
+      --code-background: #0f172a;
+      --success-color: #16a34a;
+      --danger-color: #dc2626;
+      --warning-color: #f59e0b;
+      --shadow: 0 14px 35px rgb(15 23 42 / 7%);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top right, #ede9fe 0, transparent 28rem),
+        var(--page-background);
+      color: var(--text-color);
+      font-family: Tahoma, Arial, sans-serif;
+      line-height: 1.85;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    code,
+    pre {
+      font-family: Consolas, "Courier New", monospace;
+    }
+
+    code {
+      direction: ltr;
+      unicode-bidi: isolate;
+    }
+
+    .container {
+      width: min(100% - 30px, 1050px);
+      margin-inline: auto;
+    }
+
+    /* =========================================================
+   2. ط±ط£ط³ ط§ظ„طµظپط­ط©
+   ========================================================= */
+
+    .hero {
+      padding: 70px 0 55px;
+      /* background: linear-gradient(135deg, #312e81, #7c3aed); */
+      color: white;
+      text-align: center;
+      background: radial-gradient(circle at 15% 20%,
+          rgb(59 130 246 / 55%),
+          transparent 35%),
+        radial-gradient(circle at 85% 80%, rgb(168 85 247 / 45%), transparent 38%),
+        linear-gradient(135deg, #172554 0%, #312e81 35%, #6d28d9 70%, #2563eb 100%);
+    }
+
+    .eyebrow {
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: 3px;
+      opacity: 0.85;
+    }
+
+    .hero h1 {
+      margin: 10px 0 12px;
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      line-height: 1.35;
+    }
+
+    .hero-text {
+      max-width: 760px;
+      margin: 0 auto;
+      color: #ede9fe;
+      font-size: 1.05rem;
+    }
+
+    main.container {
+      padding-block: 34px 80px;
+    }
+
+    /* =========================================================
+   3. ط§ظ„ط¨ط·ط§ظ‚ط§طھ ظˆط§ظ„ط¹ظ†ط§ظˆظٹظ†
+   ========================================================= */
+
+    .panel,
+    .lesson-card {
+      background-color: var(--card-background);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel {
+      padding: 28px;
+      margin-bottom: 25px;
+    }
+
+    .section-heading,
+    .lesson-head,
+    .chapter-title {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+    }
+
+    .section-number,
+    .badge,
+    .chapter-title>span {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      min-width: 46px;
+      min-height: 46px;
+      padding-inline: 10px;
+      border-radius: 12px;
+      background-color: var(--primary-soft);
+      color: var(--primary-dark);
+      font-weight: 800;
+    }
+
+    .section-heading h2,
+    .lesson-head h3,
+    .chapter-title h2 {
+      margin: 0;
+    }
+
+    .section-heading p,
+    .lesson-head p,
+    .chapter-title p {
+      margin: 5px 0 0;
+      color: var(--muted-color);
+    }
+
+    .chapter {
+      scroll-margin-top: 20px;
+      margin-top: 50px;
+    }
+
+    .chapter-title {
+      margin-bottom: 20px;
+    }
+
+    .chapter-title>span {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .chapter-title h2 {
+      font-size: clamp(1.55rem, 3vw, 2.25rem);
+    }
+
+    .pseudo-title>span {
+      background-color: var(--pseudo-color);
+    }
+
+    .lesson-card {
+      padding: 25px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .lesson-head {
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .lesson-head h3 {
+      font-size: 1.45rem;
+    }
+
+    .lesson-head h3 code {
+      color: var(--primary-dark);
+    }
+
+    .pseudo-badge {
+      background-color: var(--pseudo-soft);
+      color: #0e7490;
+    }
+
+    .note {
+      margin: 15px 0 0;
+      padding: 10px 13px;
+      border-right: 4px solid var(--warning-color);
+      background-color: #fffbeb;
+      border-radius: 8px;
+      color: #92400e;
+    }
+
+    /* =========================================================
+   4. ط§ظ„ظ…ظ‚ط¯ظ…ط© ظˆط§ظ„ظپظ‡ط±ط³
+   ========================================================= */
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 22px;
+    }
+
+    .definition-box {
+      padding: 20px;
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      background-color: #fcfcff;
+    }
+
+    .definition-box h3 {
+      margin-top: 0;
+    }
+
+    .syntax {
+      display: block;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background-color: var(--code-background);
+      color: #e2e8f0;
+    }
+
+    .example-line {
+      margin-bottom: 0;
+    }
+
+    .table-of-contents h2 {
+      margin-top: 0;
+    }
+
+    .toc-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .toc-links a {
+      padding: 9px 13px;
+      border: 1px solid #ddd6fe;
+      border-radius: 999px;
+      background-color: var(--primary-soft);
+      color: var(--primary-dark);
+      text-decoration: none;
+      font-weight: 700;
+      transition: 0.2s;
+    }
+
+    .toc-links a:hover {
+      color: white;
+      background-color: var(--primary-color);
+    }
+
+    /* =========================================================
+   5. ظ…ظ†ط§ط·ظ‚ ط§ظ„طھط¬ط±ط¨ط© ظˆط§ظ„ظƒظˆط¯
+   ========================================================= */
+
+    .demo-area {
+      margin-top: 20px;
+      padding: 22px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 14px;
+      background-color: #f8fafc;
+    }
+
+    .demo-instruction {
+      margin-top: 0;
+      color: var(--muted-color);
+    }
+
+    .demo-button,
+    .not-buttons button,
+    .cart-button,
+    .tooltip-button,
+    .dialog-close-button {
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .demo-button {
+      padding: 11px 20px;
+      background-color: #334155;
+      color: white;
+      transition: 0.2s;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+      width: min(100%, 520px);
+      padding: 12px 14px;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      outline: none;
+      background-color: white;
+      transition: 0.2s;
+    }
+
+    details {
+      margin-top: 18px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    summary {
+      padding: 12px 15px;
+      background-color: #f8fafc;
+      cursor: pointer;
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+
+    pre {
+      direction: ltr;
+      overflow-x: auto;
+      margin: 0;
+      padding: 18px;
+      background-color: var(--code-background);
+      color: #e2e8f0;
+      line-height: 1.7;
+      text-align: left;
+    }
+
+    pre code {
+      display: block;
+    }
+
+    .two-columns,
+    .product-grid,
+    .empty-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    /* =========================================================
+   6. ط£ظ…ط«ظ„ط© Pseudo-classes
+   ========================================================= */
+
+    /* 1- :hover */
+    .hover-button:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-3px);
+    }
+
+    /* 2- :focus */
+    .focus-input:focus {
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 4px rgb(37 99 235 / 15%);
+    }
+
+    /* 3- :focus-visible */
+    .keyboard-button:focus-visible {
+      outline: 4px solid var(--warning-color);
+      outline-offset: 4px;
+    }
+
+    /* 4- :active */
+    .active-button {
+      background-color: var(--success-color);
+    }
+
+    .active-button:active {
+      transform: scale(0.9);
+      background-color: #166534;
+    }
+
+    /* 16- :focus-within */
+    .focus-within-box {
+      width: min(100%, 560px);
+      padding: 18px;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      background-color: white;
+      transition: 0.2s;
+    }
+
+    .focus-within-box label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .focus-within-box input {
+      width: 100%;
+    }
+
+    .focus-within-box:focus-within {
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 4px rgb(37 99 235 / 15%);
+    }
+
+    /* 5- :first-child ظˆ6- :last-child */
+    .children-list,
+    .nth-child-list,
+    .only-child-list {
+      margin: 0;
+      padding: 12px 38px 12px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      background-color: white;
+    }
+
+    .children-list li,
+    .nth-child-list li,
+    .only-child-list li,
+    .marker-list li {
+      margin-block: 5px;
+      padding: 8px 10px;
+      border-radius: 8px;
+    }
+
+    .children-list li:first-child {
+      background-color: #dcfce7;
+      color: #166534;
+      font-weight: 700;
+    }
+
+    .children-list li:last-child {
+      background-color: #fee2e2;
+      color: #991b1b;
+      font-weight: 700;
+    }
+
+    /* 7- :nth-child() */
+    .nth-child-list li:nth-child(odd) {
+      background-color: #fff7ed;
+    }
+
+    .nth-child-list li:nth-child(even) {
+      background-color: #eff6ff;
+    }
+
+    .nth-child-list li:nth-child(2) {
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    /* 8- :empty */
+    .empty-box {
+      min-height: 92px;
+      padding: 16px;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      background-color: white;
+    }
+
+    .empty-box:empty {
+      border: 2px dashed var(--danger-color);
+      background-color: #fef2f2;
+    }
+
+    /* 9- :only-child */
+    .only-child-list li:only-child {
+      background-color: #ede9fe;
+      color: #6d28d9;
+      font-weight: 700;
+    }
+
+    /* 10- :first-of-type ظˆ11- :last-of-type ظˆ12- :nth-of-type */
+    .type-demo p,
+    .last-type-demo p,
+    .nth-type-demo p {
+      margin-block: 7px;
+      padding: 9px 11px;
+      border-radius: 8px;
+    }
+
+    .type-demo p:first-of-type {
+      background-color: #dcfce7;
+      color: #166534;
+      font-weight: 700;
+    }
+
+    .last-type-demo p:last-of-type {
+      background-color: #fee2e2;
+      color: #991b1b;
+      font-weight: 700;
+    }
+
+    .nth-type-demo p:nth-of-type(2) {
+      background-color: #dbeafe;
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    /* 8- :checked */
+    .check-example {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .check-example input {
+      width: 20px;
+      height: 20px;
+    }
+
+    .check-example input:checked+label {
+      color: #15803d;
+      font-weight: 700;
+      text-decoration: line-through;
+    }
+
+    /* 9- :disabled */
+    .disabled-input:disabled,
+    .state-fields:disabled {
+      color: #64748b;
+      border-style: dashed;
+      background-color: #e2e8f0;
+      cursor: not-allowed;
+    }
+
+    /* -10 :enabled */
+    .state-fields:enabled {
+      border-color: var(--success-color);
+      background-color: #f0fdf4;
+    }
+
+    /* 11- :required ظˆ12- :optional */
+    .requirement-field:required {
+      border-right: 5px solid #f97316;
+    }
+
+    .requirement-field:optional {
+      border-right: 5px solid #64748b;
+    }
+
+    /* 13- :valid ظˆ14- :invalid */
+    .validation-field:valid {
+      border-color: var(--success-color);
+      background-color: #f0fdf4;
+    }
+
+    .validation-field:invalid {
+      border-color: var(--danger-color);
+      background-color: #fef2f2;
+    }
+
+    /* 15- :not() */
+    .not-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .not-buttons button {
+      padding: 10px 18px;
+    }
+
+    .not-buttons button:not(.current) {
+      background-color: #e2e8f0;
+      color: #64748b;
+    }
+
+    .not-buttons .current {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+
+    /* 16- :link ظˆ17- :visited */
+    .links-example a {
+      font-weight: 700;
+    }
+
+    .links-example a:link {
+      color: var(--secondary-color);
+    }
+
+    .links-example a:visited {
+      color: #7e22ce;
+    }
+
+    /* 18- :is() */
+    .is-demo {
+      display: grid;
+      gap: 10px;
+    }
+
+    :is(.box-one, .box-two, .box-three) {
+      padding: 12px 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background-color: white;
+    }
+
+    :is(.box-one, #test-is, .box-three) h4 {
+      margin: 0;
+      color: #be123c;
+    }
+
+    /* 14- :where() */
+    .where-demo {
+      display: grid;
+      gap: 10px;
+    }
+
+    :where(.where-card, .where-box) p {
+      margin: 0;
+      padding: 12px;
+      border-radius: 8px;
+      background-color: #f1f5f9;
+    }
+
+    /* 15- :has() */
+    .product {
+      padding: 18px;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      background-color: white;
+    }
+
+    .product h4 {
+      margin-top: 0;
+    }
+
+    .product:has(.discount) {
+      border-color: var(--danger-color);
+      background-color: #fef2f2;
+    }
+
+    .discount {
+      color: var(--danger-color);
+      font-weight: 800;
+    }
+
+    /* 27- :root */
+    .root-demo {
+      padding: 18px;
+      border: 2px solid var(--primary-color);
+      border-radius: 12px;
+      color: var(--primary-color);
+      background-color: var(--primary-soft);
+      font-weight: 700;
+    }
+
+    /* 28- :target */
+    .target-link {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 9px;
+      background-color: var(--secondary-color);
+      color: white;
+      text-decoration: none;
+    }
+
+    .target-box {
+      margin-top: 20px;
+      padding: 20px;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      background-color: white;
+      transition: 0.2s;
+    }
+
+    .target-box:target {
+      border-color: var(--warning-color);
+      background-color: #fffbeb;
+      box-shadow: 0 0 0 4px rgb(245 158 11 / 15%);
+      transform: scale(1.01);
+    }
+
+    /* =========================================================
+   7. ط£ظ…ط«ظ„ط© Pseudo-elements
+   ========================================================= */
+
+    /* 1- ::before ظˆ::after */
+    .cart-button {
+      position: relative;
+      padding: 11px 42px;
+      background-color: #22c55e;
+      color: white;
+      font-weight: 700;
+    }
+
+    .cart-button::before {
+      content: "ًں›’";
+      position: absolute;
+      right: 14px;
+    }
+
+    .cart-button::after {
+      content: " â†گ";
+      opacity: 0;
+      transition: 0.2s;
+    }
+
+    .cart-button:hover::after {
+      opacity: 1;
+    }
+
+    /* طھط·ط¨ظٹظ‚ Tooltip */
+    .tooltip-area {
+      min-height: 170px;
+      display: grid;
+      place-items: end center;
+    }
+
+    .tooltip-button {
+      position: relative;
+      padding: 12px 20px;
+      background-color: var(--secondary-color);
+      color: white;
+    }
+
+    .tooltip-button::before {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 135%;
+      left: 50%;
+      width: max-content;
+      max-width: 260px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background-color: #1e293b;
+      color: white;
+      font-size: 0.88rem;
+      white-space: normal;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(-50%) translateY(5px);
+      transition: 0.2s;
+    }
+
+    .tooltip-button::after {
+      content: "";
+      position: absolute;
+      bottom: 112%;
+      left: 50%;
+      border-width: 8px;
+      border-style: solid;
+      border-color: #1e293b transparent transparent;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(-50%);
+      transition: 0.2s;
+    }
+
+    .tooltip-button:hover::before,
+    .tooltip-button:hover::after {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .tooltip-button:hover::before {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* 2- ::first-letter ظˆ::first-line */
+    .article-text {
+      max-width: 720px;
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .article-text::first-letter {
+      float: right;
+      margin-left: 8px;
+      color: var(--danger-color);
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .article-text::first-line {
+      color: #334155;
+      font-weight: 700;
+    }
+
+    /* 3- ::selection */
+    .selection-text {
+      margin: 0;
+      padding: 14px;
+      border-right: 4px solid #14b8a6;
+      background-color: #f0fdfa;
+    }
+
+    .selection-text::selection {
+      background-color: #facc15;
+      color: #111827;
+    }
+
+    /* 4- ::placeholder */
+    .email-input::placeholder {
+      color: var(--primary-color);
+      font-style: italic;
+      opacity: 0.8;
+    }
+
+    /* 5- ::marker */
+    .marker-list {
+      margin: 0;
+      padding-right: 30px;
+    }
+
+    .marker-list li::marker {
+      color: #9333ea;
+      font-size: 1.4rem;
+    }
+
+    /* 8- ::file-selector-button */
+    .file-input {
+      width: min(100%, 570px);
+      padding: 8px;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      background-color: white;
+    }
+
+    .file-input::file-selector-button {
+      margin-left: 12px;
+      border: 0;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background-color: var(--secondary-color);
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .file-input::file-selector-button:hover {
+      background-color: #1d4ed8;
+    }
+
+    /* 9- ::backdrop */
+    .dialog-open-button {
+      background-color: var(--primary-color);
+    }
+
+    dialog {
+      width: min(90%, 480px);
+      border: 0;
+      border-radius: 18px;
+      padding: 28px;
+      color: var(--text-color);
+      box-shadow: 0 30px 80px rgb(15 23 42 / 35%);
+    }
+
+    dialog::backdrop {
+      background-color: rgb(15 23 42 / 70%);
+      backdrop-filter: blur(3px);
+    }
+
+    .dialog-close-button {
+      padding: 10px 17px;
+      background-color: #e2e8f0;
+      color: var(--text-color);
+    }
+
+    /* =========================================================
+   8. ط§ظ„ظ…ظ„ط®طµ ظˆط§ظ„طھط°ظٹظٹظ„
+   ========================================================= */
+
+    .final-summary h2 {
+      margin-top: 0;
+    }
+
+    .final-summary li {
+      margin-bottom: 6px;
+    }
+
+    .page-footer {
+      padding: 22px 15px;
+      background-color: #1e293b;
+      color: #cbd5e1;
+      text-align: center;
+    }
+
+    .page-footer p {
+      margin: 0;
+    }
+
+    /* =========================================================
+   9. ط§ظ„طھطµظ…ظٹظ… ط§ظ„ظ…طھط¬ط§ظˆط¨
+   ========================================================= */
+
+    @media (max-width: 700px) {
+      .hero {
+        padding-block: 50px 42px;
+      }
+
+      .panel,
+      .lesson-card {
+        padding: 20px;
+      }
+
+      .comparison-grid,
+      .two-columns,
+      .product-grid,
+      .empty-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-heading,
+      .lesson-head,
+      .chapter-title {
+        gap: 11px;
+      }
+
+      .section-number,
+      .badge,
+      .chapter-title>span {
+        min-width: 40px;
+        min-height: 40px;
+      }
+
+      .demo-area {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="hero">
+    <div class="container">
+      <p class="eyebrow">CSS Selectors</p>
+      <h1>شرح الـPseudo-classes والـPseudo-elements</h1>
+      <p class="hero-text">
+        ملخص عملي منظم يوضح التعريف، وطريقة الكتابة، والفرق بين المحددات، مع
+        أمثلة يمكن تجربتها مباشرة داخل الصفحة.
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- ========================= المقدمة ========================= -->
+    <section class="panel intro" id="intro">
+      <div class="section-heading">
+        <span class="section-number">00</span>
+        <div>
+          <h2>الفرق الأساسي</h2>
+        </div>
+      </div>
+
+      <div class="comparison-grid">
+        <article class="definition-box">
+          <h3>Pseudo-class</h3>
+          <p>
+            تصف <strong>حالة العنصر</strong> أو <strong>موقعه</strong> بين
+            العناصر، وتكتب بنقطتين واحدة.
+          </p>
+          <code class="syntax">selector:pseudo-class</code>
+          <p class="example-line">مثال: <code>button:hover</code></p>
+        </article>
+
+        <article class="definition-box">
+          <h3>Pseudo-element</h3>
+          <p>
+            يستهدف <strong>جزءًا افتراضيًا</strong> من العنصر أو يضيف جزءًا
+            تجميليًا دون كتابة عنصر HTML جديد.
+          </p>
+          <code class="syntax">selector::pseudo-element</code>
+          <p class="example-line">مثال: <code>p::first-letter</code></p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========================= الفهرس ========================= -->
+    <nav class="panel table-of-contents" aria-label="فهرس الصفحة">
+      <h2>فهرس الشرح</h2>
+      <div class="toc-links">
+        <a href="#interaction">حالات التفاعل</a>
+        <a href="#structure">محددات البنية والترتيب</a>
+        <a href="#forms">محددات النماذج</a>
+        <a href="#logic">المحددات المنطقية والروابط</a>
+        <a href="#pseudo-elements">العناصر الزائفة</a>
+      </div>
+    </nav>
+
+    <!-- =========================================================
+         أولًا: حالات التفاعل
+         ========================================================= -->
+    <section class="chapter" id="interaction">
+      <div class="chapter-title">
+        <span>أولًا</span>
+        <div>
+          <h2>حالات التفاعل والتركيز</h2>
+          <p>محددات تعمل حسب تفاعل المستخدم مع العنصر.</p>
+        </div>
+      </div>
+
+      <!-- 1 hover -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">1</span>
+          <div>
+            <h3><code>:hover</code></h3>
+            <p>تعمل عندما يمر مؤشر الماوس فوق العنصر.</p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <p class="demo-instruction">جرّب: مرّر الماوس فوق الزر.</p>
+          <button class="demo-button hover-button">مرّر الماوس هنا</button>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.hover-button:hover {
+  background-color: #2563eb;
+  transform: translateY(-3px);
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 2 focus -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">2</span>
+          <div>
+            <h3><code>:focus</code></h3>
+            <p>
+              تعمل عندما يحصل العنصر على التركيز، مثل الضغط داخل حقل إدخال.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <p class="demo-instruction">جرّب: اضغط داخل الحقل.</p>
+          <input class="focus-input" type="text" placeholder="اضغط هنا للكتابة" />
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.focus-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgb(37 99 235 / 15%);
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 3 focus-visible -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">3</span>
+          <div>
+            <h3><code>:focus-visible</code></h3>
+            <p>
+              تعرض مؤشر التركيز عندما يرى المتصفح أن إظهاره ضروري، وغالبًا عند
+              التنقل بلوحة المفاتيح.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <p class="demo-instruction">
+            جرّب: استخدم زر Tab حتى تصل إلى الزر.
+          </p>
+          <button class="demo-button keyboard-button">
+            زر لوحة المفاتيح
+          </button>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.keyboard-button:focus-visible {
+  outline: 4px solid #f59e0b;
+  outline-offset: 4px;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 4 active -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">4</span>
+          <div>
+            <h3><code>:active</code></h3>
+            <p>
+              تعمل في أثناء تفعيل العنصر، مثل لحظة استمرار الضغط على الزر.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <p class="demo-instruction">جرّب: اضغط على الزر واستمر بالضغط.</p>
+          <button class="demo-button active-button">اضغط باستمرار</button>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.active-button:active {
+  transform: scale(0.94);
+  background-color: #166534;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 5 focus-within -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">5</span>
+          <div>
+            <h3><code>:focus-within</code></h3>
+            <p>
+              يختار العنصر الأب عندما يحصل هو أو أي عنصر بداخله على التركيز.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <p class="demo-instruction">
+            جرّب: اضغط داخل الحقل ولاحظ إطار الصندوق كله.
+          </p>
+          <div class="focus-within-box">
+            <label for="full-name">الاسم الكامل</label>
+            <input id="full-name" type="text" placeholder="اكتب اسمك هنا" />
+          </div>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.focus-within-box:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgb(37 99 235 / 15%);
+}</code></pre>
+        </details>
+      </article>
+    </section>
+
+    <!-- =========================================================
+         ثانيًا: البنية والترتيب
+         ========================================================= -->
+    <section class="chapter" id="structure">
+      <div class="chapter-title">
+        <span>ثانيًا</span>
+        <div>
+          <h2>محددات البنية والترتيب</h2>
+          <p>تختار العناصر بحسب موقعها داخل العنصر الأب.</p>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">6</span>
+          <div>
+            <h3><code>:first-child</code> و<code>:last-child</code></h3>
+            <p>
+              الأول يختار العنصر إذا كان أول ابن، والثاني يختاره إذا كان آخر
+              ابن.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <ul class="children-list">
+            <li>العنصر رقم 1</li>
+            <li>العنصر رقم 2</li>
+            <li>العنصر رقم 3</li>
+            <li>العنصر رقم 4</li>
+            <li>العنصر رقم 5</li>
+          </ul>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.children-list li:first-child {
+  background-color: #dcfce7;
+}
+
+.children-list li:last-child {
+  background-color: #fee2e2;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 7 nth-child -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">7</span>
+          <div>
+            <h3><code>:nth-child()</code></h3>
+            <p>
+              يختار العنصر بحسب ترتيبه بين جميع إخوته. يبدأ العد من الرقم 1.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <ul class="nth-child-list">
+            <li>العنصر رقم 1</li>
+            <li>العنصر رقم 2</li>
+            <li>العنصر رقم 3</li>
+            <li>العنصر رقم 4</li>
+            <li>العنصر رقم 5</li>
+          </ul>
+          <p class="note">
+            <code>odd</code> للعناصر الفردية، و<code>even</code> للعناصر
+            الزوجية.
+          </p>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.nth-child-list li:nth-child(odd) {
+  background-color: #fff7ed;
+}
+
+.nth-child-list li:nth-child(even) {
+  background-color: #eff6ff;
+}
+
+.nth-child-list li:nth-child(2) {
+  color: #1d4ed8;
+  font-weight: 700;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 8 empty -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">8</span>
+          <div>
+            <h3><code>:empty</code></h3>
+            <p>يختار العنصر الذي لا يحتوي على نص أو عناصر بداخله.</p>
+          </div>
+        </div>
+
+        <div class="demo-area empty-grid">
+          <div class="empty-box" aria-label="صندوق فارغ"></div>
+          <div class="empty-box">هذا الصندوق يحتوي على نص.</div>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.empty-box:empty {
+  border: 2px dashed #dc2626;
+  background-color: #fef2f2;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 9 only-child -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">9</span>
+          <div>
+            <h3><code>:only-child</code></h3>
+            <p>يختار العنصر عندما يكون الابن الوحيد داخل العنصر الأب.</p>
+          </div>
+        </div>
+
+        <div class="demo-area two-columns">
+          <ul class="only-child-list">
+            <li>أنا الابن الوحيد</li>
+          </ul>
+
+          <ul class="only-child-list">
+            <li>عنصر أول</li>
+            <li>عنصر ثانٍ</li>
+          </ul>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.only-child-list li:only-child {
+  background-color: #ede9fe;
+  color: #6d28d9;
+  font-weight: 700;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 10 first-of-type -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">10</span>
+          <div>
+            <h3><code>:first-of-type</code></h3>
+            <p>يختار أول عنصر من نوع محدد داخل الأب.</p>
+          </div>
+        </div>
+
+        <div class="demo-area type-demo">
+          <h4>عنوان قبل الفقرات</h4>
+          <p>أنا أول فقرة من النوع p.</p>
+          <p>أنا الفقرة الثانية.</p>
+          <p>أنا الفقرة الثالثة.</p>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.type-demo p:first-of-type {
+  background-color: #dcfce7;
+  color: #166534;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 11 last-of-type -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">11</span>
+          <div>
+            <h3><code>:last-of-type</code></h3>
+            <p>يختار آخر عنصر من النوع نفسه داخل الأب.</p>
+          </div>
+        </div>
+
+        <div class="demo-area last-type-demo">
+          <p>الفقرة الأولى.</p>
+          <p>الفقرة الثانية.</p>
+          <p>أنا آخر فقرة من النوع p.</p>
+          <span>عنصر span جاء بعد الفقرات.</span>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.last-type-demo p:last-of-type {
+  background-color: #fee2e2;
+  color: #991b1b;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 12 nth-of-type -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">12</span>
+          <div>
+            <h3><code>:nth-of-type()</code></h3>
+            <p>
+              يختار العنصر بحسب ترتيبه بين العناصر من النوع نفسه، وليس بين
+              جميع الإخوة.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area nth-type-demo">
+          <h4>عنوان لا يدخل في عدّ الفقرات</h4>
+          <p>الفقرة رقم 1</p>
+          <p>الفقرة رقم 2</p>
+          <p>الفقرة رقم 3</p>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.nth-type-demo p:nth-of-type(2) {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}</code></pre>
+        </details>
+      </article>
+    </section>
+
+    <!-- =========================================================
+         ثالثًا: النماذج
+         ========================================================= -->
+    <section class="chapter" id="forms">
+      <div class="chapter-title">
+        <span>ثالثًا</span>
+        <div>
+          <h2>محددات النماذج</h2>
+          <p>تتعامل مع حالة حقول الإدخال والاختيار.</p>
+        </div>
+      </div>
+
+      <!-- 13 checked -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">13</span>
+          <div>
+            <h3><code>:checked</code></h3>
+            <p>يختار مربع الاختيار أو زر الراديو بعد تحديده.</p>
+          </div>
+        </div>
+
+        <div class="demo-area check-example">
+          <input type="checkbox" id="agree" />
+          <label for="agree">أوافق على الشروط</label>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.check-example input:checked + label {
+  color: #15803d;
+  font-weight: 700;
+  text-decoration: line-through;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 14 disabled -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">14</span>
+          <div>
+            <h3><code>:disabled</code></h3>
+            <p>يختار العناصر المعطلة التي لا يمكن للمستخدم التفاعل معها.</p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <input class="disabled-input" type="text" value="هذا الحقل معطل" disabled />
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.disabled-input:disabled {
+  background-color: #e2e8f0;
+  color: #64748b;
+  cursor: not-allowed;
+  border-style: dashed;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 15 enabled -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">15</span>
+          <div>
+            <h3><code>:enabled</code></h3>
+            <p>يختار الحقول والأزرار المتاحة وغير المعطلة.</p>
+          </div>
+        </div>
+
+        <div class="demo-area two-columns">
+          <input class="state-fields" type="text" placeholder="حقل متاح" />
+          <input class="state-fields" type="text" placeholder="حقل معطل" disabled />
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.state-fields:enabled {
+  border-color: #16a34a;
+  background-color: #f0fdf4;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 16 required + 17 optional -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">16 + 17</span>
+          <div>
+            <h3><code>:required</code> و<code>:optional</code></h3>
+            <p>
+              الأول يختار الحقول الإلزامية، والثاني يختار الحقول الاختيارية.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area two-columns">
+          <input class="requirement-field" type="text" placeholder="حقل إجباري" required />
+          <input class="requirement-field" type="text" placeholder="حقل اختياري" />
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.requirement-field:required {
+  border-right: 5px solid #f97316;
+}
+
+.requirement-field:optional {
+  border-right: 5px solid #64748b;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 18 valid + 19 invalid -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">20 + 21</span>
+          <div>
+            <h3><code>:valid</code> و<code>:invalid</code></h3>
+            <p>
+              يحددان ما إذا كانت قيمة الحقل صحيحة أو غير صحيحة حسب شروط HTML.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <p class="demo-instruction">
+            جرّب: اكتب بريدًا إلكترونيًا صحيحًا أو غير صحيح.
+          </p>
+          <input class="validation-field" type="email" placeholder="example@email.com" required />
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.validation-field:valid {
+  border-color: #16a34a;
+}
+
+.validation-field:invalid {
+  border-color: #dc2626;
+}</code></pre>
+        </details>
+      </article>
+    </section>
+
+    <!-- =========================================================
+         رابعًا: المنطق والروابط
+         ========================================================= -->
+    <section class="chapter" id="logic">
+      <div class="chapter-title">
+        <span>رابعًا</span>
+        <div>
+          <h2>المحددات المنطقية والروابط</h2>
+          <p>تختصر المحددات أو تختار عناصر حسب محتواها وحالة الرابط.</p>
+        </div>
+      </div>
+
+      <!-- 20 not -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">20</span>
+          <div>
+            <h3><code>:not()</code></h3>
+            <p>
+              يطبق التنسيق على العناصر ما عدا العناصر المطابقة للمحدد داخل
+              الأقواس.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area not-buttons">
+          <button>الرئيسية</button>
+          <button class="current">المنتجات</button>
+          <button>تواصل معنا</button>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.not-buttons button:not(.current) {
+  background-color: #e2e8f0;
+  color: #64748b;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 21 + 22 -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">21 + 22</span>
+          <div>
+            <h3><code>:link</code> و<code>:visited</code></h3>
+            <p>
+              <code>:link</code> للرابط الذي لم تتم زيارته، و<code>:visited</code>
+              للرابط الذي تمت زيارته.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area links-example">
+          <a href="https://example.com" target="_blank" rel="noopener">افتح رابطًا تجريبيًا</a>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.links-example a:link {
+  color: #2563eb;
+}
+
+.links-example a:visited {
+  color: #7e22ce;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 23 is -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">23</span>
+          <div>
+            <h3><code>:is()</code></h3>
+            <p>تختصر قائمة من المحددات بدل تكرار القاعدة نفسها.</p>
+          </div>
+        </div>
+
+        <div class="demo-area is-demo">
+          <div class="box-one">
+            <h4>عنوان داخل box-one</h4>
+          </div>
+          <div class="box-two" id="test-is">
+            <h4>عنوان داخل box-two</h4>
+          </div>
+          <div class="box-three">
+            <h4>عنوان داخل box-three</h4>
+          </div>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>:is(.box-one, .box-two, .box-three) h4 {
+  color: #be123c;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 24 where -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">24</span>
+          <div>
+            <h3><code>:where()</code></h3>
+            <p>
+              تشبه <code>:is()</code>، لكن قوة التحديد الخاصة بها تساوي صفرًا،
+              لذلك يسهل تجاوز تنسيقها لاحقًا.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area where-demo">
+          <div class="where-card">
+            <p>فقرة داخل where-card</p>
+          </div>
+          <div class="where-box">
+            <p>فقرة داخل where-box</p>
+          </div>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>:where(.where-card, .where-box) p {
+  background-color: #f1f5f9;
+  padding: 12px;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 25 has -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">25</span>
+          <div>
+            <h3><code>:has()</code></h3>
+            <p>يختار العنصر اعتمادًا على وجود عنصر محدد بداخله أو بجواره.</p>
+          </div>
+        </div>
+
+        <div class="demo-area product-grid">
+          <div class="product">
+            <h4>منتج عادي</h4>
+            <p>السعر: 50 شيقل</p>
+          </div>
+
+          <div class="product">
+            <h4>منتج عليه خصم</h4>
+            <p>السعر: 40 شيقل</p>
+            <span class="discount">خصم خاص</span>
+          </div>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.product:has(.discount) {
+  border-color: #dc2626;
+  background-color: #fef2f2;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 26 root -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">26</span>
+          <div>
+            <h3><code>:root</code></h3>
+            <p>
+              يمثل العنصر الجذري للصفحة، وهو غالبًا عنصر <code>html</code>.
+              يستخدم كثيرًا لتعريف متغيرات CSS العامة.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <div class="root-demo">
+            هذا الصندوق يستخدم متغيرات معرفة داخل <code>:root</code>.
+          </div>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>:root {
+  --primary-color: #7c3aed;
+  --primary-soft: #f5f3ff;
+}
+
+.root-demo {
+  color: var(--primary-color);
+  background-color: var(--primary-soft);
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 27 target -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge">27</span>
+          <div>
+            <h3><code>:target</code></h3>
+            <p>
+              يختار العنصر الذي يطابق المعرّف الموجود بعد علامة
+              <code>#</code> في عنوان الصفحة.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <a class="target-link" href="#target-box">فعّل العنصر المستهدف</a>
+          <div id="target-box" class="target-box">أنا العنصر المستهدف.</div>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.target-box:target {
+  border-color: #f59e0b;
+  background-color: #fffbeb;
+  transform: scale(1.01);
+}</code></pre>
+        </details>
+      </article>
+    </section>
+
+    <!-- =========================================================
+         خامسًا: Pseudo-elements
+         ========================================================= -->
+    <section class="chapter" id="pseudo-elements">
+      <div class="chapter-title pseudo-title">
+        <span>خامسًا</span>
+        <div>
+          <h2>العناصر الزائفة Pseudo-elements</h2>
+          <p>تستهدف أجزاء افتراضية من العنصر وتكتب غالبًا بنقطتين.</p>
+        </div>
+      </div>
+
+      <!-- 1 before + after -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge pseudo-badge">1</span>
+          <div>
+            <h3><code>::before</code> و<code>::after</code></h3>
+            <p>
+              يضيفان محتوى تجميليًا قبل محتوى العنصر أو بعده. غالبًا نستخدم
+              معهما الخاصية <code>content</code>.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <button class="cart-button">سلة المشتريات</button>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.cart-button::before {
+  content: "🛒";
+}
+
+.cart-button::after {
+  content: " ←";
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- practical before/after -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge pseudo-badge">تطبيق</span>
+          <div>
+            <h3>
+              إنشاء Tooltip بواسطة <code>::before</code> و<code>::after</code>
+            </h3>
+            <p>
+              يُستخدم <code>::before</code> لصندوق النص، و<code>::after</code>
+              للمثلث الصغير.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area tooltip-area">
+          <button class="tooltip-button" data-tooltip="عرض خاص: خصم 50% لفترة محدودة!">
+            مرّر الماوس لمعرفة العرض
+          </button>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.tooltip-button::before {
+  content: attr(data-tooltip);
+  /* بقية تنسيقات صندوق التلميح */
+}
+
+.tooltip-button::after {
+  content: "";
+  /* رسم المثلث باستخدام الحدود */
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 2 first letter and line -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge pseudo-badge">2</span>
+          <div>
+            <h3><code>::first-letter</code> و<code>::first-line</code></h3>
+            <p>الأول ينسق الحرف الأول، والثاني ينسق السطر الأول من النص.</p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <p class="article-text">
+            هذا النص يمثل بداية مقال عن تصميم واجهات المستخدم. يمكن لتفاصيل
+            صغيرة في CSS أن تغير شكل الموقع بالكامل وتجعله أكثر وضوحًا وجاذبية
+            للمستخدم.
+          </p>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.article-text::first-letter {
+  font-size: 2.4rem;
+  color: #dc2626;
+}
+
+.article-text::first-line {
+  font-weight: 700;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 3 selection -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge pseudo-badge">3</span>
+          <div>
+            <h3><code>::selection</code></h3>
+            <p>يغير تنسيق النص عندما يحدده المستخدم بالماوس.</p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <p class="selection-text">
+            حدّد هذا النص بالماوس لتلاحظ تغير لون الخلفية ولون الخط.
+          </p>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.selection-text::selection {
+  background-color: #facc15;
+  color: #111827;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 4 placeholder -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge pseudo-badge">4</span>
+          <div>
+            <h3><code>::placeholder</code></h3>
+            <p>ينسق النص الإرشادي المؤقت داخل حقل الإدخال.</p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <input class="email-input" type="email" placeholder="أدخل بريدك الإلكتروني هنا" />
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.email-input::placeholder {
+  color: #7c3aed;
+  font-style: italic;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 5 marker -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge pseudo-badge">5</span>
+          <div>
+            <h3><code>::marker</code></h3>
+            <p>ينسق علامات القوائم، مثل النقاط والأرقام.</p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <ul class="marker-list">
+            <li>تعلم HTML لتنظيم المحتوى.</li>
+            <li>تعلم CSS لتنسيق الصفحة.</li>
+            <li>استخدم JavaScript لإضافة التفاعل.</li>
+          </ul>
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.marker-list li::marker {
+  color: #9333ea;
+  font-size: 1.4rem;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 8 file selector -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge pseudo-badge">8</span>
+          <div>
+            <h3><code>::file-selector-button</code></h3>
+            <p>ينسق الزر الداخلي الخاص بحقل رفع الملفات.</p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <input class="file-input" type="file" />
+        </div>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>.file-input::file-selector-button {
+  border: 0;
+  padding: 10px 16px;
+  background-color: #2563eb;
+  color: white;
+}</code></pre>
+        </details>
+      </article>
+
+      <!-- 9 backdrop -->
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="badge pseudo-badge">9</span>
+          <div>
+            <h3><code>::backdrop</code></h3>
+            <p>
+              ينسق الخلفية التي تظهر خلف نافذة <code>dialog</code> المنبثقة.
+            </p>
+          </div>
+        </div>
+
+        <div class="demo-area">
+          <button class="demo-button dialog-open-button" type="button"
+            onclick="document.querySelector('#demo-dialog').showModal()">
+            افتح النافذة
+          </button>
+        </div>
+
+        <dialog id="demo-dialog">
+          <h3>نافذة Dialog</h3>
+          <p>الخلفية الداكنة خلف النافذة تم تنسيقها بواسطة ::backdrop.</p>
+          <form method="dialog">
+            <button class="dialog-close-button">إغلاق</button>
+          </form>
+        </dialog>
+
+        <details>
+          <summary>عرض الكود</summary>
+          <pre><code>dialog::backdrop {
+  background-color: rgb(15 23 42 / 70%);
+  backdrop-filter: blur(3px);
+}</code></pre>
+        </details>
+      </article>
+    </section>
+  </main>
+
+  <footer class="page-footer">
+    <p>ملخص عملي للـPseudo-classes والـPseudo-elements في CSS</p>
+  </footer>
+</body>
+
+</html>

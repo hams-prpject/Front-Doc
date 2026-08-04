@@ -1,0 +1,2111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>دورة JavaScript الأساسية | مرجع الطلاب</title>
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Fonts: Arabic + Mono -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!-- Prism for code highlighting -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Tajawal', 'IBM Plex Sans Arabic', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+        },
+        colors: {
+          js: {
+            yellow: '#F7DF1E',
+            dark: '#0a0e1a',
+            card: '#111729',
+            border: '#1f2a44',
+            muted: '#94a3b8',
+          }
+        },
+        animation: {
+          'fade-in': 'fadeIn 0.6s ease-out forwards',
+          'slide-up': 'slideUp 0.7s ease-out forwards',
+          'pulse-slow': 'pulse 3s ease-in-out infinite',
+          'glow': 'glow 2s ease-in-out infinite alternate',
+        },
+        keyframes: {
+          fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+          slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+          glow: {
+            '0%': { boxShadow: '0 0 20px rgba(247, 223, 30, 0.2)' },
+            '100%': { boxShadow: '0 0 40px rgba(247, 223, 30, 0.5)' },
+          },
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background:
+      radial-gradient(ellipse at top right, rgba(247, 223, 30, 0.05), transparent 50%),
+      radial-gradient(ellipse at bottom left, rgba(99, 102, 241, 0.06), transparent 50%),
+      #0a0e1a;
+    background-attachment: fixed;
+    color: #e2e8f0;
+  }
+
+  /* Grid pattern */
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(247, 223, 30, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(247, 223, 30, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  /* Code block: code in LTR */
+  pre[class*="language-"], code[class*="language-"] {
+    direction: ltr; text-align: left;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 14px !important;
+    line-height: 1.7 !important;
+    background: #0d1117 !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 1.25rem !important;
+  }
+  .code-card { border: 1px solid #1f2a44; border-radius: 12px; overflow: hidden; }
+  .code-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #050a13; padding: 0.5rem 1rem; border-bottom: 1px solid #1f2a44;
+    direction: ltr;
+  }
+  .code-dots { display: flex; gap: 6px; }
+  .code-dots span { width: 12px; height: 12px; border-radius: 50%; }
+
+  /* Console output */
+  .console-out {
+    direction: ltr; text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: #050a13;
+    border-top: 1px solid #1f2a44;
+    padding: 1rem;
+    min-height: 60px;
+    color: #94e2d5;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .console-out .err { color: #f87171; }
+  .console-out .empty { color: #475569; font-style: italic; }
+
+  /* Sidebar active link */
+  .nav-link.active {
+    background: linear-gradient(90deg, rgba(247, 223, 30, 0.15), transparent);
+    border-right: 3px solid #F7DF1E;
+    color: #F7DF1E;
+  }
+
+  /* Soft scroll bar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #0a0e1a; }
+  ::-webkit-scrollbar-thumb { background: #1f2a44; border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: #F7DF1E; }
+
+  /* Section anchor offset */
+  section { scroll-margin-top: 80px; }
+
+  /* Reveal on scroll */
+  .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* Badge */
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(247, 223, 30, 0.1);
+    color: #F7DF1E;
+    border: 1px solid rgba(247, 223, 30, 0.3);
+    padding: 4px 12px; border-radius: 999px;
+    font-size: 12px; font-weight: 600;
+  }
+
+  /* Topic card */
+  .topic-card {
+    background: linear-gradient(180deg, rgba(17, 23, 41, 0.8), rgba(10, 14, 26, 0.8));
+    border: 1px solid #1f2a44;
+    border-radius: 16px;
+    padding: 1.75rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .topic-card:hover {
+    border-color: rgba(247, 223, 30, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+  .topic-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #F7DF1E, transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .topic-card:hover::before { opacity: 1; }
+
+  /* Run button */
+  .run-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #F7DF1E; color: #0a0e1a;
+    padding: 6px 14px; border-radius: 8px;
+    font-weight: 700; font-size: 13px;
+    cursor: pointer; border: none;
+    transition: all 0.2s;
+    direction: rtl;
+  }
+  .run-btn:hover { background: #fff047; transform: scale(1.05); box-shadow: 0 0 20px rgba(247, 223, 30, 0.4); }
+  .copy-btn {
+    background: transparent; color: #94a3b8;
+    padding: 4px 10px; border-radius: 6px;
+    font-size: 12px; cursor: pointer;
+    border: 1px solid #1f2a44;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { color: #F7DF1E; border-color: #F7DF1E; }
+
+  /* Task box */
+  .task-box {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.05));
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-right: 4px solid #818cf8;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+  }
+  .tip-box {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(16, 185, 129, 0.05));
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-right: 4px solid #4ade80;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+  }
+  .warn-box {
+    background: linear-gradient(135deg, rgba(251, 146, 60, 0.08), rgba(249, 115, 22, 0.05));
+    border: 1px solid rgba(251, 146, 60, 0.3);
+    border-right: 4px solid #fb923c;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+  }
+
+  /* Section number */
+  .section-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, #F7DF1E, #fbbf24);
+    color: #0a0e1a;
+    border-radius: 12px;
+    font-weight: 900; font-size: 18px;
+    box-shadow: 0 8px 24px rgba(247, 223, 30, 0.3);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Method table */
+  .method-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    border: 1px solid #1f2a44;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .method-table th {
+    background: #050a13;
+    padding: 12px 16px;
+    text-align: right;
+    font-weight: 700;
+    color: #F7DF1E;
+    border-bottom: 1px solid #1f2a44;
+    font-size: 14px;
+  }
+  .method-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #1f2a44;
+    font-size: 14px;
+    vertical-align: top;
+  }
+  .method-table tr:last-child td { border-bottom: none; }
+  .method-table tr:hover { background: rgba(247, 223, 30, 0.03); }
+  .method-table code {
+    background: #0d1117;
+    color: #F7DF1E;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    direction: ltr;
+    display: inline-block;
+  }
+
+  /* Header glow */
+  .hero-title {
+    background: linear-gradient(135deg, #F7DF1E 0%, #fbbf24 50%, #fff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Hide scrollbar in mobile menu */
+  .scroll-hidden::-webkit-scrollbar { display: none; }
+</style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- =========== Top Navigation =========== -->
+<header class="sticky top-0 z-50 backdrop-blur-xl bg-js-dark/80 border-b border-js-border">
+  <div class="max-w-7xl mx-auto px-4 lg:px-6 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <button id="menuBtn" class="lg:hidden text-js-yellow p-2">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-lg bg-js-yellow flex items-center justify-center font-mono font-black text-js-dark text-sm">JS</div>
+        <div>
+          <div class="font-bold text-white text-sm leading-tight">دورة JavaScript</div>
+          <div class="text-js-muted text-[11px] leading-tight">مرجع الطلاب</div>
+        </div>
+      </div>
+    </div>
+    <div class="hidden md:flex items-center gap-3 text-sm">
+      <span class="text-js-muted">التقدم:</span>
+      <div class="w-32 h-2 bg-js-border rounded-full overflow-hidden">
+        <div id="progressBar" class="h-full bg-js-yellow transition-all duration-300" style="width:0%"></div>
+      </div>
+      <span id="progressText" class="text-js-yellow font-bold font-mono">0%</span>
+    </div>
+  </div>
+</header>
+
+<div class="max-w-7xl mx-auto px-4 lg:px-6 py-6 lg:flex lg:gap-8">
+
+  <!-- =========== Sidebar =========== -->
+  <aside id="sidebar" class="hidden lg:block w-64 shrink-0 sticky top-20 self-start max-h-[calc(100vh-100px)] overflow-y-auto scroll-hidden">
+    <div class="bg-js-card/60 border border-js-border rounded-2xl p-4">
+      <div class="text-xs font-bold text-js-muted uppercase tracking-wider mb-3 px-2">المحتوى</div>
+      <nav class="flex flex-col gap-1 text-sm">
+        <a href="#intro" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">١. مقدمة</a>
+        <a href="#whereto" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">٢. أين نضع الكود</a>
+        <a href="#output" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">٣. الإخراج Output</a>
+        <a href="#syntax" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">٤. البنية Syntax</a>
+        <a href="#statements" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">٥. العبارات Statements</a>
+        <a href="#comments" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">٦. التعليقات Comments</a>
+        <a href="#variables" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">⭐ ٧. المتغيرات Variables</a>
+        <a href="#datatypes" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">٨. أنواع البيانات</a>
+        <a href="#scope" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">٩. النطاق Scope</a>
+        <a href="#operators" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">١٠. العمليات Operators</a>
+        <a href="#conditions" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">١١. الشروط Conditions</a>
+        <a href="#loops" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">١٢. الحلقات Loops</a>
+        <a href="#functions" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">⭐ ١٣. الدوال Functions</a>
+        <a href="#objects" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">١٤. الكائنات Objects</a>
+        <a href="#dates" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">١٥. التواريخ Dates</a>
+        <a href="#arrays" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">١٦. المصفوفات Arrays</a>
+        <a href="#methods" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all">١٧. أهم الدوال الجاهزة</a>
+        <a href="#playground" class="nav-link px-3 py-2 rounded-lg hover:bg-js-border/50 transition-all bg-indigo-500/10 text-indigo-300">🛠️ ساحة التجربة</a>
+      </nav>
+    </div>
+
+    <div class="mt-4 bg-gradient-to-br from-js-yellow/10 to-amber-500/5 border border-js-yellow/30 rounded-2xl p-4">
+      <div class="text-js-yellow font-bold mb-2 text-sm">💡 نصيحة</div>
+      <p class="text-xs text-js-muted leading-relaxed">جرّب كل الأمثلة بنفسك. اضغط زر "تشغيل" بجانب أي مثال، أو افتح ساحة التجربة في الأسفل.</p>
+    </div>
+  </aside>
+
+  <!-- =========== Main Content =========== -->
+  <main class="flex-1 min-w-0">
+
+    <!-- HERO -->
+    <section class="relative overflow-hidden rounded-3xl border border-js-border bg-js-card/40 p-8 md:p-12 mb-12 grid-bg">
+      <div class="relative z-10">
+        <div class="badge mb-4">
+          <span class="w-2 h-2 rounded-full bg-js-yellow animate-pulse"></span>
+          مرجع تفاعلي
+        </div>
+        <h1 class="text-4xl md:text-6xl font-black hero-title leading-tight mb-4">
+          أساسيات JavaScript
+        </h1>
+        <p class="text-js-muted text-lg md:text-xl max-w-2xl leading-relaxed mb-6">
+          مرجعك الكامل لتعلم لغة الويب الأشهر. شرح مبسّط، أمثلة قابلة للتنفيذ، ومهام تتدرّج معك خطوة بخطوة حتى الإتقان.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a href="#intro" class="bg-js-yellow text-js-dark font-bold px-6 py-3 rounded-xl hover:bg-yellow-300 transition-all shadow-lg shadow-yellow-500/20">ابدأ من الصفر ←</a>
+          <a href="#playground" class="border border-js-border text-white px-6 py-3 rounded-xl hover:border-js-yellow transition-all">ساحة التجربة 🛠️</a>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
+          <div class="bg-js-dark/60 border border-js-border rounded-xl p-4">
+            <div class="text-3xl font-black text-js-yellow font-mono">17</div>
+            <div class="text-xs text-js-muted mt-1">موضوع شامل</div>
+          </div>
+          <div class="bg-js-dark/60 border border-js-border rounded-xl p-4">
+            <div class="text-3xl font-black text-js-yellow font-mono">+50</div>
+            <div class="text-xs text-js-muted mt-1">مثال تفاعلي</div>
+          </div>
+          <div class="bg-js-dark/60 border border-js-border rounded-xl p-4">
+            <div class="text-3xl font-black text-js-yellow font-mono">+25</div>
+            <div class="text-xs text-js-muted mt-1">مهمة عملية</div>
+          </div>
+          <div class="bg-js-dark/60 border border-js-border rounded-xl p-4">
+            <div class="text-3xl font-black text-js-yellow font-mono">100%</div>
+            <div class="text-xs text-js-muted mt-1">عربي</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Decorative code preview -->
+      <div class="hidden lg:block absolute -bottom-6 -left-10 rotate-[-6deg] opacity-20 pointer-events-none">
+        <pre class="text-js-yellow font-mono text-sm leading-relaxed">
+function welcome(name) {
+  return `أهلاً ${name}!`;
+}
+console.log(welcome("طالبي"));
+        </pre>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 1: INTRODUCTION -->
+    <!-- ============================================ -->
+    <section id="intro" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">01</div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white">JavaScript Introduction</h2>
+          <p class="text-js-muted text-sm">مقدمة تعريفية</p>
+        </div>
+      </div>
+
+      <div class="topic-card mb-6">
+        <h3 class="text-xl font-bold text-js-yellow mb-3">ما هي JavaScript؟</h3>
+        <p class="leading-loose text-slate-300 mb-4">
+          <strong class="text-white">JavaScript</strong> هي لغة برمجة عالية المستوى، وهي لغة الويب الأساسية إلى جانب HTML و CSS.
+          إذا كانت <span class="text-pink-400">HTML هي العظام</span> و <span class="text-blue-400">CSS هي الجلد والملابس</span>،
+          فإن <span class="text-js-yellow font-bold">JavaScript هي الدماغ والعضلات</span> التي تجعل الصفحة تتفاعل وتعمل.
+        </p>
+        <ul class="space-y-2 text-slate-300">
+          <li class="flex gap-2"><span class="text-js-yellow">▸</span> تعمل في المتصفح مباشرة بدون تثبيت أي برامج.</li>
+          <li class="flex gap-2"><span class="text-js-yellow">▸</span> تستخدم لتطوير مواقع الويب، تطبيقات الجوال، وحتى الخوادم (Node.js).</li>
+          <li class="flex gap-2"><span class="text-js-yellow">▸</span> ديناميكية، مرنة، ومناسبة للمبتدئين.</li>
+          <li class="flex gap-2"><span class="text-js-yellow">▸</span> هي اللغة <em>رقم 1</em> الأكثر استخداماً حول العالم.</li>
+        </ul>
+      </div>
+
+      <h4 class="font-bold text-white mb-3 flex items-center gap-2"><span class="text-js-yellow">📝</span> أول مثال:</h4>
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">hello.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">// أول برنامج لك بـ JavaScript
+console.log("مرحباً يا عالم!");
+console.log("أهلاً بكم في عالم البرمجة");</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" لرؤية النتيجة —</div>
+      </div>
+
+      <div class="task-box">
+        <div class="font-bold text-indigo-300 mb-2">🎯 مهمة 1.1:</div>
+        <p class="text-slate-300">اكتب برنامج يطبع اسمك، عمرك، وهوايتك المفضلة، كل واحدة في سطر منفصل باستخدام <code class="text-js-yellow font-mono">console.log</code>.</p>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 2: WHERE TO -->
+    <!-- ============================================ -->
+    <section id="whereto" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">02</div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white">JavaScript Where To</h2>
+          <p class="text-js-muted text-sm">أين نكتب الكود؟</p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-5 mb-6">
+        <div class="topic-card">
+          <div class="text-2xl mb-2">📄</div>
+          <h3 class="font-bold text-white mb-2">داخل HTML — وسم <code class="text-js-yellow">&lt;script&gt;</code></h3>
+          <p class="text-sm text-slate-400 mb-3">يمكن وضعه في <code>head</code> أو في نهاية <code>body</code> (الأفضل).</p>
+          <div class="code-card">
+            <div class="code-card-header">
+              <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+              <div class="text-js-muted text-xs font-mono">index.html</div>
+            </div>
+<pre><code class="language-html">&lt;body&gt;
+  &lt;h1&gt;صفحتي&lt;/h1&gt;
+  &lt;script&gt;
+    document.querySelector("h1").textContent = "تم التعديل!";
+  &lt;/script&gt;
+&lt;/body&gt;</code></pre>
+          </div>
+        </div>
+
+        <div class="topic-card">
+          <div class="text-2xl mb-2">📁</div>
+          <h3 class="font-bold text-white mb-2">في ملف خارجي <code class="text-js-yellow">.js</code></h3>
+          <p class="text-sm text-slate-400 mb-3">الطريقة الأنسب للمشاريع الكبيرة. أنظف وأسهل في التعديل.</p>
+          <div class="code-card">
+            <div class="code-card-header">
+              <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+              <div class="text-js-muted text-xs font-mono">index.html</div>
+            </div>
+<pre><code class="language-html">&lt;body&gt;
+  &lt;script src="app.js"&gt;&lt;/script&gt;
+&lt;/body&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <div class="font-bold text-green-300 mb-2">✅ أفضل ممارسة:</div>
+        <p class="text-slate-300">ضع وسم <code class="text-js-yellow font-mono">&lt;script&gt;</code> قبل إغلاق <code class="text-js-yellow font-mono">&lt;/body&gt;</code> مباشرة، حتى يتم تحميل HTML قبل تنفيذ الكود.</p>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 3: OUTPUT -->
+    <!-- ============================================ -->
+    <section id="output" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">03</div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white">JavaScript Output</h2>
+          <p class="text-js-muted text-sm">طرق إظهار النتائج</p>
+        </div>
+      </div>
+
+      <p class="text-slate-300 mb-5 leading-loose">
+        هناك أربع طرق رئيسية لعرض البيانات في JavaScript:
+      </p>
+
+      <div class="overflow-x-auto mb-6">
+        <table class="method-table">
+          <thead>
+            <tr>
+              <th>الطريقة</th>
+              <th>الاستخدام</th>
+              <th>أين تظهر النتيجة</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>console.log()</code></td><td>للطباعة أثناء التطوير والتصحيح</td><td>في وحدة تحكم المتصفح (F12)</td></tr>
+            <tr><td><code>document.write()</code></td><td>الكتابة مباشرة في الصفحة</td><td>داخل صفحة HTML</td></tr>
+            <tr><td><code>alert()</code></td><td>عرض رسالة منبثقة للمستخدم</td><td>نافذة تنبيه</td></tr>
+            <tr><td><code>innerHTML</code></td><td>تعديل محتوى عنصر HTML</td><td>داخل العنصر المحدد</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">output.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">console.log("هذه رسالة في الكونسول");
+console.log("الجمع:", 5 + 3);
+console.log("اسم وعمر:", "أحمد", 25);
+
+// تنبيه (مفعّل في المتصفح فقط)
+// alert("مرحباً!");
+
+// لا تنسَ: console.error و console.warn
+console.warn("⚠️ هذه رسالة تحذير");
+console.error("❌ هذه رسالة خطأ");</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <div class="task-box">
+        <div class="font-bold text-indigo-300 mb-2">🎯 مهمة 3.1:</div>
+        <p class="text-slate-300">جرّب الأربعة طرق في ملف HTML على جهازك. لاحظ أين تظهر كل واحدة.</p>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 4: SYNTAX -->
+    <!-- ============================================ -->
+    <section id="syntax" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">04</div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white">JavaScript Syntax</h2>
+          <p class="text-js-muted text-sm">قواعد كتابة الكود</p>
+        </div>
+      </div>
+
+      <div class="topic-card mb-6">
+        <p class="text-slate-300 leading-loose mb-4">
+          البنية (Syntax) هي مجموعة القواعد التي تحدد كيفية كتابة الكود. أي خطأ بسيط فيها = الكود لن يعمل!
+        </p>
+        <ul class="space-y-3 text-slate-300">
+          <li><span class="text-js-yellow font-bold">▸ حساسة لحالة الأحرف:</span> <code class="text-pink-400">name</code> ≠ <code class="text-pink-400">Name</code> ≠ <code class="text-pink-400">NAME</code></li>
+          <li><span class="text-js-yellow font-bold">▸ تنتهي العبارات بفاصلة منقوطة <code>;</code></span> (اختيارية لكن يُنصح بها).</li>
+          <li><span class="text-js-yellow font-bold">▸ المسافات والأسطر:</span> JavaScript تتجاهل المسافات الزائدة.</li>
+          <li><span class="text-js-yellow font-bold">▸ النصوص داخل علامات اقتباس:</span> <code>" "</code> أو <code>' '</code> أو <code>` `</code></li>
+        </ul>
+      </div>
+
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">syntax.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">// قيم Values: ثوابت ومتغيرات
+let x = 10;        // متغير
+const PI = 3.14;   // ثابت
+
+// المعرّفات (أسماء المتغيرات) تتبع قواعد:
+// - تبدأ بحرف أو _ أو $
+// - تتكون من حروف وأرقام
+// - حساسة لحالة الأحرف
+
+let firstName = "أحمد";  // ✅ صحيح
+let _age = 20;           // ✅ صحيح
+let $price = 99;         // ✅ صحيح
+// let 1name = "خطأ";    // ❌ لا يبدأ برقم
+
+console.log(firstName, _age, $price);</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 5: STATEMENTS -->
+    <!-- ============================================ -->
+    <section id="statements" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">05</div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white">JavaScript Statements</h2>
+          <p class="text-js-muted text-sm">العبارات والأوامر</p>
+        </div>
+      </div>
+
+      <div class="topic-card mb-6">
+        <p class="text-slate-300 leading-loose">
+          <strong class="text-white">العبارة (Statement)</strong> هي تعليمة كاملة يقوم المتصفح بتنفيذها. البرنامج عبارة عن <em>سلسلة من العبارات</em>،
+          تنفّذ بالترتيب من الأعلى إلى الأسفل.
+        </p>
+        <p class="text-slate-300 leading-loose mt-3">
+          كل عبارة تنتهي بفاصلة منقوطة <code class="text-js-yellow">;</code>، ويمكن أن تتكون من:
+          <strong>قيم، عاملين، تعابير، كلمات مفتاحية، تعليقات.</strong>
+        </p>
+      </div>
+
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">statements.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">// كل سطر هنا = عبارة (statement)
+let a = 5;             // عبارة تعريف متغير
+let b = 6;             // عبارة تعريف متغير
+let c = a + b;         // عبارة حسابية
+console.log(c);        // عبارة استدعاء دالة
+
+// يمكن دمج عدة عبارات في سطر واحد بفصلها بـ ;
+let x = 1; let y = 2; let z = x + y;
+console.log("النتيجة:", z);
+
+// كتلة من العبارات داخل { }
+{
+  let message = "أنا داخل بلوك";
+  console.log(message);
+}</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 6: COMMENTS -->
+    <!-- ============================================ -->
+    <section id="comments" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">06</div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white">JavaScript Comments</h2>
+          <p class="text-js-muted text-sm">التعليقات</p>
+        </div>
+      </div>
+
+      <p class="text-slate-300 leading-loose mb-5">
+        التعليقات نصوص يكتبها المبرمج لشرح الكود، ويتجاهلها المتصفح تماماً. تجعل الكود مفهوماً لك ولزملائك.
+      </p>
+
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">comments.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">// تعليق سطر واحد: يبدأ بشرطتين مائلتين
+
+/*
+  تعليق متعدد الأسطر
+  يمكن أن يمتد على
+  عدة أسطر
+*/
+
+let price = 100;       // ضريبة مضمّنة
+let discount = 0.10;   // نسبة الخصم 10%
+
+// نقوم بحساب السعر النهائي
+let final = price - (price * discount);
+
+console.log("السعر النهائي:", final);</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <div class="task-box">
+        <div class="font-bold text-indigo-300 mb-2">🎯 مهمة 6.1:</div>
+        <p class="text-slate-300">اكتب برنامجاً يحسب مساحة مستطيل (الطول × العرض)، وعلّق على كل سطر مما تفعله.</p>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 7: VARIABLES (DETAILED!) -->
+    <!-- ============================================ -->
+    <section id="variables" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">07</div>
+        <div class="flex-1">
+          <div class="flex items-center gap-2">
+            <h2 class="text-2xl md:text-3xl font-black text-white">JavaScript Variables</h2>
+            <span class="badge">⭐ موضوع مهم</span>
+          </div>
+          <p class="text-js-muted text-sm">المتغيرات — حجر الأساس في البرمجة</p>
+        </div>
+      </div>
+
+      <div class="topic-card mb-6">
+        <h3 class="text-xl font-bold text-js-yellow mb-3">ما هو المتغير؟</h3>
+        <p class="text-slate-300 leading-loose">
+          المتغير <strong class="text-white">عبارة عن صندوق</strong> نضع فيه بيانات (نص، رقم، قائمة...) ونعطيه اسماً نستخدمه لاحقاً.
+          تخيّل خزانة صغيرة عليها لاصق باسم <code class="text-js-yellow">age</code> وفي داخلها الرقم <code>20</code>. كلما احتجت العمر، فتحت الخزانة.
+        </p>
+      </div>
+
+      <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+        <span class="text-js-yellow">▸</span> طرق التعريف الثلاث:
+      </h3>
+
+      <div class="grid md:grid-cols-3 gap-4 mb-6">
+        <div class="topic-card">
+          <div class="text-2xl mb-2">🔓</div>
+          <h4 class="font-mono font-bold text-pink-400 text-lg mb-2">var</h4>
+          <p class="text-sm text-slate-400 mb-3">الطريقة القديمة (تجنبها).</p>
+          <ul class="text-xs text-slate-500 space-y-1">
+            <li>▸ Function Scope</li>
+            <li>▸ يمكن إعادة تعريفه</li>
+            <li>▸ Hoisting بقيمة undefined</li>
+          </ul>
+        </div>
+        <div class="topic-card">
+          <div class="text-2xl mb-2">✏️</div>
+          <h4 class="font-mono font-bold text-blue-400 text-lg mb-2">let</h4>
+          <p class="text-sm text-slate-400 mb-3">للقيم القابلة للتغيير.</p>
+          <ul class="text-xs text-slate-500 space-y-1">
+            <li>▸ Block Scope</li>
+            <li>▸ لا يمكن إعادة تعريفه</li>
+            <li>▸ <strong class="text-blue-400">يمكن تغيير قيمته</strong></li>
+          </ul>
+        </div>
+        <div class="topic-card">
+          <div class="text-2xl mb-2">🔒</div>
+          <h4 class="font-mono font-bold text-emerald-400 text-lg mb-2">const</h4>
+          <p class="text-sm text-slate-400 mb-3">للقيم الثابتة.</p>
+          <ul class="text-xs text-slate-500 space-y-1">
+            <li>▸ Block Scope</li>
+            <li>▸ لا يمكن إعادة تعريفه</li>
+            <li>▸ <strong class="text-emerald-400">لا تتغير قيمته</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">variables.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">// 1) let — قابل للتغيير
+let age = 20;
+console.log("العمر الآن:", age);
+age = 21;                    // ✅ يمكن تغيير القيمة
+console.log("العمر بعد سنة:", age);
+
+// 2) const — ثابت
+const COUNTRY = "فلسطين";
+console.log("الدولة:", COUNTRY);
+// COUNTRY = "السعودية";    // ❌ خطأ! لا يمكن تغييره
+
+// 3) إعلانات متعددة
+let firstName = "محمد", lastName = "علي", year = 2024;
+console.log(firstName, lastName, year);
+
+// 4) متغير بدون قيمة = undefined
+let mystery;
+console.log("القيمة:", mystery);</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <div class="warn-box mb-6">
+        <div class="font-bold text-orange-300 mb-2">⚠️ ملاحظات مهمة:</div>
+        <ul class="text-slate-300 space-y-2 text-sm">
+          <li>▸ استخدم <code class="text-js-yellow font-mono">const</code> دائماً، إلا إذا كنت متأكداً أنك ستغيّر القيمة، فاستخدم <code class="text-js-yellow font-mono">let</code>.</li>
+          <li>▸ تجنّب <code class="text-pink-400 font-mono">var</code> في الكود الحديث.</li>
+          <li>▸ أسماء المتغيرات يجب أن تكون <strong>وصفية</strong>: <code class="text-emerald-400">studentAge</code> أفضل من <code class="text-red-400">x</code>.</li>
+          <li>▸ نستخدم <strong>camelCase</strong>: الكلمة الأولى صغيرة، وكل كلمة بعدها تبدأ بحرف كبير. مثال: <code class="text-emerald-400">firstName</code>, <code class="text-emerald-400">totalPrice</code>.</li>
+        </ul>
+      </div>
+
+      <h3 class="text-xl font-bold text-white mb-4">قواعد تسمية المتغيرات:</h3>
+      <div class="overflow-x-auto mb-6">
+        <table class="method-table">
+          <thead>
+            <tr><th>القاعدة</th><th>صحيح ✅</th><th>خطأ ❌</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>يبدأ بحرف، _ أو $</td><td><code>name</code>, <code>_age</code>, <code>$price</code></td><td><code>1name</code>, <code>#tag</code></td></tr>
+            <tr><td>بدون مسافات</td><td><code>fullName</code></td><td><code>full name</code></td></tr>
+            <tr><td>ليس كلمة محجوزة</td><td><code>userClass</code></td><td><code>class</code>, <code>function</code></td></tr>
+            <tr><td>وصفي</td><td><code>totalPrice</code></td><td><code>tp</code> (غامض)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="task-box">
+        <div class="font-bold text-indigo-300 mb-2">🎯 مهام 7:</div>
+        <ol class="text-slate-300 space-y-2 list-decimal pr-5">
+          <li>عرّف ثلاثة متغيرات تمثل: اسمك، عمرك، مدينتك. اطبعها في جملة واحدة.</li>
+          <li>عرّف ثابتاً <code class="text-js-yellow">PI</code> بقيمة <code>3.14</code> ثم احسب مساحة دائرة قطرها <code>10</code>.</li>
+          <li>عرّف متغيرين <code>price</code> و <code>quantity</code>، احسب الإجمالي وأضف ضريبة <code>15%</code>.</li>
+          <li>ما الفرق بين <code class="text-js-yellow">let</code> و <code class="text-emerald-400">const</code>؟ اكتب مثالاً يوضح ذلك.</li>
+        </ol>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 8: DATATYPES -->
+    <!-- ============================================ -->
+    <section id="datatypes" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">08</div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white">JavaScript Data Types</h2>
+          <p class="text-js-muted text-sm">أنواع البيانات</p>
+        </div>
+      </div>
+
+      <p class="text-slate-300 leading-loose mb-5">
+        البيانات في JavaScript تنقسم إلى <strong>نوعين رئيسيين</strong>:
+        <span class="text-js-yellow">بيانات أولية (Primitive)</span> و <span class="text-blue-400">بيانات مرجعية (Reference)</span>.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-4 mb-6">
+        <div class="topic-card">
+          <h3 class="text-lg font-bold text-js-yellow mb-3">🟡 الأنواع الأولية (Primitive)</h3>
+          <ul class="space-y-2 text-sm text-slate-300">
+            <li><code class="text-js-yellow font-mono">String</code> — نص: <code>"مرحبا"</code></li>
+            <li><code class="text-js-yellow font-mono">Number</code> — رقم: <code>25</code>, <code>3.14</code></li>
+            <li><code class="text-js-yellow font-mono">Boolean</code> — <code>true</code> / <code>false</code></li>
+            <li><code class="text-js-yellow font-mono">Undefined</code> — متغير لم يُعطَ قيمة</li>
+            <li><code class="text-js-yellow font-mono">Null</code> — قيمة فارغة متعمّدة</li>
+            <li><code class="text-js-yellow font-mono">BigInt</code> — أعداد كبيرة جداً</li>
+            <li><code class="text-js-yellow font-mono">Symbol</code> — قيمة فريدة (متقدم)</li>
+          </ul>
+        </div>
+        <div class="topic-card">
+          <h3 class="text-lg font-bold text-blue-400 mb-3">🔵 الأنواع المرجعية (Reference)</h3>
+          <ul class="space-y-2 text-sm text-slate-300">
+            <li><code class="text-blue-400 font-mono">Object</code> — كائن: <code>{name:"أحمد"}</code></li>
+            <li><code class="text-blue-400 font-mono">Array</code> — مصفوفة: <code>[1, 2, 3]</code></li>
+            <li><code class="text-blue-400 font-mono">Function</code> — دالة</li>
+            <li><code class="text-blue-400 font-mono">Date</code> — تاريخ</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">datatypes.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">// String — نص
+let name = "أحمد";
+let greeting = 'مرحبا';
+let template = `أهلاً ${name}`;   // template literal
+
+// Number — رقم (صحيح أو عشري)
+let age = 25;
+let pi = 3.14;
+let big = 1e6;          // 1000000
+
+// Boolean — منطقي
+let isStudent = true;
+let isOnline = false;
+
+// Undefined — لم يعرف بعد
+let unknown;
+
+// Null — فارغ متعمداً
+let empty = null;
+
+// Object
+let person = { name: "علي", age: 22 };
+
+// Array
+let numbers = [10, 20, 30];
+
+// نتعرف على النوع باستخدام typeof
+console.log(typeof name);       // string
+console.log(typeof age);        // number
+console.log(typeof isStudent);  // boolean
+console.log(typeof unknown);    // undefined
+console.log(typeof person);     // object
+console.log(typeof numbers);    // object (المصفوفة نوع من الكائن)</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <div class="task-box">
+        <div class="font-bold text-indigo-300 mb-2">🎯 مهمة 8.1:</div>
+        <p class="text-slate-300">عرّف 6 متغيرات من 6 أنواع مختلفة، واطبع نوع كل واحد باستخدام <code class="text-js-yellow font-mono">typeof</code>.</p>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 9: SCOPE -->
+    <!-- ============================================ -->
+    <section id="scope" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">09</div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white">JavaScript Scope</h2>
+          <p class="text-js-muted text-sm">نطاق المتغيرات</p>
+        </div>
+      </div>
+
+      <div class="topic-card mb-6">
+        <p class="text-slate-300 leading-loose">
+          <strong class="text-white">النطاق (Scope)</strong> يحدد <em>أين</em> يمكن الوصول إلى متغير معين.
+          المتغير الذي تُعرّفه داخل دالة، لا يمكن استخدامه خارجها — إنه <q>محلي</q> داخلها.
+        </p>
+      </div>
+
+      <h3 class="text-lg font-bold text-white mb-3">ثلاثة أنواع من النطاق:</h3>
+
+      <div class="grid md:grid-cols-3 gap-4 mb-6">
+        <div class="topic-card">
+          <div class="font-bold text-pink-400 mb-2">🌍 Global Scope</div>
+          <p class="text-sm text-slate-400">معرف خارج أي دالة، ومتاح في كل البرنامج.</p>
+        </div>
+        <div class="topic-card">
+          <div class="font-bold text-blue-400 mb-2">🏠 Function Scope</div>
+          <p class="text-sm text-slate-400">معرف داخل دالة، ومتاح فقط داخلها.</p>
+        </div>
+        <div class="topic-card">
+          <div class="font-bold text-emerald-400 mb-2">📦 Block Scope</div>
+          <p class="text-sm text-slate-400">معرف داخل { } (مع <code class="text-js-yellow">let</code> أو <code class="text-emerald-400">const</code>) ومتاح فقط داخلها.</p>
+        </div>
+      </div>
+
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">scope.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">// نطاق عام (Global)
+let globalVar = "أنا متاح في كل مكان";
+
+function showScope() {
+  // نطاق دالة (Function)
+  let localVar = "أنا فقط داخل الدالة";
+  console.log(globalVar);   // ✅
+  console.log(localVar);    // ✅
+}
+
+showScope();
+console.log(globalVar);     // ✅
+// console.log(localVar);   // ❌ خطأ! غير متاح هنا
+
+// نطاق بلوك (Block)
+if (true) {
+  let blockVar = "أنا داخل البلوك";
+  console.log(blockVar);    // ✅
+}
+// console.log(blockVar);   // ❌ خطأ!</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 10: OPERATORS -->
+    <!-- ============================================ -->
+    <section id="operators" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">10</div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white">JavaScript Operators</h2>
+          <p class="text-js-muted text-sm">العاملين والعمليات</p>
+        </div>
+      </div>
+
+      <p class="text-slate-300 leading-loose mb-5">
+        العاملين هي <strong>الرموز</strong> التي نستخدمها لإجراء العمليات على القيم. تنقسم لعدة أقسام:
+      </p>
+
+      <h3 class="font-bold text-white mb-3">١. العاملين الحسابية (Arithmetic):</h3>
+      <div class="overflow-x-auto mb-6">
+        <table class="method-table">
+          <thead>
+            <tr><th>العامل</th><th>الوصف</th><th>مثال</th><th>النتيجة</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>+</code></td><td>جمع</td><td><code>5 + 3</code></td><td><code>8</code></td></tr>
+            <tr><td><code>-</code></td><td>طرح</td><td><code>10 - 4</code></td><td><code>6</code></td></tr>
+            <tr><td><code>*</code></td><td>ضرب</td><td><code>4 * 3</code></td><td><code>12</code></td></tr>
+            <tr><td><code>/</code></td><td>قسمة</td><td><code>10 / 2</code></td><td><code>5</code></td></tr>
+            <tr><td><code>%</code></td><td>باقي القسمة</td><td><code>10 % 3</code></td><td><code>1</code></td></tr>
+            <tr><td><code>**</code></td><td>الأس</td><td><code>2 ** 3</code></td><td><code>8</code></td></tr>
+            <tr><td><code>++</code></td><td>زيادة 1</td><td><code>x++</code></td><td>x يصبح x+1</td></tr>
+            <tr><td><code>--</code></td><td>إنقاص 1</td><td><code>x--</code></td><td>x يصبح x-1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- IMPORTANT: + sign -->
+      <div class="warn-box mb-6">
+        <div class="font-bold text-orange-300 mb-2 text-lg flex items-center gap-2">
+          ⭐ أهمية إشارة الجمع (+)
+        </div>
+        <p class="text-slate-300 leading-loose mb-3">
+          إشارة <code class="text-js-yellow font-mono text-base">+</code> في JavaScript مميزة جداً وتستخدم لشيئين:
+        </p>
+        <ol class="text-slate-300 space-y-2 list-decimal pr-5 mb-3">
+          <li><strong class="text-white">الجمع الحسابي</strong> عندما تكون القيم أرقاماً: <code class="text-js-yellow">5 + 3 = 8</code></li>
+          <li><strong class="text-white">دمج النصوص (Concatenation)</strong> عندما تكون إحدى القيمتين نص: <code class="text-pink-400">"أحمد" + " علي" = "أحمد علي"</code></li>
+        </ol>
+        <p class="text-slate-300 leading-loose">
+          <strong class="text-orange-300">انتبه!</strong> إذا جمعت رقماً مع نص، JavaScript تحوّل الرقم إلى نص:
+          <code class="text-pink-400 block mt-2 text-center bg-black/30 p-2 rounded font-mono">"5" + 3 = "53"   ❌  (وليس 8)</code>
+        </p>
+      </div>
+
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">plus-operator.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">// 1) جمع أرقام
+console.log(5 + 3);              // 8
+
+// 2) دمج نصوص
+console.log("Hello, " + "World"); // "Hello, World"
+
+// 3) الخلط — نتيجة غير متوقعة!
+console.log("5" + 3);            // "53"  ← نص!
+console.log(5 + "3");            // "53"  ← نص!
+console.log(5 + 3 + "5");        // "85"  ← اليسار حسابي ثم نص
+console.log("5" + 3 + 5);        // "535" ← الكل نص
+
+// 4) للتحويل العكسي:
+console.log(Number("5") + 3);    // 8
+console.log(+"5" + 3);           // 8 (الـ + قبل النص يحوّله رقم)</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <h3 class="font-bold text-white mb-3">٢. عاملين الإسناد (Assignment):</h3>
+      <div class="overflow-x-auto mb-6">
+        <table class="method-table">
+          <thead><tr><th>العامل</th><th>المثال</th><th>يساوي</th></tr></thead>
+          <tbody>
+            <tr><td><code>=</code></td><td><code>x = 5</code></td><td><code>x = 5</code></td></tr>
+            <tr><td><code>+=</code></td><td><code>x += 3</code></td><td><code>x = x + 3</code></td></tr>
+            <tr><td><code>-=</code></td><td><code>x -= 2</code></td><td><code>x = x - 2</code></td></tr>
+            <tr><td><code>*=</code></td><td><code>x *= 4</code></td><td><code>x = x * 4</code></td></tr>
+            <tr><td><code>/=</code></td><td><code>x /= 2</code></td><td><code>x = x / 2</code></td></tr>
+            <tr><td><code>%=</code></td><td><code>x %= 3</code></td><td><code>x = x % 3</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="font-bold text-white mb-3">٣. عاملين المقارنة (Comparison):</h3>
+      <div class="overflow-x-auto mb-6">
+        <table class="method-table">
+          <thead><tr><th>العامل</th><th>المعنى</th><th>مثال</th></tr></thead>
+          <tbody>
+            <tr><td><code>==</code></td><td>يساوي (مع تحويل النوع)</td><td><code>"5" == 5</code> → true</td></tr>
+            <tr><td><code>===</code></td><td>يساوي بنفس النوع (الأفضل)</td><td><code>"5" === 5</code> → false</td></tr>
+            <tr><td><code>!=</code></td><td>لا يساوي</td><td><code>5 != 6</code> → true</td></tr>
+            <tr><td><code>!==</code></td><td>لا يساوي بنفس النوع</td><td><code>5 !== "5"</code> → true</td></tr>
+            <tr><td><code>&gt;</code></td><td>أكبر</td><td><code>10 &gt; 5</code> → true</td></tr>
+            <tr><td><code>&lt;</code></td><td>أصغر</td><td><code>3 &lt; 5</code> → true</td></tr>
+            <tr><td><code>&gt;=</code></td><td>أكبر أو يساوي</td><td><code>5 &gt;= 5</code> → true</td></tr>
+            <tr><td><code>&lt;=</code></td><td>أصغر أو يساوي</td><td><code>4 &lt;= 5</code> → true</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="font-bold text-white mb-3">٤. العاملين المنطقية (Logical):</h3>
+      <div class="overflow-x-auto mb-6">
+        <table class="method-table">
+          <thead><tr><th>العامل</th><th>المعنى</th><th>مثال</th></tr></thead>
+          <tbody>
+            <tr><td><code>&&</code></td><td>AND — وَ</td><td><code>true && false</code> → false</td></tr>
+            <tr><td><code>||</code></td><td>OR — أو</td><td><code>true || false</code> → true</td></tr>
+            <tr><td><code>!</code></td><td>NOT — ليس</td><td><code>!true</code> → false</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="task-box">
+        <div class="font-bold text-indigo-300 mb-2">🎯 مهام 10:</div>
+        <ol class="text-slate-300 space-y-2 list-decimal pr-5">
+          <li>احسب: <code>(15 + 5) × 2 - 4 / 2</code> وتأكد من الترتيب.</li>
+          <li>اكتب برنامجاً يأخذ <code>price</code> و <code>quantity</code> و <code>discount</code> ويحسب الإجمالي.</li>
+          <li>جرّب: <code>"10" + 5</code> ثم <code>10 + "5"</code> ثم <code>10 + 5 + "5"</code>. اشرح الفرق.</li>
+          <li>قارن: <code>0 == false</code> و <code>0 === false</code>. أيّهما أصدق؟</li>
+        </ol>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 11: CONDITIONS -->
+    <!-- ============================================ -->
+    <section id="conditions" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">11</div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white">JavaScript Conditions</h2>
+          <p class="text-js-muted text-sm">الجمل الشرطية</p>
+        </div>
+      </div>
+
+      <p class="text-slate-300 leading-loose mb-5">
+        الشروط تجعل البرنامج يتخذ قرارات: <em>إذا تحقق شرط، نفّذ شيء، وإلّا نفّذ شيئاً آخر</em>.
+      </p>
+
+      <h3 class="font-bold text-white mb-3">if / else if / else</h3>
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">conditions.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">let grade = 75;
+
+if (grade >= 90) {
+  console.log("ممتاز 🌟");
+} else if (grade >= 80) {
+  console.log("جيد جداً 👏");
+} else if (grade >= 70) {
+  console.log("جيد 👍");
+} else if (grade >= 60) {
+  console.log("مقبول");
+} else {
+  console.log("راسب 😞");
+}
+
+// عامل ثلاثي (Ternary): شرط ? نتيجة_True : نتيجة_False
+let age = 18;
+let status = age >= 18 ? "بالغ" : "قاصر";
+console.log("الحالة:", status);</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <h3 class="font-bold text-white mb-3">switch — للحالات المتعددة</h3>
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">switch.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">let day = "الثلاثاء";
+
+switch (day) {
+  case "السبت":
+  case "الأحد":
+    console.log("بداية الأسبوع 💪");
+    break;
+  case "الاثنين":
+  case "الثلاثاء":
+  case "الأربعاء":
+    console.log("منتصف الأسبوع 📚");
+    break;
+  case "الخميس":
+    console.log("نهاية الأسبوع 🎉");
+    break;
+  default:
+    console.log("عطلة 🏖️");
+}</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <div class="task-box">
+        <div class="font-bold text-indigo-300 mb-2">🎯 مهام 11:</div>
+        <ol class="text-slate-300 space-y-2 list-decimal pr-5">
+          <li>اكتب برنامجاً يحدد ما إذا كان رقم <strong>زوجي أو فردي</strong>.</li>
+          <li>اكتب برنامجاً يأخذ سنة ويتحقق إن كانت <strong>سنة كبيسة</strong> (تقبل القسمة على 4، ولكن إن قبلت القسمة على 100 يجب أن تقبل القسمة على 400).</li>
+          <li>برنامج "آلة حاسبة بسيطة" يأخذ رقمين وعملية ( <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> ) باستخدام <code class="text-js-yellow font-mono">switch</code>.</li>
+        </ol>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 12: LOOPS -->
+    <!-- ============================================ -->
+    <section id="loops" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">12</div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white">JavaScript Loops</h2>
+          <p class="text-js-muted text-sm">الحلقات التكرارية</p>
+        </div>
+      </div>
+
+      <p class="text-slate-300 leading-loose mb-5">
+        الحلقات تكرر تنفيذ كتلة من الكود طالما تحقق شرط معيّن. توفّر لنا الجهد والوقت.
+      </p>
+
+      <h3 class="font-bold text-white mb-3">١. for — عندما نعرف عدد التكرارات</h3>
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">for-loop.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">// طباعة الأرقام من 1 إلى 5
+for (let i = 1; i <= 5; i++) {
+  console.log("العدد:", i);
+}
+
+// جدول ضرب الـ 3
+console.log("--- جدول الـ 3 ---");
+for (let i = 1; i <= 10; i++) {
+  console.log(`3 × ${i} = ${3 * i}`);
+}
+
+// مجموع الأعداد من 1 إلى 100
+let sum = 0;
+for (let i = 1; i <= 100; i++) {
+  sum += i;
+}
+console.log("المجموع:", sum);</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <h3 class="font-bold text-white mb-3">٢. while — طالما تحقق الشرط</h3>
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">while-loop.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">let i = 1;
+while (i <= 5) {
+  console.log("التكرار رقم", i);
+  i++;
+}
+
+// do...while: ينفّذ مرة واحدة على الأقل
+let n = 10;
+do {
+  console.log("القيمة:", n);
+  n++;
+} while (n < 13);</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <h3 class="font-bold text-white mb-3">٣. for...of — للعناصر في مصفوفة</h3>
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">for-of.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">let fruits = ["تفاح", "موز", "برتقال", "عنب"];
+
+// for...of: للحصول على القيم
+for (let fruit of fruits) {
+  console.log("🍎", fruit);
+}
+
+// for...in: للحصول على المفاتيح/الفهارس
+for (let i in fruits) {
+  console.log(`الفهرس ${i}: ${fruits[i]}`);
+}</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <div class="warn-box mb-6">
+        <div class="font-bold text-orange-300 mb-2">⚠️ break و continue</div>
+        <ul class="text-slate-300 space-y-1 text-sm">
+          <li>▸ <code class="text-js-yellow">break</code>: يكسر الحلقة ويخرج منها فوراً.</li>
+          <li>▸ <code class="text-js-yellow">continue</code>: يتجاوز التكرار الحالي ويذهب للذي بعده.</li>
+        </ul>
+      </div>
+
+      <div class="task-box">
+        <div class="font-bold text-indigo-300 mb-2">🎯 مهام 12:</div>
+        <ol class="text-slate-300 space-y-2 list-decimal pr-5">
+          <li>اطبع جميع الأعداد <strong>الزوجية</strong> من 1 إلى 50.</li>
+          <li>اطبع <strong>مضروب</strong> العدد 5 (Factorial: <code>5!</code> = 120).</li>
+          <li>اطبع جدول ضرب أي رقم يدخله المستخدم باستخدام <code class="text-js-yellow font-mono">for</code>.</li>
+          <li>اطبع نمطاً مثل هذا باستخدام حلقتين متداخلتين:
+            <pre class="text-emerald-400 mt-2 bg-black/30 p-2 rounded text-sm">*
+**
+***
+****
+*****</pre>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 13: FUNCTIONS (IMPORTANT!) -->
+    <!-- ============================================ -->
+    <section id="functions" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">13</div>
+        <div class="flex-1">
+          <div class="flex items-center gap-2">
+            <h2 class="text-2xl md:text-3xl font-black text-white">JavaScript Functions</h2>
+            <span class="badge">⭐ موضوع مهم جداً</span>
+          </div>
+          <p class="text-js-muted text-sm">الدوال — لُبّ البرمجة الحديثة</p>
+        </div>
+      </div>
+
+      <div class="topic-card mb-6">
+        <h3 class="text-xl font-bold text-js-yellow mb-3">ما هي الدالة؟</h3>
+        <p class="text-slate-300 leading-loose">
+          الدالة هي <strong class="text-white">كتلة من الكود</strong> نعطيها اسماً، ونستدعيها كلما احتجناها. تساعدنا على
+          <strong>إعادة استخدام الكود</strong> بدلاً من تكراره، وتقسيم البرنامج إلى أجزاء صغيرة سهلة الفهم.
+        </p>
+        <p class="text-slate-300 leading-loose mt-3">
+          تتكون الدالة من: <code class="text-js-yellow">اسم</code> + <code class="text-js-yellow">معاملات (Parameters)</code> + <code class="text-js-yellow">جسم</code> + (اختياري) <code class="text-js-yellow">قيمة مرجَعة</code>.
+        </p>
+      </div>
+
+      <h3 class="font-bold text-white mb-3">١. الدالة العادية (Function Declaration)</h3>
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">functions-1.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">// 1) دالة بدون معاملات وبدون قيمة مرجَعة
+function sayHello() {
+  console.log("مرحباً 👋");
+}
+sayHello();   // استدعاء
+
+// 2) دالة بمعاملات
+function greet(name) {
+  console.log("مرحباً يا " + name);
+}
+greet("أحمد");
+greet("ليلى");
+
+// 3) دالة ترجع قيمة (return)
+function add(a, b) {
+  return a + b;
+}
+let result = add(5, 3);
+console.log("الناتج:", result);   // 8
+
+// 4) قيم افتراضية للمعاملات
+function welcome(name = "زائر") {
+  return `أهلاً يا ${name}`;
+}
+console.log(welcome());           // أهلاً يا زائر
+console.log(welcome("سارة"));    // أهلاً يا سارة</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <h3 class="font-bold text-white mb-3">٢. تعبير الدالة (Function Expression)</h3>
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">functions-2.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">// تخزين الدالة داخل متغير
+const multiply = function(a, b) {
+  return a * b;
+};
+console.log(multiply(4, 5));    // 20</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <h3 class="font-bold text-white mb-3">٣. Arrow Functions (السهمية) — الأشهر حالياً</h3>
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">arrow-functions.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">// الصيغة: (المعاملات) => { الجسم }
+
+// كاملة
+const square = (n) => {
+  return n * n;
+};
+console.log(square(7));         // 49
+
+// مختصرة (return تلقائي)
+const cube = n => n * n * n;
+console.log(cube(3));           // 27
+
+// مع عدة معاملات
+const sum = (a, b, c) => a + b + c;
+console.log(sum(1, 2, 3));      // 6
+
+// بدون معاملات
+const sayHi = () => console.log("Hi!");
+sayHi();</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <div class="tip-box mb-6">
+        <div class="font-bold text-green-300 mb-2">✅ متى تستخدم كل نوع؟</div>
+        <ul class="text-slate-300 space-y-2 text-sm">
+          <li>▸ <code class="text-js-yellow">function</code>: للدوال الكبيرة الرئيسية في البرنامج.</li>
+          <li>▸ <code class="text-js-yellow">arrow</code>: للدوال القصيرة، خصوصاً مع <code>map</code>, <code>filter</code>, <code>forEach</code>.</li>
+        </ul>
+      </div>
+
+      <div class="task-box">
+        <div class="font-bold text-indigo-300 mb-2">🎯 مهام 13:</div>
+        <ol class="text-slate-300 space-y-2 list-decimal pr-5">
+          <li>اكتب دالة <code>circleArea(radius)</code> ترجع مساحة دائرة.</li>
+          <li>اكتب دالة <code>isEven(num)</code> ترجع <code>true</code> أو <code>false</code>.</li>
+          <li>اكتب دالة <code>maxOfThree(a, b, c)</code> ترجع أكبر رقم من ثلاثة.</li>
+          <li>اكتب دالة <code>greet(name, lang)</code> تطبع التحية باللغة المحددة (<code>"ar"</code> أو <code>"en"</code>).</li>
+          <li>حوّل المهام أعلاه إلى Arrow Functions.</li>
+        </ol>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 14: OBJECTS -->
+    <!-- ============================================ -->
+    <section id="objects" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">14</div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white">JavaScript Objects</h2>
+          <p class="text-js-muted text-sm">الكائنات</p>
+        </div>
+      </div>
+
+      <p class="text-slate-300 leading-loose mb-5">
+        الكائن مجموعة من <strong>الأزواج (مفتاح: قيمة)</strong>. يستخدم لوصف عنصر له خصائص متعددة: شخص، سيارة، منتج، إلخ.
+      </p>
+
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">objects.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">// إنشاء كائن
+const student = {
+  firstName: "أحمد",
+  lastName: "علي",
+  age: 20,
+  isActive: true,
+  hobbies: ["قراءة", "كرة قدم"],
+  greet: function() {
+    return `أهلاً، أنا ${this.firstName}`;
+  }
+};
+
+// الوصول للخصائص
+console.log(student.firstName);      // الطريقة 1: النقطة
+console.log(student["lastName"]);    // الطريقة 2: الأقواس
+console.log(student.age);
+console.log(student.greet());        // استدعاء الدالة الداخلية
+
+// التعديل والإضافة
+student.age = 21;                    // تعديل
+student.email = "ahmed@mail.com";    // إضافة جديدة
+console.log(student);
+
+// الحذف
+delete student.isActive;
+console.log(student);
+
+// التكرار على الخصائص
+for (let key in student) {
+  console.log(`${key}: ${student[key]}`);
+}</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <div class="task-box">
+        <div class="font-bold text-indigo-300 mb-2">🎯 مهمة 14.1:</div>
+        <p class="text-slate-300">أنشئ كائن <code>book</code> له خصائص: <code>title</code>, <code>author</code>, <code>pages</code>, <code>year</code>, ودالة <code>info()</code> ترجع جميع المعلومات في نص واحد.</p>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 15: DATES -->
+    <!-- ============================================ -->
+    <section id="dates" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">15</div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white">JavaScript Dates</h2>
+          <p class="text-js-muted text-sm">التواريخ والوقت</p>
+        </div>
+      </div>
+
+      <p class="text-slate-300 leading-loose mb-5">
+        لاستخدام التواريخ في JavaScript، نستعمل كائن <code class="text-js-yellow font-mono">Date</code>.
+      </p>
+
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">dates.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">// التاريخ والوقت الحاليين
+const now = new Date();
+console.log(now);
+
+// تاريخ محدد
+const birthday = new Date(2005, 7, 15);   // 15 أغسطس 2005 (الشهر يبدأ من 0!)
+console.log(birthday);
+
+// الحصول على أجزاء التاريخ
+console.log("السنة:", now.getFullYear());     // 2026
+console.log("الشهر:", now.getMonth() + 1);    // 1-12
+console.log("اليوم:", now.getDate());         // 1-31
+console.log("اسم اليوم:", now.getDay());      // 0=الأحد .. 6=السبت
+console.log("الساعة:", now.getHours());
+console.log("الدقيقة:", now.getMinutes());
+console.log("الثانية:", now.getSeconds());
+
+// تنسيقات
+console.log(now.toDateString());   // Wed May 06 2026
+console.log(now.toLocaleDateString("ar-EG"));  // ٦‏/٥‏/٢٠٢٦
+console.log(now.toLocaleTimeString("ar-EG"));
+
+// طابع زمني (milliseconds since 1970)
+console.log(Date.now());</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <div class="task-box">
+        <div class="font-bold text-indigo-300 mb-2">🎯 مهمة 15.1:</div>
+        <p class="text-slate-300">اكتب دالة <code>calculateAge(birthYear)</code> ترجع عمر الشخص بناءً على سنة ميلاده والسنة الحالية.</p>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 16: ARRAYS -->
+    <!-- ============================================ -->
+    <section id="arrays" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">16</div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white">JavaScript Arrays</h2>
+          <p class="text-js-muted text-sm">المصفوفات</p>
+        </div>
+      </div>
+
+      <p class="text-slate-300 leading-loose mb-5">
+        المصفوفة <strong class="text-white">قائمة مرتبة</strong> من القيم. كل قيمة لها فهرس (index) يبدأ من <code class="text-js-yellow">0</code>.
+      </p>
+
+      <div class="code-card mb-6">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">arrays.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">// إنشاء مصفوفة
+const fruits = ["تفاح", "موز", "برتقال", "عنب"];
+console.log(fruits);
+console.log("العدد:", fruits.length);     // 4
+
+// الوصول للعناصر بالفهرس
+console.log(fruits[0]);     // تفاح (الأول)
+console.log(fruits[2]);     // برتقال
+console.log(fruits[fruits.length - 1]);  // العنب (الأخير)
+
+// التعديل
+fruits[1] = "موزة";
+console.log(fruits);
+
+// الإضافة في النهاية
+fruits.push("فراولة");
+console.log(fruits);
+
+// الحذف من النهاية
+fruits.pop();
+console.log(fruits);
+
+// مصفوفة بأنواع مختلطة
+const mixed = ["نص", 42, true, null, [1, 2, 3]];
+console.log(mixed);
+
+// التكرار على المصفوفة
+for (let fruit of fruits) {
+  console.log("✓", fruit);
+}</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <div class="task-box">
+        <div class="font-bold text-indigo-300 mb-2">🎯 مهام 16:</div>
+        <ol class="text-slate-300 space-y-2 list-decimal pr-5">
+          <li>أنشئ مصفوفة من 5 طلاب، اطبع كل اسم باستخدام <code class="text-js-yellow font-mono">for...of</code>.</li>
+          <li>أنشئ مصفوفة من الأعداد، احسب <strong>المجموع</strong> و <strong>المتوسط</strong>.</li>
+          <li>أنشئ مصفوفة من الأرقام، أوجد <strong>أكبر</strong> و <strong>أصغر</strong> قيمة.</li>
+        </ol>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- SECTION 17: BUILT-IN METHODS -->
+    <!-- ============================================ -->
+    <section id="methods" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num">17</div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white">أهم الدوال الجاهزة</h2>
+          <p class="text-js-muted text-sm">String, Array, Number — الأدوات الأساسية</p>
+        </div>
+      </div>
+
+      <!-- STRING METHODS -->
+      <h3 class="text-xl font-bold text-pink-400 mb-4 flex items-center gap-2">
+        <span>📝</span> دوال النصوص String Methods
+      </h3>
+
+      <div class="overflow-x-auto mb-6">
+        <table class="method-table">
+          <thead>
+            <tr><th>الدالة</th><th>الوصف</th><th>مثال</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>length</code></td><td>عدد الأحرف</td><td><code>"Hello".length → 5</code></td></tr>
+            <tr><td><code>toUpperCase()</code></td><td>تحويل لأحرف كبيرة</td><td><code>"hi".toUpperCase() → "HI"</code></td></tr>
+            <tr><td><code>toLowerCase()</code></td><td>تحويل لأحرف صغيرة</td><td><code>"HI".toLowerCase() → "hi"</code></td></tr>
+            <tr><td><code>trim()</code></td><td>إزالة المسافات الزائدة</td><td><code>" hi ".trim() → "hi"</code></td></tr>
+            <tr><td><code>indexOf(x)</code></td><td>موقع أول ظهور لـ x</td><td><code>"hello".indexOf("l") → 2</code></td></tr>
+            <tr><td><code>includes(x)</code></td><td>هل يحتوي على x؟</td><td><code>"hello".includes("ell") → true</code></td></tr>
+            <tr><td><code>slice(a, b)</code></td><td>قطعة من a إلى b</td><td><code>"hello".slice(0, 3) → "hel"</code></td></tr>
+            <tr><td><code>replace(a, b)</code></td><td>استبدال a بـ b</td><td><code>"hi ali".replace("ali", "sara")</code></td></tr>
+            <tr><td><code>split(x)</code></td><td>تقسيم النص لمصفوفة</td><td><code>"a,b,c".split(",") → ["a","b","c"]</code></td></tr>
+            <tr><td><code>charAt(i)</code></td><td>الحرف في موقع i</td><td><code>"hello".charAt(1) → "e"</code></td></tr>
+            <tr><td><code>concat(s)</code></td><td>دمج نصوص</td><td><code>"hi".concat(" there")</code></td></tr>
+            <tr><td><code>startsWith(x)</code></td><td>هل يبدأ بـ x؟</td><td><code>"hello".startsWith("he") → true</code></td></tr>
+            <tr><td><code>endsWith(x)</code></td><td>هل ينتهي بـ x؟</td><td><code>"hello".endsWith("lo") → true</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-card mb-8">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">string-methods.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">let str = "  Hello JavaScript World  ";
+
+console.log(str.length);                  // 28
+console.log(str.trim());                  // "Hello JavaScript World"
+console.log(str.toUpperCase());
+console.log(str.toLowerCase());
+console.log(str.includes("Java"));        // true
+console.log(str.indexOf("Java"));         // 8
+console.log(str.replace("World", "كل العالم"));
+console.log(str.trim().split(" "));       // ["Hello", "JavaScript", "World"]
+console.log(str.trim().slice(0, 5));      // "Hello"</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <!-- ARRAY METHODS -->
+      <h3 class="text-xl font-bold text-blue-400 mb-4 flex items-center gap-2">
+        <span>📋</span> دوال المصفوفات Array Methods
+      </h3>
+
+      <div class="overflow-x-auto mb-6">
+        <table class="method-table">
+          <thead>
+            <tr><th>الدالة</th><th>الوصف</th><th>مثال</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>length</code></td><td>عدد العناصر</td><td><code>[1,2,3].length → 3</code></td></tr>
+            <tr><td><code>push(x)</code></td><td>إضافة في النهاية</td><td><code>arr.push(4)</code></td></tr>
+            <tr><td><code>pop()</code></td><td>حذف من النهاية</td><td><code>arr.pop()</code></td></tr>
+            <tr><td><code>shift()</code></td><td>حذف من البداية</td><td><code>arr.shift()</code></td></tr>
+            <tr><td><code>unshift(x)</code></td><td>إضافة في البداية</td><td><code>arr.unshift(0)</code></td></tr>
+            <tr><td><code>indexOf(x)</code></td><td>موقع العنصر</td><td><code>[1,2,3].indexOf(2) → 1</code></td></tr>
+            <tr><td><code>includes(x)</code></td><td>هل يحتوي x؟</td><td><code>[1,2,3].includes(2) → true</code></td></tr>
+            <tr><td><code>slice(a,b)</code></td><td>جزء من المصفوفة</td><td><code>[1,2,3,4].slice(1,3) → [2,3]</code></td></tr>
+            <tr><td><code>splice(i,n)</code></td><td>حذف/إضافة</td><td><code>arr.splice(1, 2)</code></td></tr>
+            <tr><td><code>concat(arr2)</code></td><td>دمج مصفوفتين</td><td><code>[1,2].concat([3,4])</code></td></tr>
+            <tr><td><code>join(s)</code></td><td>دمج كل العناصر بنص</td><td><code>[1,2,3].join("-") → "1-2-3"</code></td></tr>
+            <tr><td><code>reverse()</code></td><td>عكس الترتيب</td><td><code>[1,2,3].reverse() → [3,2,1]</code></td></tr>
+            <tr><td><code>sort()</code></td><td>ترتيب</td><td><code>arr.sort()</code></td></tr>
+            <tr><td><code>forEach(fn)</code></td><td>تنفيذ دالة لكل عنصر</td><td><code>arr.forEach(x => ...)</code></td></tr>
+            <tr><td><code>map(fn)</code></td><td>تحويل كل عنصر</td><td><code>[1,2,3].map(x => x*2) → [2,4,6]</code></td></tr>
+            <tr><td><code>filter(fn)</code></td><td>تصفية حسب شرط</td><td><code>arr.filter(x => x &gt; 5)</code></td></tr>
+            <tr><td><code>reduce(fn, init)</code></td><td>تجميع لقيمة واحدة</td><td><code>arr.reduce((a,b) =&gt; a+b)</code></td></tr>
+            <tr><td><code>find(fn)</code></td><td>أول عنصر يحقق الشرط</td><td><code>arr.find(x =&gt; x &gt; 5)</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-card mb-8">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">array-methods.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">let nums = [1, 2, 3, 4, 5];
+
+// map: ضرب كل عنصر في 2
+const doubled = nums.map(n => n * 2);
+console.log(doubled);                  // [2, 4, 6, 8, 10]
+
+// filter: العناصر الزوجية فقط
+const evens = nums.filter(n => n % 2 === 0);
+console.log(evens);                    // [2, 4]
+
+// reduce: مجموع العناصر
+const sum = nums.reduce((acc, n) => acc + n, 0);
+console.log("المجموع:", sum);          // 15
+
+// find: أول عنصر أكبر من 3
+const first = nums.find(n => n > 3);
+console.log(first);                    // 4
+
+// forEach: تنفيذ دالة لكل عنصر
+nums.forEach((n, i) => console.log(`الفهرس ${i}: ${n}`));
+
+// sort + reverse
+const sorted = [3, 1, 4, 1, 5, 9, 2].sort();
+console.log(sorted);                   // [1, 1, 2, 3, 4, 5, 9]
+console.log(sorted.reverse());         // [9, 5, 4, 3, 2, 1, 1]
+
+// join
+console.log(nums.join(" + "));         // "1 + 2 + 3 + 4 + 5"</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <!-- NUMBER METHODS -->
+      <h3 class="text-xl font-bold text-emerald-400 mb-4 flex items-center gap-2">
+        <span>🔢</span> دوال الأرقام Number Methods
+      </h3>
+
+      <div class="overflow-x-auto mb-6">
+        <table class="method-table">
+          <thead>
+            <tr><th>الدالة</th><th>الوصف</th><th>مثال</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>toFixed(n)</code></td><td>عدد الأرقام بعد الفاصلة</td><td><code>3.14159.toFixed(2) → "3.14"</code></td></tr>
+            <tr><td><code>toString()</code></td><td>تحويل لنص</td><td><code>(123).toString() → "123"</code></td></tr>
+            <tr><td><code>Number(x)</code></td><td>تحويل لرقم</td><td><code>Number("42") → 42</code></td></tr>
+            <tr><td><code>parseInt(x)</code></td><td>تحويل لعدد صحيح</td><td><code>parseInt("3.7") → 3</code></td></tr>
+            <tr><td><code>parseFloat(x)</code></td><td>تحويل لعدد عشري</td><td><code>parseFloat("3.14") → 3.14</code></td></tr>
+            <tr><td><code>isNaN(x)</code></td><td>هل x ليس رقماً؟</td><td><code>isNaN("hello") → true</code></td></tr>
+            <tr><td><code>Math.round()</code></td><td>تقريب للأقرب</td><td><code>Math.round(4.7) → 5</code></td></tr>
+            <tr><td><code>Math.floor()</code></td><td>تقريب لأسفل</td><td><code>Math.floor(4.9) → 4</code></td></tr>
+            <tr><td><code>Math.ceil()</code></td><td>تقريب لأعلى</td><td><code>Math.ceil(4.1) → 5</code></td></tr>
+            <tr><td><code>Math.max(...)</code></td><td>أكبر رقم</td><td><code>Math.max(1, 5, 3) → 5</code></td></tr>
+            <tr><td><code>Math.min(...)</code></td><td>أصغر رقم</td><td><code>Math.min(1, 5, 3) → 1</code></td></tr>
+            <tr><td><code>Math.abs(x)</code></td><td>القيمة المطلقة</td><td><code>Math.abs(-7) → 7</code></td></tr>
+            <tr><td><code>Math.pow(a, b)</code></td><td>a أس b</td><td><code>Math.pow(2, 3) → 8</code></td></tr>
+            <tr><td><code>Math.sqrt(x)</code></td><td>الجذر التربيعي</td><td><code>Math.sqrt(16) → 4</code></td></tr>
+            <tr><td><code>Math.random()</code></td><td>رقم عشوائي 0-1</td><td><code>Math.random() → 0.547...</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-card mb-8">
+        <div class="code-card-header">
+          <div class="code-dots"><span class="bg-red-400"></span><span class="bg-yellow-400"></span><span class="bg-green-400"></span></div>
+          <div class="text-js-muted text-xs font-mono">number-methods.js</div>
+          <div class="flex gap-2">
+            <button class="copy-btn" onclick="copyCode(this)">نسخ</button>
+            <button class="run-btn" onclick="runCode(this)">▶ تشغيل</button>
+          </div>
+        </div>
+<pre><code class="language-javascript">// تنسيق الأرقام
+let price = 99.999;
+console.log(price.toFixed(2));        // "100.00"
+
+// تحويل النص لرقم
+console.log(Number("42"));            // 42
+console.log(parseInt("100px"));       // 100
+console.log(parseFloat("3.14em"));    // 3.14
+console.log(isNaN("hello"));          // true
+
+// Math
+console.log(Math.round(4.7));         // 5
+console.log(Math.floor(4.9));         // 4
+console.log(Math.ceil(4.1));          // 5
+console.log(Math.max(1, 5, 3, 9, 2)); // 9
+console.log(Math.min(1, 5, 3, 9, 2)); // 1
+console.log(Math.abs(-15));           // 15
+console.log(Math.pow(2, 8));          // 256
+console.log(Math.sqrt(144));          // 12
+
+// رقم عشوائي بين 1 و 10
+const random = Math.floor(Math.random() * 10) + 1;
+console.log("رقم عشوائي:", random);</code></pre>
+        <div class="console-out empty">— اضغط "تشغيل" —</div>
+      </div>
+
+      <div class="task-box">
+        <div class="font-bold text-indigo-300 mb-2">🎯 مهام 17 — الجامعة:</div>
+        <ol class="text-slate-300 space-y-2 list-decimal pr-5">
+          <li>اكتب دالة <code>countVowels(str)</code> ترجع عدد حروف العلة في النص (a, e, i, o, u).</li>
+          <li>اكتب دالة <code>reverseString(str)</code> تعكس النص دون استخدام <code class="text-js-yellow">.reverse()</code>.</li>
+          <li>أنشئ مصفوفة من 10 طلاب بدرجاتهم، استخدم <code>filter</code> لإيجاد الناجحين، و <code>map</code> لاستخراج الأسماء فقط.</li>
+          <li>اكتب دالة تحاكي رمي حجر النرد (رقم عشوائي من 1 إلى 6).</li>
+          <li>اكتب دالة <code>average(arr)</code> ترجع متوسط الأرقام في مصفوفة باستخدام <code>reduce</code>.</li>
+        </ol>
+      </div>
+    </section>
+
+
+    <!-- ============================================ -->
+    <!-- PLAYGROUND -->
+    <!-- ============================================ -->
+    <section id="playground" class="reveal mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="section-num bg-gradient-to-br from-indigo-400 to-purple-500">🛠️</div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white">ساحة التجربة</h2>
+          <p class="text-js-muted text-sm">اكتب الكود وشغّله مباشرة!</p>
+        </div>
+      </div>
+
+      <div class="bg-js-card border border-js-border rounded-2xl overflow-hidden">
+        <div class="flex items-center justify-between bg-black/40 px-4 py-3 border-b border-js-border">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-red-400"></div>
+            <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+            <div class="w-3 h-3 rounded-full bg-green-400"></div>
+            <span class="text-js-muted text-xs font-mono mr-3">playground.js</span>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="clearPlayground()" class="copy-btn">مسح</button>
+            <button onclick="runPlayground()" class="run-btn">▶ تشغيل (Ctrl+Enter)</button>
+          </div>
+        </div>
+        <textarea id="playgroundCode" dir="ltr" spellcheck="false" class="w-full bg-[#0d1117] text-emerald-300 p-4 font-mono text-sm focus:outline-none" rows="14" placeholder="// اكتب الكود هنا...">// مرحباً! جرّب أي كود JavaScript هنا
+const message = "أهلاً بك في ساحة التجربة!";
+console.log(message);
+
+const numbers = [1, 2, 3, 4, 5];
+const sum = numbers.reduce((a, b) => a + b, 0);
+console.log("المجموع:", sum);
+
+// جرّب: اكتب كودك بنفسك ثم اضغط تشغيل
+</textarea>
+        <div id="playgroundOut" class="console-out empty">— الناتج سيظهر هنا —</div>
+      </div>
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer class="text-center py-8 border-t border-js-border mt-12">
+      <p class="text-js-muted text-sm leading-loose">
+        🎓 مرجع تعليمي لطلاب أساسيات JavaScript<br>
+        أنشئ بـ <span class="text-pink-400">♥</span> لأجلكم — تابعوا التعلم والممارسة!
+      </p>
+      <div class="mt-4 inline-flex items-center gap-2 text-xs text-js-muted">
+        <span class="w-1.5 h-1.5 rounded-full bg-js-yellow"></span>
+        نسخة 2026 — مرجع للطلاب
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+
+<!-- ============================== JS LOGIC ============================== -->
+<script>
+// ===================== Code Runner =====================
+function runCode(button) {
+  const card = button.closest('.code-card');
+  const code = card.querySelector('code').innerText;
+  const output = card.querySelector('.console-out');
+  output.classList.remove('empty');
+  output.innerHTML = '';
+
+  const logs = [];
+  const fakeConsole = {
+    log: (...args) => logs.push({ type: 'log', msg: args.map(formatArg).join(' ') }),
+    warn: (...args) => logs.push({ type: 'warn', msg: '⚠️ ' + args.map(formatArg).join(' ') }),
+    error: (...args) => logs.push({ type: 'err', msg: '❌ ' + args.map(formatArg).join(' ') }),
+    info: (...args) => logs.push({ type: 'log', msg: 'ℹ️ ' + args.map(formatArg).join(' ') }),
+  };
+
+  try {
+    const fn = new Function('console', code);
+    fn(fakeConsole);
+    if (logs.length === 0) {
+      output.innerHTML = '<span class="empty">(لا يوجد ناتج — استخدم console.log)</span>';
+    } else {
+      output.innerHTML = logs.map(l =>
+        l.type === 'err' ? `<div class="err">${escapeHtml(l.msg)}</div>` : `<div>${escapeHtml(l.msg)}</div>`
+      ).join('');
+    }
+  } catch (e) {
+    output.innerHTML = `<div class="err">❌ ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+function formatArg(arg) {
+  if (arg === null) return 'null';
+  if (arg === undefined) return 'undefined';
+  if (typeof arg === 'object') {
+    try { return JSON.stringify(arg, null, 2); }
+    catch { return String(arg); }
+  }
+  return String(arg);
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function copyCode(button) {
+  const code = button.closest('.code-card').querySelector('code').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    const orig = button.textContent;
+    button.textContent = '✓ نسخ';
+    button.style.color = '#4ade80';
+    setTimeout(() => { button.textContent = orig; button.style.color = ''; }, 1500);
+  });
+}
+
+// ===================== Playground =====================
+function runPlayground() {
+  const code = document.getElementById('playgroundCode').value;
+  const output = document.getElementById('playgroundOut');
+  output.classList.remove('empty');
+  output.innerHTML = '';
+
+  const logs = [];
+  const fakeConsole = {
+    log: (...args) => logs.push({ type: 'log', msg: args.map(formatArg).join(' ') }),
+    warn: (...args) => logs.push({ type: 'warn', msg: '⚠️ ' + args.map(formatArg).join(' ') }),
+    error: (...args) => logs.push({ type: 'err', msg: '❌ ' + args.map(formatArg).join(' ') }),
+    info: (...args) => logs.push({ type: 'log', msg: 'ℹ️ ' + args.map(formatArg).join(' ') }),
+  };
+
+  try {
+    const fn = new Function('console', code);
+    fn(fakeConsole);
+    if (logs.length === 0) {
+      output.innerHTML = '<span class="empty">✅ تم التنفيذ بدون ناتج (استخدم console.log)</span>';
+    } else {
+      output.innerHTML = logs.map(l =>
+        l.type === 'err' ? `<div class="err">${escapeHtml(l.msg)}</div>` : `<div>${escapeHtml(l.msg)}</div>`
+      ).join('');
+    }
+  } catch (e) {
+    output.innerHTML = `<div class="err">❌ ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+function clearPlayground() {
+  document.getElementById('playgroundCode').value = '';
+  document.getElementById('playgroundOut').innerHTML = '<span class="empty">— تم المسح —</span>';
+  document.getElementById('playgroundOut').classList.add('empty');
+}
+
+// Ctrl+Enter to run playground
+document.getElementById('playgroundCode').addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    runPlayground();
+  }
+});
+
+// ===================== Reveal on scroll =====================
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.05 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ===================== Active nav link + progress =====================
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+const progressBar = document.getElementById('progressBar');
+const progressText = document.getElementById('progressText');
+
+function updateActive() {
+  let current = '';
+  sections.forEach(section => {
+    const top = section.getBoundingClientRect().top;
+    if (top < 200) current = section.id;
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+  });
+
+  // Progress
+  const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = Math.min(100, Math.round((window.scrollY / totalHeight) * 100));
+  if (progressBar) progressBar.style.width = pct + '%';
+  if (progressText) progressText.textContent = pct + '%';
+}
+
+window.addEventListener('scroll', updateActive);
+updateActive();
+
+// ===================== Mobile menu =====================
+document.getElementById('menuBtn').addEventListener('click', () => {
+  const sidebar = document.getElementById('sidebar');
+  sidebar.classList.toggle('hidden');
+  if (!sidebar.classList.contains('hidden')) {
+    sidebar.classList.add('fixed', 'inset-0', 'z-40', 'p-4', 'overflow-auto', 'bg-js-dark/95');
+    sidebar.classList.remove('sticky', 'top-20', 'self-start', 'max-h-[calc(100vh-100px)]');
+  } else {
+    sidebar.classList.remove('fixed', 'inset-0', 'z-40', 'p-4', 'overflow-auto', 'bg-js-dark/95');
+    sidebar.classList.add('sticky', 'top-20', 'self-start', 'max-h-[calc(100vh-100px)]');
+  }
+});
+
+// Close mobile menu on link click
+navLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth < 1024) {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.add('hidden');
+      sidebar.classList.remove('fixed', 'inset-0', 'z-40', 'p-4', 'overflow-auto', 'bg-js-dark/95');
+    }
+  });
+});
+</script>
+
+</body>
+</html>

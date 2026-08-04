@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دليل طرق المناداة في CSS — Selectors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f1220;
+    --bg-panel:#171b2e;
+    --bg-code:#0b0e1a;
+    --line:#2a2f4a;
+    --text:#e8e9f3;
+    --text-dim:#9599b8;
+    --accent:#f4b93e;   /* amber - selector highlight */
+    --accent-2:#7c9eff; /* violet-blue - keywords */
+    --accent-3:#6ee7b7; /* mint - strings/values */
+    --accent-4:#ff8fa3;  /* rose - special/pseudo */
+    --match:#f4b93e;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Tajawal',sans-serif;
+    line-height:1.8;
+  }
+  code, .mono, pre{
+    font-family:'JetBrains Mono', monospace;
+    direction:ltr;
+    unicode-bidi:isolate;
+  }
+
+  /* ===== Hero ===== */
+  .hero{
+    position:relative;
+    padding:90px 24px 70px;
+    text-align:center;
+    overflow:hidden;
+    border-bottom:1px solid var(--line);
+    background:
+      radial-gradient(circle at 20% 20%, rgba(124,158,255,.15), transparent 40%),
+      radial-gradient(circle at 80% 30%, rgba(244,185,62,.12), transparent 40%);
+  }
+  .hero .tag{
+    display:inline-block;
+    font-family:'JetBrains Mono',monospace;
+    direction:ltr;
+    font-size:13px;
+    color:var(--accent);
+    background:rgba(244,185,62,.1);
+    border:1px solid rgba(244,185,62,.35);
+    padding:6px 14px;
+    border-radius:999px;
+    margin-bottom:22px;
+    letter-spacing:.5px;
+  }
+  .hero h1{
+    font-size:clamp(32px,5vw,54px);
+    font-weight:900;
+    margin:0 0 16px;
+    background:linear-gradient(90deg,#fff,#c9cdf0);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .hero p{
+    color:var(--text-dim);
+    max-width:640px;
+    margin:0 auto;
+    font-size:17px;
+  }
+  .hero .selector-line{
+    margin-top:40px;
+    display:inline-flex;
+    gap:2px;
+    font-family:'JetBrains Mono',monospace;
+    direction:ltr;
+    font-size:clamp(16px,3vw,26px);
+    background:var(--bg-code);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px 26px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  .hero .selector-line span{padding:2px 4px; border-radius:4px;}
+  .hero .s1{color:var(--accent-4);}
+  .hero .s2{color:var(--accent);}
+  .hero .s3{color:var(--accent-2);}
+  .hero .s4{color:var(--accent-3);}
+
+  /* ===== Nav ===== */
+  .toc-wrap{
+    position:sticky; top:0; z-index:50;
+    background:rgba(15,18,32,.9);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .toc{
+    max-width:1100px;
+    margin:0 auto;
+    padding:12px 24px;
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    scrollbar-width:thin;
+  }
+  .toc a{
+    color:var(--text-dim);
+    text-decoration:none;
+    font-size:13px;
+    padding:8px 14px;
+    border-radius:999px;
+    white-space:nowrap;
+    border:1px solid transparent;
+    transition:.2s;
+  }
+  .toc a:hover{color:var(--text); border-color:var(--line); background:var(--bg-panel);}
+
+  /* ===== Layout ===== */
+  main{max-width:1100px; margin:0 auto; padding:50px 24px 100px;}
+  section{margin-bottom:70px; scroll-margin-top:80px;}
+
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:8px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:16px;
+  }
+  .section-num{
+    font-family:'JetBrains Mono',monospace;
+    color:var(--accent);
+    font-size:14px;
+    direction:ltr;
+  }
+  .section-head h2{
+    font-size:26px;
+    margin:0;
+    font-weight:700;
+  }
+  .section-desc{
+    color:var(--text-dim);
+    margin:14px 0 30px;
+    font-size:15.5px;
+    max-width:760px;
+  }
+
+  /* ===== Cards ===== */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:16px;
+  }
+  .card{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px 18px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .card .name{
+    font-family:'JetBrains Mono',monospace;
+    direction:ltr;
+    color:var(--accent);
+    font-size:15px;
+    font-weight:600;
+  }
+  .card p{
+    margin:0;
+    color:var(--text-dim);
+    font-size:14px;
+    line-height:1.7;
+  }
+  .card pre{
+    margin:0;
+    background:var(--bg-code);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 12px;
+    font-size:13px;
+    color:var(--accent-3);
+    overflow-x:auto;
+  }
+  .card pre .k{color:var(--accent-2);}
+  .card pre .p{color:var(--accent-4);}
+
+  /* demo boxes */
+  .demo{
+    background:var(--bg-code);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px;
+    font-size:14px;
+  }
+  .demo-title{
+    font-size:11px;
+    color:var(--text-dim);
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin-bottom:8px;
+    font-family:'JetBrains Mono',monospace;
+    direction:ltr;
+  }
+  .match{
+    outline:2px solid var(--match);
+    outline-offset:2px;
+    background:rgba(244,185,62,.12);
+    border-radius:4px;
+  }
+
+  /* generic demo elements */
+  .box{
+    display:inline-block;
+    padding:6px 12px;
+    margin:3px;
+    border-radius:6px;
+    background:#22273f;
+    border:1px solid var(--line);
+    font-family:'JetBrains Mono',monospace;
+    direction:ltr;
+    font-size:13px;
+  }
+  ul.tree, ul.tree ul{
+    list-style:none;
+    padding-inline-start:22px;
+    margin:6px 0;
+  }
+  ul.tree > li{margin:4px 0;}
+  ul.tree li > .box{margin:2px 0;}
+
+  /* Attribute demo inputs */
+  .fake-input{
+    font-family:'JetBrains Mono',monospace;
+    direction:ltr;
+    font-size:13px;
+    color:var(--text-dim);
+    background:#1b1f38;
+    border:1px solid var(--line);
+    padding:5px 10px;
+    border-radius:6px;
+    display:inline-block;
+    margin:3px;
+  }
+
+  footer{
+    text-align:center;
+    color:var(--text-dim);
+    font-size:13px;
+    padding:40px 24px;
+    border-top:1px solid var(--line);
+  }
+  footer .mono{color:var(--accent);}
+
+  /* specificity table */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+    font-size:14.5px;
+  }
+  th, td{
+    padding:12px 16px;
+    text-align:right;
+    border-bottom:1px solid var(--line);
+  }
+  th{
+    background:#1b1f38;
+    color:var(--accent);
+    font-family:'JetBrains Mono',monospace;
+    direction:ltr;
+    font-size:13px;
+    text-align:left;
+  }
+  td .mono{color:var(--accent-3); direction:ltr; display:inline-block;}
+  tr:last-child td{border-bottom:none;}
+
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <span class="tag">CSS Selectors Reference · دليل شامل</span>
+  <h1>كل طرق المناداة في CSS</h1>
+  <p>من الأساسيات مثل الكلاس والـ ID، إلى المُجمّعات والـ Pseudo-classes والـ Pseudo-elements — مرجع واحد شامل مع أمثلة حيّة لكل نوع.</p>
+  <div class="selector-line">
+    <span class="s1">.card</span><span> &gt; </span><span class="s2">h2</span><span class="s3">:first-child</span><span>::</span><span class="s4">before</span>
+  </div>
+</div>
+
+<div class="toc-wrap">
+  <nav class="toc">
+    <a href="#basic">أساسية</a>
+    <a href="#grouping">التجميع</a>
+    <a href="#combinators">المُجمِّعات</a>
+    <a href="#attribute">السمات</a>
+    <a href="#pseudo-class">Pseudo-classes</a>
+    <a href="#pseudo-element">Pseudo-elements</a>
+    <a href="#specificity">الأولوية</a>
+  </nav>
+</div>
+
+<main>
+
+<!-- ================= 1. BASIC ================= -->
+<section id="basic">
+  <div class="section-head">
+    <span class="section-num">01</span>
+    <h2>المُحدِّدات الأساسية</h2>
+  </div>
+  <p class="section-desc">أبسط طرق اختيار العناصر: عن طريق اسم الوسم، أو الكلاس، أو الـ ID، أو اختيار كل شيء دفعة واحدة.</p>
+
+  <div class="grid">
+    <div class="card">
+      <span class="name">*</span>
+      <p><b>Universal Selector</b> — يختار كل عنصر في الصفحة بدون استثناء.</p>
+      <pre>* { <span class="k">margin</span>: 0; }</pre>
+      <div class="demo">
+        <div class="demo-title">النتيجة</div>
+        <span class="box match">div</span><span class="box match">p</span><span class="box match">span</span><span class="box match">a</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="name">p</span>
+      <p><b>Type / Element Selector</b> — يختار كل عناصر من نفس نوع الوسم (tag name).</p>
+      <pre><span class="k">p</span> { <span class="k">color</span>: <span class="p">teal</span>; }</pre>
+      <div class="demo">
+        <div class="demo-title">النتيجة</div>
+        <span class="box match">&lt;p&gt;</span><span class="box match">&lt;p&gt;</span><span class="box">&lt;div&gt;</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="name">.card</span>
+      <p><b>Class Selector</b> — يختار كل عنصر يحمل هذا الاسم في خاصية class، ويمكن تكرار نفس الكلاس على عناصر متعددة.</p>
+      <pre>.card { <span class="k">border</span>: <span class="p">1px solid #ccc</span>; }</pre>
+      <div class="demo">
+        <div class="demo-title">النتيجة</div>
+        <span class="box match">class="card"</span><span class="box match">class="card active"</span><span class="box">class="item"</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="name">#header</span>
+      <p><b>ID Selector</b> — يختار عنصرًا واحدًا فقط بمعرّف فريد (id). يجب ألا يتكرر الـ id في نفس الصفحة.</p>
+      <pre>#header { <span class="k">position</span>: <span class="p">sticky</span>; }</pre>
+      <div class="demo">
+        <div class="demo-title">النتيجة</div>
+        <span class="box match">id="header"</span><span class="box">id="footer"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2. GROUPING ================= -->
+<section id="grouping">
+  <div class="section-head">
+    <span class="section-num">02</span>
+    <h2>التجميع (Grouping)</h2>
+  </div>
+  <p class="section-desc">تطبيق نفس القواعد على أكثر من محدِّد دفعة واحدة، بالفصل بينها بفاصلة.</p>
+
+  <div class="grid">
+    <div class="card">
+      <span class="name">h1, h2, h3</span>
+      <p>يطبّق نفس التنسيق على كل العناصر المذكورة، بغضّ النظر عن نوعها.</p>
+      <pre><span class="k">h1</span>, <span class="k">h2</span>, <span class="k">h3</span> {
+  <span class="k">font-family</span>: <span class="p">Tajawal</span>;
+}</pre>
+      <div class="demo">
+        <div class="demo-title">النتيجة</div>
+        <span class="box match">&lt;h1&gt;</span><span class="box match">&lt;h2&gt;</span><span class="box match">&lt;h3&gt;</span><span class="box">&lt;p&gt;</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="name">.btn, #cta, a</span>
+      <p>يمكن خلط أي نوع محدِّدات معًا (class + id + tag) في نفس التجميع.</p>
+      <pre>.btn, #cta, <span class="k">a</span> {
+  <span class="k">cursor</span>: <span class="p">pointer</span>;
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3. COMBINATORS ================= -->
+<section id="combinators">
+  <div class="section-head">
+    <span class="section-num">03</span>
+    <h2>المُجمِّعات (Combinators)</h2>
+  </div>
+  <p class="section-desc">تربط بين محدِّدين لاختيار عنصر بناءً على علاقته بعنصر آخر داخل الشجرة (parent / child / sibling).</p>
+
+  <div class="grid">
+    <div class="card">
+      <span class="name">div p</span>
+      <p><b>Descendant Combinator (مسافة)</b> — يختار كل &lt;p&gt; داخل &lt;div&gt; بغض النظر عن عمق التداخل.</p>
+      <pre><span class="k">div</span> <span class="k">p</span> { <span class="k">color</span>: <span class="p">gray</span>; }</pre>
+      <div class="demo">
+        <div class="demo-title">شجرة العناصر</div>
+        <ul class="tree">
+          <li><span class="box">div</span>
+            <ul>
+              <li><span class="box match">p</span></li>
+              <li><span class="box">section</span>
+                <ul><li><span class="box match">p (متداخل)</span></li></ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="name">div &gt; p</span>
+      <p><b>Child Combinator</b> — يختار فقط &lt;p&gt; التي هي ابن مباشر لـ &lt;div&gt;، وليس أي حفيد أعمق.</p>
+      <pre><span class="k">div</span> &gt; <span class="k">p</span> { <span class="k">color</span>: <span class="p">crimson</span>; }</pre>
+      <div class="demo">
+        <div class="demo-title">شجرة العناصر</div>
+        <ul class="tree">
+          <li><span class="box">div</span>
+            <ul>
+              <li><span class="box match">p (ابن مباشر)</span></li>
+              <li><span class="box">section</span>
+                <ul><li><span class="box">p (حفيد – غير مطابق)</span></li></ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="name">h2 + p</span>
+      <p><b>Adjacent Sibling</b> — يختار العنصر الذي يأتي <i>مباشرة</i> بعد شقيقه، وله نفس الأب.</p>
+      <pre><span class="k">h2</span> + <span class="k">p</span> { <span class="k">margin-top</span>: <span class="p">0</span>; }</pre>
+      <div class="demo">
+        <div class="demo-title">النتيجة</div>
+        <span class="box">h2</span><span class="box match">p (مباشرة بعده)</span><span class="box">p (الثاني – غير مطابق)</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="name">h2 ~ p</span>
+      <p><b>General Sibling</b> — يختار كل الأشقاء اللاحقين من نفس النوع، وليس فقط المجاور مباشرة.</p>
+      <pre><span class="k">h2</span> ~ <span class="k">p</span> { <span class="k">color</span>: <span class="p">slateblue</span>; }</pre>
+      <div class="demo">
+        <div class="demo-title">النتيجة</div>
+        <span class="box">h2</span><span class="box match">p</span><span class="box">span</span><span class="box match">p</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4. ATTRIBUTE ================= -->
+<section id="attribute">
+  <div class="section-head">
+    <span class="section-num">04</span>
+    <h2>محدِّدات السمات (Attribute Selectors)</h2>
+  </div>
+  <p class="section-desc">تختار العناصر بناءً على وجود سمة (attribute) أو قيمتها أو جزء منها.</p>
+
+  <div class="grid">
+    <div class="card">
+      <span class="name">[disabled]</span>
+      <p>يختار أي عنصر يحمل هذه السمة، بغضّ النظر عن قيمتها.</p>
+      <pre>[disabled] { <span class="k">opacity</span>: <span class="p">.5</span>; }</pre>
+      <div class="fake-input match">&lt;button disabled&gt;</div>
+      <div class="fake-input">&lt;button&gt;</div>
+    </div>
+
+    <div class="card">
+      <span class="name">[type="text"]</span>
+      <p>يختار العنصر عندما تساوي قيمة السمة النص بالضبط (تطابق تام).</p>
+      <pre>[type="text"] { <span class="k">border</span>: <span class="p">1px solid #444</span>; }</pre>
+      <div class="fake-input match">type="text"</div>
+      <div class="fake-input">type="email"</div>
+    </div>
+
+    <div class="card">
+      <span class="name">[class~="tag"]</span>
+      <p>تطابق كلمة كاملة ضمن قائمة قيم مفصولة بمسافات (مثل خاصية class المتعددة).</p>
+      <pre>[class~="new"] { <span class="k">color</span>: <span class="p">gold</span>; }</pre>
+      <div class="fake-input match">class="item new"</div>
+      <div class="fake-input">class="renewal"</div>
+    </div>
+
+    <div class="card">
+      <span class="name">[lang|="en"]</span>
+      <p>تطابق القيمة بالضبط أو القيمة متبوعة بشرطة (-)، شائع في سمات اللغة.</p>
+      <pre>[lang|="en"] { <span class="k">direction</span>: <span class="p">ltr</span>; }</pre>
+      <div class="fake-input match">lang="en-US"</div>
+      <div class="fake-input">lang="ar"</div>
+    </div>
+
+    <div class="card">
+      <span class="name">[href^="https"]</span>
+      <p><b>Starts With</b> — تطابق القيم التي <u>تبدأ</u> بالنص المحدَّد.</p>
+      <pre>[href^="https"] { <span class="k">color</span>: <span class="p">green</span>; }</pre>
+      <div class="fake-input match">href="https://a.com"</div>
+      <div class="fake-input">href="ftp://a.com"</div>
+    </div>
+
+    <div class="card">
+      <span class="name">[src$=".png"]</span>
+      <p><b>Ends With</b> — تطابق القيم التي <u>تنتهي</u> بالنص المحدَّد.</p>
+      <pre>[src$=".png"] { <span class="k">border-radius</span>: <span class="p">8px</span>; }</pre>
+      <div class="fake-input match">src="logo.png"</div>
+      <div class="fake-input">src="logo.jpg"</div>
+    </div>
+
+    <div class="card">
+      <span class="name">[title*="css"]</span>
+      <p><b>Contains</b> — تطابق القيم التي تحتوي على النص في <u>أي مكان</u> منها.</p>
+      <pre>[title*="css"] { <span class="k">outline</span>: <span class="p">1px dashed</span>; }</pre>
+      <div class="fake-input match">title="learn-css-fast"</div>
+      <div class="fake-input">title="learn-html"</div>
+    </div>
+
+    <div class="card">
+      <span class="name">[data-x="1" i]</span>
+      <p>اللاحقة <code>i</code> تجعل المطابقة غير حساسة لحالة الأحرف (case-insensitive).</p>
+      <pre>[data-x="yes" i] { }</pre>
+      <div class="fake-input match">data-x="YES"</div>
+      <div class="fake-input match">data-x="yes"</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5. PSEUDO CLASS ================= -->
+<section id="pseudo-class">
+  <div class="section-head">
+    <span class="section-num">05</span>
+    <h2>Pseudo-classes</h2>
+  </div>
+  <p class="section-desc">تختار العناصر بناءً على حالتها أو موقعها ضمن الشجرة، وليس بناءً على اسمها أو سماتها. تبدأ دائمًا بنقطتين ( : ).</p>
+
+  <h3 style="color:var(--text-dim); font-size:14px; font-family:'JetBrains Mono',monospace; margin:26px 0 14px; direction:ltr; text-transform:uppercase; letter-spacing:.5px;">حالات التفاعل</h3>
+  <div class="grid">
+    <div class="card"><span class="name">:hover</span><p>عند تمرير الفأرة فوق العنصر.</p><pre>a:hover { <span class="k">color</span>: <span class="p">orange</span>; }</pre></div>
+    <div class="card"><span class="name">:focus</span><p>عند وضع التركيز على العنصر (مثل حقل إدخال).</p><pre>input:focus { <span class="k">outline</span>: <span class="p">2px solid blue</span>; }</pre></div>
+    <div class="card"><span class="name">:active</span><p>أثناء لحظة الضغط على العنصر.</p><pre>button:active { <span class="k">transform</span>: <span class="p">scale(.97)</span>; }</pre></div>
+    <div class="card"><span class="name">:visited</span><p>الروابط التي زارها المستخدم من قبل.</p><pre>a:visited { <span class="k">color</span>: <span class="p">purple</span>; }</pre></div>
+    <div class="card"><span class="name">:link</span><p>الروابط التي لم تُزَر بعد.</p><pre>a:link { <span class="k">color</span>: <span class="p">blue</span>; }</pre></div>
+  </div>
+
+  <h3 style="color:var(--text-dim); font-size:14px; font-family:'JetBrains Mono',monospace; margin:26px 0 14px; direction:ltr; text-transform:uppercase; letter-spacing:.5px;">الموقع البنيوي (Structural)</h3>
+  <div class="grid">
+    <div class="card">
+      <span class="name">:first-child</span>
+      <p>العنصر إذا كان الابن الأول لأبيه.</p>
+      <pre>li:first-child { }</pre>
+      <div class="demo"><ul class="tree"><li><span class="box match">li</span></li><li><span class="box">li</span></li><li><span class="box">li</span></li></ul></div>
+    </div>
+    <div class="card">
+      <span class="name">:last-child</span>
+      <p>العنصر إذا كان الابن الأخير لأبيه.</p>
+      <pre>li:last-child { }</pre>
+      <div class="demo"><ul class="tree"><li><span class="box">li</span></li><li><span class="box">li</span></li><li><span class="box match">li</span></li></ul></div>
+    </div>
+    <div class="card">
+      <span class="name">:only-child</span>
+      <p>العنصر إذا كان الابن الوحيد لأبيه.</p>
+      <pre>p:only-child { }</pre>
+    </div>
+    <div class="card">
+      <span class="name">:nth-child(n)</span>
+      <p>يختار الأبناء حسب ترتيبهم الرقمي؛ يقبل صيغًا مثل <code>2n</code> (زوجي) أو <code>2n+1</code> (فردي) أو رقم ثابت.</p>
+      <pre>li:nth-child(2n) { }  <span class="k">/* زوجي */</span></pre>
+      <div class="demo"><ul class="tree"><li><span class="box">1</span></li><li><span class="box match">2</span></li><li><span class="box">3</span></li><li><span class="box match">4</span></li></ul></div>
+    </div>
+    <div class="card">
+      <span class="name">:nth-last-child(n)</span>
+      <p>نفس الفكرة، لكن العدّ يبدأ من آخر عنصر.</p>
+      <pre>li:nth-last-child(1) { }</pre>
+    </div>
+    <div class="card">
+      <span class="name">:first-of-type</span>
+      <p>أول عنصر من نفس نوع الوسم بين إخوته (حتى لو لم يكن أول ابن مطلقًا).</p>
+      <pre>p:first-of-type { }</pre>
+    </div>
+    <div class="card">
+      <span class="name">:last-of-type</span>
+      <p>آخر عنصر من نفس نوع الوسم بين إخوته.</p>
+      <pre>p:last-of-type { }</pre>
+    </div>
+    <div class="card">
+      <span class="name">:nth-of-type(n)</span>
+      <p>يختار حسب الترتيب، لكن بالعدّ فقط بين العناصر من نفس النوع.</p>
+      <pre>img:nth-of-type(3) { }</pre>
+    </div>
+    <div class="card">
+      <span class="name">:only-of-type</span>
+      <p>العنصر الوحيد من نوعه بين إخوته.</p>
+      <pre>span:only-of-type { }</pre>
+    </div>
+    <div class="card">
+      <span class="name">:empty</span>
+      <p>العنصر الذي لا يحتوي أي محتوى ولا عناصر ابنة (حتى نص أو مسافة).</p>
+      <pre>div:empty { <span class="k">display</span>: <span class="p">none</span>; }</pre>
+    </div>
+    <div class="card">
+      <span class="name">:root</span>
+      <p>يشير إلى العنصر الجذر في المستند (&lt;html&gt;)، يُستخدم غالبًا لتعريف متغيرات CSS.</p>
+      <pre>:root { <span class="k">--main-color</span>: <span class="p">#333</span>; }</pre>
+    </div>
+  </div>
+
+  <h3 style="color:var(--text-dim); font-size:14px; font-family:'JetBrains Mono',monospace; margin:26px 0 14px; direction:ltr; text-transform:uppercase; letter-spacing:.5px;">النماذج (Forms)</h3>
+  <div class="grid">
+    <div class="card"><span class="name">:checked</span><p>مربعات الاختيار أو الأزرار الدائرية المُفعَّلة.</p><pre>input:checked { }</pre></div>
+    <div class="card"><span class="name">:disabled</span><p>عناصر النموذج المُعطَّلة.</p><pre>input:disabled { }</pre></div>
+    <div class="card"><span class="name">:enabled</span><p>عناصر النموذج النشطة (غير معطّلة).</p><pre>input:enabled { }</pre></div>
+    <div class="card"><span class="name">:required</span><p>حقول الإدخال الإلزامية.</p><pre>input:required { }</pre></div>
+    <div class="card"><span class="name">:optional</span><p>حقول الإدخال الاختيارية.</p><pre>input:optional { }</pre></div>
+    <div class="card"><span class="name">:valid / :invalid</span><p>حسب صحة القيمة المُدخلة وفق قواعد التحقق.</p><pre>input:invalid { <span class="k">border-color</span>: <span class="p">red</span>; }</pre></div>
+    <div class="card"><span class="name">:placeholder-shown</span><p>الحقل الذي ما زال يعرض نص placeholder (لم يُكتب فيه شيء).</p><pre>input:placeholder-shown { }</pre></div>
+  </div>
+
+  <h3 style="color:var(--text-dim); font-size:14px; font-family:'JetBrains Mono',monospace; margin:26px 0 14px; direction:ltr; text-transform:uppercase; letter-spacing:.5px;">منطقية ومتقدّمة</h3>
+  <div class="grid">
+    <div class="card">
+      <span class="name">:not(selector)</span>
+      <p>يختار كل عنصر <u>لا يطابق</u> المُحدِّد الموجود بداخله.</p>
+      <pre>li:not(.active) { <span class="k">opacity</span>: <span class="p">.6</span>; }</pre>
+    </div>
+    <div class="card">
+      <span class="name">:is(selector-list)</span>
+      <p>اختصار لتجميع عدّة محدِّدات معًا، ويأخذ أولوية أعلى محدِّد بداخله.</p>
+      <pre>:is(h1, h2, h3) { }</pre>
+    </div>
+    <div class="card">
+      <span class="name">:where(selector-list)</span>
+      <p>مثل <code>:is()</code> تمامًا في الوظيفة، لكن أولويته (specificity) دائمًا صفر.</p>
+      <pre>:where(h1, h2, h3) { }</pre>
+    </div>
+    <div class="card">
+      <span class="name">:has(selector)</span>
+      <p>يختار العنصر <u>الأب</u> إذا كان يحتوي على العنصر المذكور بداخله (relational selector).</p>
+      <pre>div:has(> img) { <span class="k">border</span>: <span class="p">1px solid</span>; }</pre>
+    </div>
+    <div class="card">
+      <span class="name">:target</span>
+      <p>العنصر الذي يطابق الـ id الموجود في الرابط الحالي (hash في الـ URL).</p>
+      <pre>#section:target { <span class="k">background</span>: <span class="p">yellow</span>; }</pre>
+    </div>
+    <div class="card">
+      <span class="name">:lang(ar)</span>
+      <p>العناصر المكتوبة بلغة معيّنة حسب سمة lang.</p>
+      <pre>:lang(ar) { <span class="k">direction</span>: <span class="p">rtl</span>; }</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 6. PSEUDO ELEMENT ================= -->
+<section id="pseudo-element">
+  <div class="section-head">
+    <span class="section-num">06</span>
+    <h2>Pseudo-elements</h2>
+  </div>
+  <p class="section-desc">تنشئ أو تختار جزءًا محدَّدًا داخل العنصر (وليس العنصر نفسه)، وتبدأ بنقطتين مزدوجتين ( :: ).</p>
+
+  <div class="grid">
+    <div class="card">
+      <span class="name">::before</span>
+      <p>يُضيف محتوى وهميًا قبل محتوى العنصر الفعلي، يتطلّب خاصية <code>content</code>.</p>
+      <pre>.tag::before { <span class="k">content</span>: <span class="p">"# "</span>; }</pre>
+    </div>
+    <div class="card">
+      <span class="name">::after</span>
+      <p>يُضيف محتوى وهميًا بعد محتوى العنصر الفعلي.</p>
+      <pre>.tag::after { <span class="k">content</span>: <span class="p">" ✓"</span>; }</pre>
+    </div>
+    <div class="card">
+      <span class="name">::first-letter</span>
+      <p>يستهدف أوّل حرف فقط من نص العنصر.</p>
+      <pre>p::first-letter { <span class="k">font-size</span>: <span class="p">2em</span>; }</pre>
+    </div>
+    <div class="card">
+      <span class="name">::first-line</span>
+      <p>يستهدف أوّل سطر مرئي فقط من نص العنصر.</p>
+      <pre>p::first-line { <span class="k">font-weight</span>: <span class="p">bold</span>; }</pre>
+    </div>
+    <div class="card">
+      <span class="name">::selection</span>
+      <p>يُنسِّق الجزء الذي يُحدِّده المستخدم بالفأرة (تحديد النص).</p>
+      <pre>::selection { <span class="k">background</span>: <span class="p">#f4b93e</span>; }</pre>
+    </div>
+    <div class="card">
+      <span class="name">::placeholder</span>
+      <p>يُنسِّق النص الإرشادي داخل حقول الإدخال.</p>
+      <pre>input::placeholder { <span class="k">color</span>: <span class="p">#999</span>; }</pre>
+    </div>
+    <div class="card">
+      <span class="name">::marker</span>
+      <p>يُنسِّق علامة العنصر في القوائم (النقطة أو الرقم).</p>
+      <pre>li::marker { <span class="k">color</span>: <span class="p">crimson</span>; }</pre>
+    </div>
+    <div class="card">
+      <span class="name">::backdrop</span>
+      <p>الطبقة الخلفية التي تظهر خلف عناصر مثل <code>&lt;dialog&gt;</code> أو العناصر في وضع ملء الشاشة.</p>
+      <pre>dialog::backdrop { <span class="k">background</span>: <span class="p">rgba(0,0,0,.6)</span>; }</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 7. SPECIFICITY ================= -->
+<section id="specificity">
+  <div class="section-head">
+    <span class="section-num">07</span>
+    <h2>ترتيب الأولوية (Specificity)</h2>
+  </div>
+  <p class="section-desc">عند تعارض أكثر من قاعدة على نفس العنصر، يفوز المحدِّد الأعلى أولوية. الترتيب من الأضعف إلى الأقوى:</p>
+
+  <table>
+    <tr><th>Level</th><td>النوع</td><td>مثال</td></tr>
+    <tr><th>0</th><td>عام (Universal) / التجميع لا يُضيف أولوية</td><td><span class="mono">*</span></td></tr>
+    <tr><th>1</th><td>الوسم + Pseudo-elements</td><td><span class="mono">div</span> ، <span class="mono">::before</span></td></tr>
+    <tr><th>2</th><td>الكلاس + السمات + Pseudo-classes</td><td><span class="mono">.card</span> ، <span class="mono">[type]</span> ، <span class="mono">:hover</span></td></tr>
+    <tr><th>3</th><td>الـ ID</td><td><span class="mono">#header</span></td></tr>
+    <tr><th>4</th><td>Inline style</td><td><span class="mono">style="..."</span></td></tr>
+    <tr><th>∞</th><td>مع <span class="mono">!important</span> — تتجاوز كل ما سبق</td><td><span class="mono">color: red !important;</span></td></tr>
+  </table>
+</section>
+
+</main>
+
+<footer>
+  صُمِّم كمرجع سريع لجميع أنواع محدِّدات CSS — <span class="mono">selectors.reference</span>
+</footer>
+
+</body>
+</html>
