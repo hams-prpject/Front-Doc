@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>مراجعة CSS — المحاضرة الأولى</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0b0d12;
+  --surface: #11141c;
+  --surface2: #181c27;
+  --surface3: #1e2333;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --text: #e4e7f0;
+  --muted: #5c6478;
+  --accent: #6c8ef5;
+  --accent2: #a78bfa;
+  --green: #34d399;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --cyan: #22d3ee;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Tajawal', sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  padding: 70px 24px 50px;
+  text-align: center;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 90% 60% at 50% -10%, rgba(108,142,245,0.16) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(108,142,245,0.3), transparent);
+}
+.lect-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(108,142,245,0.1);
+  border: 1px solid rgba(108,142,245,0.3);
+  color: #8ba4f7;
+  font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: 2px;
+  padding: 6px 18px;
+  border-radius: 50px;
+  margin-bottom: 28px;
+  text-transform: uppercase;
+}
+.lect-tag span { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(0.7);} }
+
+.hero h1 {
+  font-size: clamp(28px, 5vw, 56px);
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 14px;
+  background: linear-gradient(135deg, #e4e7f0 20%, #8ba4f7 60%, #a78bfa 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-sub {
+  color: var(--muted);
+  font-size: 16px;
+  max-width: 520px;
+  margin: 0 auto 40px;
+}
+
+/* ── STATS BAR ── */
+.stats-bar {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0 24px 50px;
+}
+.stat-pill {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 10px 22px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.stat-pill .sp-val { font-weight: 700; color: var(--accent); font-family: 'IBM Plex Mono', monospace; }
+
+/* ── PROGRESS ── */
+.progress-wrap {
+  max-width: 700px;
+  margin: 0 auto 48px;
+  padding: 0 24px;
+}
+.progress-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px; color: var(--muted); }
+.progress-bar { height: 6px; background: var(--surface2); border-radius: 10px; overflow: hidden; }
+.progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 10px; transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  width: 0%;
+}
+
+/* ── QUIZ CONTAINER ── */
+.quiz-container { max-width: 720px; margin: 0 auto; padding: 0 24px 80px; }
+
+/* ── TOPIC DIVIDER ── */
+.topic-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 48px 0 24px;
+}
+.topic-divider::before, .topic-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.topic-label {
+  font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 8px;
+}
+.topic-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* ── QUESTION CARD ── */
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+  margin-bottom: 16px;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.45s ease, transform 0.45s ease, border-color 0.3s;
+}
+.q-card.visible { opacity: 1; transform: translateY(0); }
+.q-card.answered-correct { border-color: rgba(52,211,153,0.35); background: rgba(52,211,153,0.03); }
+.q-card.answered-wrong { border-color: rgba(248,113,113,0.25); background: rgba(248,113,113,0.02); }
+
+.q-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.q-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--surface2);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+.q-topic-tag {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.q-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+  line-height: 1.65;
+}
+
+/* code snippet in question */
+.q-code {
+  background: #090b10;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 12px 0 16px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  line-height: 1.9;
+  direction: ltr;
+  text-align: left;
+  overflow-x: auto;
+}
+.q-code .prop { color: #82aaff; }
+.q-code .val  { color: #c3e88d; }
+.q-code .sel  { color: #f78c6c; }
+.q-code .cm   { color: #546e7a; font-style: italic; }
+.q-code .at   { color: #c792ea; }
+.q-code .punc { color: #89ddff; }
+
+/* ── OPTIONS ── */
+.options { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border2);
+  background: var(--surface2);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 15px;
+  user-select: none;
+}
+.option:hover:not(.disabled) {
+  border-color: rgba(108,142,245,0.4);
+  background: rgba(108,142,245,0.06);
+}
+.option.selected-correct {
+  border-color: var(--green);
+  background: rgba(52,211,153,0.08);
+  color: #6ee7b7;
+}
+.option.selected-wrong {
+  border-color: var(--red);
+  background: rgba(248,113,113,0.08);
+  color: #fca5a5;
+}
+.option.reveal-correct {
+  border-color: rgba(52,211,153,0.5);
+  background: rgba(52,211,153,0.05);
+  color: #6ee7b7;
+}
+.option.disabled { cursor: default; pointer-events: none; }
+
+.opt-letter {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  color: var(--muted);
+}
+.option.selected-correct .opt-letter { background: var(--green); border-color: var(--green); color: #052e16; }
+.option.selected-wrong .opt-letter { background: var(--red); border-color: var(--red); color: #450a0a; }
+.option.reveal-correct .opt-letter { background: rgba(52,211,153,0.2); border-color: var(--green); color: var(--green); }
+
+/* ── FEEDBACK ── */
+.feedback {
+  display: none;
+  margin-top: 14px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.75;
+  gap: 10px;
+  align-items: flex-start;
+}
+.feedback.show { display: flex; }
+.feedback.correct { background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.25); color: #6ee7b7; }
+.feedback.wrong { background: rgba(248,113,113,0.07); border: 1px solid rgba(248,113,113,0.2); color: #fca5a5; }
+.fb-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.fb-text strong { display: block; font-weight: 700; margin-bottom: 3px; }
+
+/* ── RESULT SCREEN ── */
+.result-screen {
+  display: none;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+  text-align: center;
+}
+.result-screen.show { display: block; }
+.result-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 24px;
+  padding: 48px 40px;
+}
+.result-emoji { font-size: 64px; margin-bottom: 20px; }
+.result-title { font-size: 28px; font-weight: 900; margin-bottom: 8px; }
+.score-circle {
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  margin: 28px auto;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative;
+}
+.score-circle svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.score-num { font-size: 36px; font-weight: 900; font-family: 'IBM Plex Mono', monospace; }
+.score-denom { font-size: 14px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
+.result-breakdown { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 24px 0; }
+.rb-cell { background: var(--surface2); border-radius: 12px; padding: 16px 10px; }
+.rb-val { font-size: 22px; font-weight: 900; font-family: 'IBM Plex Mono', monospace; }
+.rb-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.result-msg { font-size: 15px; color: var(--muted); margin-bottom: 28px; line-height: 1.8; }
+.restart-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  border: none;
+  padding: 16px 40px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Tajawal', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 24px rgba(108,142,245,0.3);
+}
+.restart-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 32px rgba(108,142,245,0.4); }
+.restart-btn:active { transform: scale(0.97); }
+
+/* ── FOOTER ── */
+footer { text-align: center; padding: 32px 24px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--border); }
+footer b { color: var(--accent); }
+
+@media (max-width:560px) {
+  .q-card { padding: 20px 16px; }
+  .result-card { padding: 32px 20px; }
+  .result-breakdown { grid-template-columns: 1fr 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="lect-tag"><span></span> CSS — المحاضرة الثانية</div>
+  <h1>مراجعة سريعة<br/>للمحاضرة الأولى</h1>
+  <p class="hero-sub">اختبر فهمك قبل أن نبدأ — أسئلة اختيارية تغطي جميع مواضيع المحاضرة الأولى</p>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-pill">📋 عدد الأسئلة: <span class="sp-val" id="total-q">25</span></div>
+  <div class="stat-pill">✅ صحيح: <span class="sp-val" id="correct-count" style="color:var(--green)">0</span></div>
+  <div class="stat-pill">❌ خطأ: <span class="sp-val" id="wrong-count" style="color:var(--red)">0</span></div>
+  <div class="stat-pill">⏳ متبقي: <span class="sp-val" id="remaining-count">25</span></div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-header">
+    <span>التقدم</span>
+    <span id="progress-text">0 / 25</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+</div>
+
+<!-- QUIZ -->
+<div class="quiz-container" id="quiz-container"></div>
+
+<!-- RESULT -->
+<div class="result-screen" id="result-screen">
+  <div class="result-card">
+    <div class="result-emoji" id="r-emoji">🎉</div>
+    <div class="result-title" id="r-title">أحسنت!</div>
+    <div class="score-circle" id="score-circle">
+      <svg viewBox="0 0 140 140" width="140" height="140">
+        <circle cx="70" cy="70" r="60" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
+        <circle id="score-arc" cx="70" cy="70" r="60" fill="none" stroke="url(#grad)" stroke-width="10"
+          stroke-linecap="round" stroke-dasharray="377" stroke-dashoffset="377"/>
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#6c8ef5"/>
+            <stop offset="100%" stop-color="#a78bfa"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="score-num" id="r-score">0</div>
+      <div class="score-denom" id="r-denom">/ 25</div>
+    </div>
+    <div class="result-breakdown">
+      <div class="rb-cell"><div class="rb-val" id="rb-correct" style="color:var(--green)">0</div><div class="rb-lbl">صحيح</div></div>
+      <div class="rb-cell"><div class="rb-val" id="rb-wrong" style="color:var(--red)">0</div><div class="rb-lbl">خطأ</div></div>
+      <div class="rb-cell"><div class="rb-val" id="rb-pct" style="color:var(--accent)">0%</div><div class="rb-lbl">النسبة</div></div>
+    </div>
+    <p class="result-msg" id="r-msg"></p>
+    <button class="restart-btn" onclick="restart()">↺ إعادة المحاولة</button>
+  </div>
+</div>
+
+<footer>مراجعة CSS المحاضرة الأولى — للمحاضرة الثانية | <b>CSS Lecture 1 Review</b></footer>
+
+<script>
+const COLORS = {
+  intro:   { color:'#6c8ef5', bg:'rgba(108,142,245,0.12)', label:'مقدمة CSS' },
+  imp:     { color:'#22d3ee', bg:'rgba(34,211,238,0.12)',  label:'أهمية CSS' },
+  embed:   { color:'#a78bfa', bg:'rgba(167,139,250,0.12)', label:'طريقة التضمين' },
+  comment: { color:'#fbbf24', bg:'rgba(251,191,36,0.12)',  label:'التعليقات' },
+  selectors:{ color:'#f97316', bg:'rgba(249,115,22,0.12)',label:'المحددات' },
+  color:   { color:'#34d399', bg:'rgba(52,211,153,0.12)',  label:'Color & Background' },
+  size:    { color:'#fb7185', bg:'rgba(251,113,133,0.12)', label:'Width & Height' },
+  text:    { color:'#e879f9', bg:'rgba(232,121,249,0.12)', label:'Text Properties' },
+  font:    { color:'#facc15', bg:'rgba(250,204,21,0.12)',  label:'Font Properties' },
+};
+
+const questions = [
+  // ── مقدمة CSS ──────────────────────────────────
+  {
+    topic:'intro', num:1,
+    q:'ماذا تعني اختصار CSS؟',
+    opts:['Colorful Style Sheets','Cascading Style Sheets','Creative Styling System','Computer Style Syntax'],
+    ans:1,
+    fb:'CSS تعني <strong>Cascading Style Sheets</strong> أي "صفحات الأنماط المتتالية". تُستخدم لتنسيق وتصميم صفحات HTML.'
+  },
+  {
+    topic:'intro', num:2,
+    q:'CSS لغة:',
+    opts:['برمجة (Programming Language)','وصف (Markup Language)','تنسيق (Style Sheet Language)','قاعدة بيانات'],
+    ans:2,
+    fb:'CSS هي <strong>لغة تنسيق (Style Sheet Language)</strong>، وليست لغة برمجة. مهمتها تحديد كيف تبدو عناصر HTML على الشاشة.'
+  },
+  // ── أهمية CSS ──────────────────────────────────
+  {
+    topic:'imp', num:3,
+    q:'ما الفائدة الرئيسية من استخدام CSS منفصلة عن HTML؟',
+    opts:['تجعل الصفحة أسرع في التحميل فقط','الفصل بين المحتوى والتصميم وسهولة الصيانة','إضافة قواعد بيانات للموقع','تحسين محركات البحث SEO فقط'],
+    ans:1,
+    fb:'الفائدة الكبرى هي <strong>الفصل بين المحتوى (HTML) والتصميم (CSS)</strong>، مما يجعل الصيانة سهلة — يمكنك تغيير تصميم كامل الموقع بتعديل ملف CSS واحد فقط.'
+  },
+  {
+    topic:'imp', num:4,
+    q:'بدون CSS، كيف تظهر صفحة HTML؟',
+    opts:['لا تظهر أبداً','تظهر نصاً عادياً بدون تنسيق','تظهر بألوان عشوائية','تعطي خطأ في المتصفح'],
+    ans:1,
+    fb:'بدون CSS، تظهر صفحة HTML <strong>نصاً عادياً بدون تنسيق</strong> — فقط العناصر الافتراضية للمتصفح.'
+  },
+  // ── طريقة التضمين ──────────────────────────────
+  {
+    topic:'embed', num:5,
+    q:'كم طريقة لتضمين CSS في HTML؟',
+    opts:['طريقة واحدة','طريقتان','ثلاث طرق','أربع طرق'],
+    ans:2,
+    fb:'هناك <strong>ثلاث طرق</strong>: 1- الخارجية (External) بملف .css منفصل، 2- الداخلية (Internal) داخل وسم &lt;style&gt;، 3- المدمجة (Inline) بخاصية style مباشرة في العنصر.'
+  },
+  {
+    topic:'embed', num:6,
+    q:'أي طريقة تضمين CSS هي الأفضل والأكثر استخداماً في المشاريع الكبيرة؟',
+    opts:['Inline CSS','Internal CSS','External CSS','لا فرق بينهم'],
+    ans:2,
+    fb:'<strong>External CSS</strong> هي الأفضل لأنها تفصل التصميم عن المحتوى، وملف الـ CSS الواحد يمكن استخدامه لصفحات متعددة، مما يوفر وقتاً وجهداً كبيراً.'
+  },
+  {
+    topic:'embed', num:7,
+    q:'ما الوسم المستخدم لربط ملف CSS خارجي بصفحة HTML؟',
+    code:`<span class="at">&lt;link</span> <span class="prop">rel</span><span class="punc">="</span><span class="val">stylesheet</span><span class="punc">"</span> <span class="prop">href</span><span class="punc">="</span><span class="val">style.css</span><span class="punc">"</span><span class="at">&gt;</span>`,
+    opts:['&lt;style&gt;','&lt;link&gt;','&lt;css&gt;','&lt;script&gt;'],
+    ans:1,
+    fb:'يُستخدم وسم <strong>&lt;link&gt;</strong> داخل &lt;head&gt; لربط ملف CSS خارجي، مع تحديد rel="stylesheet" وhref لمسار الملف.'
+  },
+  {
+    topic:'embed', num:8,
+    q:'أين يُكتب CSS الداخلي (Internal) في صفحة HTML؟',
+    opts:['داخل وسم &lt;body&gt;','داخل وسم &lt;head&gt; في &lt;style&gt;','في نهاية الصفحة قبل &lt;/html&gt;','داخل خاصية style في كل عنصر'],
+    ans:1,
+    fb:'CSS الداخلي يُكتب <strong>داخل وسم &lt;head&gt;</strong> بين وسمَي &lt;style&gt; و&lt;/style&gt;.'
+  },
+  // ── التعليقات ──────────────────────────────────
+  {
+    topic:'comment', num:9,
+    q:'ما الصيغة الصحيحة لكتابة تعليق في CSS؟',
+    opts:['// هذا تعليق','<!-- هذا تعليق -->','/* هذا تعليق */','# هذا تعليق'],
+    ans:2,
+    fb:'التعليق في CSS يكتب هكذا: <strong>/* نص التعليق */</strong>. لاحظ الفرق عن HTML الذي يستخدم <!-- --> وعن JavaScript الذي يستخدم //'
+  },
+  // ── المحددات ──────────────────────────────────
+  {
+    topic:'selectors', num:10,
+    q:'ما الفرق بين المحدد #myId والمحدد .myClass؟',
+    opts:['لا فرق بينهما','# للفئات و. للمعرفات','# يستهدف معرّف فريد، . يستهدف فئة يمكن تكرارها','# للعناصر الكبيرة، . للصغيرة'],
+    ans:2,
+    fb:'<strong>#</strong> يستهدف ID (معرّف فريد لعنصر واحد)، بينما <strong>.</strong> يستهدف Class (فئة يمكن تطبيقها على عناصر متعددة).'
+  },
+  {
+    topic:'selectors', num:11,
+    q:'ما ترتيب الأولوية (Specificity) الصحيح من الأعلى للأدنى؟',
+    opts:['Element > Class > ID > Inline','Inline > ID > Class > Element','Class > ID > Inline > Element','ID > Inline > Element > Class'],
+    ans:1,
+    fb:'ترتيب الأولوية من الأعلى: <strong>Inline style > ID > Class > Element</strong>. كلما كان المحدد أكثر تخصيصاً كانت أولويته أعلى.'
+  },
+  {
+    topic:'selectors', num:12,
+    q:'ماذا تستهدف هذه القاعدة؟',
+    code:`<span class="sel">*</span> <span class="punc">{</span>\n  <span class="prop">margin</span><span class="punc">:</span> <span class="val">0</span><span class="punc">;</span>\n<span class="punc">}</span>`,
+    opts:['العنصر الأول فقط','جميع عناصر &lt;p&gt;','جميع عناصر الصفحة بدون استثناء','العنصر الأخير فقط'],
+    ans:2,
+    fb:'<strong>* (النجمة)</strong> هو المحدد الكلي (Universal Selector) ويستهدف جميع عناصر الصفحة بدون استثناء.'
+  },
+  // ── Color & Background ──────────────────────────
+  {
+    topic:'color', num:13,
+    q:'أيّ من هذه القيم لخاصية color صحيحة؟',
+    opts:['color: red فقط','color: #ff0000 فقط','color: rgb(255,0,0) فقط','كل السابق صحيح'],
+    ans:3,
+    fb:'خاصية color تقبل <strong>عدة صيغ</strong>: الاسم النصي (red)، والهيكسادسيمال (#ff0000)، وRGB (rgb(255,0,0))، وHSL وغيرها.'
+  },
+  {
+    topic:'color', num:14,
+    q:'ما الفرق بين color و background-color؟',
+    opts:['لا فرق بينهما','color للخلفية وbackground-color للنص','color تلوّن النص وbackground-color تلوّن خلفية العنصر','color للصور وbackground-color للنصوص'],
+    ans:2,
+    fb:'<strong>color</strong> تحدد لون النص بداخل العنصر، بينما <strong>background-color</strong> تحدد لون خلفية العنصر نفسه.'
+  },
+  {
+    topic:'color', num:15,
+    q:'ما قيمة اللون الشفاف في CSS؟',
+    opts:['none','null','transparent','empty'],
+    ans:2,
+    fb:'القيمة <strong>transparent</strong> تجعل لون الخلفية أو النص شفافاً تماماً.'
+  },
+  // ── Width & Height ─────────────────────────────
+  {
+    topic:'size', num:16,
+    q:'ما الفرق بين تحديد العرض بـ px وتحديده بـ %؟',
+    opts:['لا فرق','px ثابت لا يتغير، % نسبة من حجم العنصر الأب','% ثابتة وpx تتغير','px للنصوص فقط و% للصور فقط'],
+    ans:1,
+    fb:'<strong>px</strong> قيمة ثابتة لا تتغير بتغيير حجم الشاشة، أما <strong>%</strong> فهي نسبة من حجم العنصر الأب مما يجعلها مرنة ومناسبة للتصميم المتجاوب.'
+  },
+  {
+    topic:'size', num:17,
+    q:'ماذا يحدث للمحتوى إذا حددنا height: 50px وكان المحتوى أكبر من ذلك؟',
+    opts:['يُحذف المحتوى الزائد','يطفو المحتوى خارج حدود العنصر','يتكيف العنصر تلقائياً','يظهر خطأ'],
+    ans:1,
+    fb:'إذا كان المحتوى أكبر من الارتفاع المحدد فإنه <strong>يطفو (overflow)</strong> خارج حدود العنصر. يمكن التحكم بهذا عبر خاصية overflow.'
+  },
+  // ── Text Properties ────────────────────────────
+  {
+    topic:'text', num:18,
+    q:'ما الخاصية المستخدمة لمحاذاة النص؟',
+    opts:['align','text-align','position','justify'],
+    ans:1,
+    fb:'<strong>text-align</strong> هي الخاصية الصحيحة، وتقبل القيم: left، right، center، justify.'
+  },
+  {
+    topic:'text', num:19,
+    q:'ماذا تفعل هذه الخاصية؟',
+    code:`<span class="prop">text-transform</span><span class="punc">:</span> <span class="val">uppercase</span><span class="punc">;</span>`,
+    opts:['تحوّل النص إلى خط مائل','تحوّل جميع الأحرف إلى كبيرة (Capital)','تحذف النص','تغيّر لون النص'],
+    ans:1,
+    fb:'<strong>text-transform: uppercase</strong> تحوّل جميع الأحرف إلى أحرف كبيرة. القيم الأخرى: lowercase (صغيرة)، capitalize (أول حرف كبير).'
+  },
+  {
+    topic:'text', num:20,
+    q:'ما وظيفة خاصية letter-spacing؟',
+    opts:['المسافة بين الكلمات','المسافة بين الأسطر','المسافة بين الحروف الفردية','حجم الخط'],
+    ans:2,
+    fb:'<strong>letter-spacing</strong> تتحكم في المسافة بين <strong>الحروف الفردية</strong>. أما المسافة بين الكلمات فهي word-spacing، وبين الأسطر line-height.'
+  },
+  {
+    topic:'text', num:21,
+    q:'ما الخاصية التي تضيف مسافة في أول سطر من الفقرة؟',
+    opts:['margin-right','padding-right','text-indent','first-line'],
+    ans:2,
+    fb:'<strong>text-indent</strong> تضيف مسافة (بادئة) في بداية أول سطر من الفقرة فقط، مثل المسافة المستخدمة في الكتب.'
+  },
+  {
+    topic:'text', num:22,
+    q:'ما الفرق بين line-height و word-spacing؟',
+    opts:['لا فرق','line-height = مسافة بين الأسطر، word-spacing = مسافة بين الكلمات','line-height = حجم الخط، word-spacing = المسافة بين الحروف','كلاهما يتحكمان في حجم النص'],
+    ans:1,
+    fb:'<strong>line-height</strong> تتحكم في المسافة الرأسية بين الأسطر (ارتفاع السطر)، بينما <strong>word-spacing</strong> تتحكم في المسافة الأفقية بين الكلمات.'
+  },
+  // ── Font Properties ────────────────────────────
+  {
+    topic:'font', num:23,
+    q:'ما قيمة font-weight للحصول على نص سميك (Bold)؟',
+    opts:['font-weight: italic','font-weight: bold أو 700','font-weight: large','font-weight: thick'],
+    ans:1,
+    fb:'<strong>font-weight: bold</strong> أو <strong>font-weight: 700</strong> كلاهما يجعل النص سميكاً. القيم من 100 (خفيف جداً) إلى 900 (سميك جداً).'
+  },
+  {
+    topic:'font', num:24,
+    q:'ماذا تفعل هذه الخاصية؟',
+    code:`<span class="prop">font-style</span><span class="punc">:</span> <span class="val">italic</span><span class="punc">;</span>`,
+    opts:['تجعل النص سميكاً','تجعل النص مائلاً','تغيّر نوع الخط','تضيف خطاً تحت النص'],
+    ans:1,
+    fb:'<strong>font-style: italic</strong> تجعل النص مائلاً. القيم المتاحة: normal (عادي)، italic (مائل)، oblique (مائل مصطنع).'
+  },
+];
+
+let answered = 0, correct = 0, wrong = 0;
+const total = questions.length;
+
+function buildQuiz() {
+  const container = document.getElementById('quiz-container');
+  document.getElementById('total-q').textContent = total;
+  document.getElementById('remaining-count').textContent = total;
+
+  let currentTopic = null;
+
+  questions.forEach((q, qi) => {
+    // topic divider
+    if (q.topic !== currentTopic) {
+      currentTopic = q.topic;
+      const c = COLORS[q.topic];
+      const div = document.createElement('div');
+      div.className = 'topic-divider';
+      div.innerHTML = `<span class="topic-label"><span class="topic-dot" style="background:${c.color}"></span>${c.label}</span>`;
+      container.appendChild(div);
+    }
+
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = `q-${qi}`;
+
+    const c = COLORS[q.topic];
+    const letters = ['أ','ب','ج','د'];
+
+    let codeHtml = q.code ? `<div class="q-code">${q.code}</div>` : '';
+
+    card.innerHTML = `
+      <div class="q-meta">
+        <span class="q-num">س ${q.num}</span>
+        <span class="q-topic-tag" style="background:${c.bg};color:${c.color}">${c.label}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      ${codeHtml}
+      <div class="options" id="opts-${qi}">
+        ${q.opts.map((o,oi)=>`
+          <div class="option" id="opt-${qi}-${oi}" onclick="pick(${qi},${oi})">
+            <span class="opt-letter">${letters[oi]}</span>
+            <span>${o}</span>
+          </div>`).join('')}
+      </div>
+      <div class="feedback" id="fb-${qi}">
+        <span class="fb-icon"></span>
+        <div class="fb-text"></div>
+      </div>`;
+
+    container.appendChild(card);
+  });
+
+  // observe scroll
+  const observer = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:0.08});
+  document.querySelectorAll('.q-card').forEach(c=>observer.observe(c));
+}
+
+function pick(qi, oi) {
+  const q = questions[qi];
+  const card = document.getElementById(`q-${qi}`);
+  if (card.classList.contains('answered-correct') || card.classList.contains('answered-wrong')) return;
+
+  const isCorrect = oi === q.ans;
+  const opts = document.querySelectorAll(`#opts-${qi} .option`);
+
+  // disable all
+  opts.forEach(o=>o.classList.add('disabled'));
+
+  // mark selected
+  opts[oi].classList.add(isCorrect ? 'selected-correct' : 'selected-wrong');
+
+  // reveal correct if wrong
+  if (!isCorrect) opts[q.ans].classList.add('reveal-correct');
+
+  // card border
+  card.classList.add(isCorrect ? 'answered-correct' : 'answered-wrong');
+
+  // feedback
+  const fb = document.getElementById(`fb-${qi}`);
+  fb.classList.add('show', isCorrect ? 'correct' : 'wrong');
+  fb.querySelector('.fb-icon').textContent = isCorrect ? '✅' : '❌';
+  fb.querySelector('.fb-text').innerHTML = `<strong>${isCorrect ? 'إجابة صحيحة!' : 'إجابة خاطئة'}</strong>${q.fb}`;
+
+  // stats
+  answered++;
+  if (isCorrect) correct++; else wrong++;
+  updateStats();
+
+  if (answered === total) setTimeout(showResult, 900);
+}
+
+function updateStats() {
+  document.getElementById('correct-count').textContent = correct;
+  document.getElementById('wrong-count').textContent = wrong;
+  document.getElementById('remaining-count').textContent = total - answered;
+  document.getElementById('progress-text').textContent = `${answered} / ${total}`;
+  document.getElementById('progress-fill').style.width = `${(answered/total)*100}%`;
+}
+
+function showResult() {
+  document.getElementById('quiz-container').style.display = 'none';
+  document.querySelector('.progress-wrap').style.display = 'none';
+  document.querySelector('.stats-bar').style.display = 'none';
+  const rs = document.getElementById('result-screen');
+  rs.classList.add('show');
+
+  const pct = Math.round((correct/total)*100);
+  document.getElementById('r-score').textContent = correct;
+  document.getElementById('r-denom').textContent = `/ ${total}`;
+  document.getElementById('rb-correct').textContent = correct;
+  document.getElementById('rb-wrong').textContent = wrong;
+  document.getElementById('rb-pct').textContent = pct + '%';
+
+  // arc
+  const circumference = 377;
+  const offset = circumference - (circumference * pct / 100);
+  document.getElementById('score-arc').style.strokeDashoffset = offset;
+  document.getElementById('score-arc').style.transition = 'stroke-dashoffset 1s cubic-bezier(.4,0,.2,1)';
+
+  // message
+  let emoji, title, msg;
+  if (pct >= 90) {
+    emoji='🏆'; title='ممتاز! أنت جاهز للمحاضرة الثانية!';
+    msg='أحسنت! فهمك للمحاضرة الأولى رائع. يمكنك الانتقال بثقة للمحاضرة الثانية وستبني عليها بسهولة.';
+  } else if (pct >= 70) {
+    emoji='⭐'; title='جيد جداً! قريب من الاتقان';
+    msg='فهمك جيد للمعظم. راجع الأسئلة التي أخطأت فيها وستكون مستعداً تماماً.';
+  } else if (pct >= 50) {
+    emoji='📚'; title='جيد، لكن راجع المواضيع';
+    msg='لديك أساس لكن تحتاج لمراجعة بعض المواضيع قبل المتابعة. ارجع للملاحظات وحاول مجدداً!';
+  } else {
+    emoji='💪'; title='راجع المحاضرة الأولى';
+    msg='لا تقلق! CSS تحتاج تكرار. راجع ملاحظات المحاضرة الأولى جيداً وحاول مجدداً — ستتحسن بالتأكيد.';
+  }
+  document.getElementById('r-emoji').textContent = emoji;
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent = msg;
+}
+
+function restart() {
+  answered = 0; correct = 0; wrong = 0;
+  document.getElementById('result-screen').classList.remove('show');
+  document.getElementById('quiz-container').innerHTML = '';
+  document.getElementById('quiz-container').style.display = '';
+  document.querySelector('.progress-wrap').style.display = '';
+  document.querySelector('.stats-bar').style.display = '';
+  updateStats();
+  buildQuiz();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+buildQuiz();
+</script>
+</body>
+</html>
